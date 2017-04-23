@@ -52,7 +52,7 @@ GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
 PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to hex
             JSR         ASCII_HEX   *Convert input into Hex
             MOVE.L      D3,STA_ADDR *Move hex to STA_ADDR
-            CLR.L       D3          *Clear D2
+            CLR.L       D3          *Clear D3
             RTS                     
 
 *--------------------PROC_END-------------------------------
@@ -60,7 +60,7 @@ PROC_END    *TODO: Check for Null, bad length, odd address, range, convert to he
             *      does not fall before start
             JSR         ASCII_HEX   *Convert input into Hex
             MOVE.L      D3,END_ADDR *Move hex to END_ADDR
-            CLR.L       D3          *Clear D2
+            CLR.L       D3          *Clear D3
             RTS
 
 *-------------------ASCII_HEX-------------------------------
