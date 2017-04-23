@@ -1,6 +1,6 @@
 *-----------------------------------------------------------
 * Title      : Never Lucky Disassembler
-* Written by : Henry Hong, Ryan Palm, Joshua Plantillia
+* Written by : Henry Hong, Ryan Palm, Joshua Plantilla
 * Date       : April 23, 2017
 * Description: Final Project for CSS 422. This program
 *              translates machine code into assembly (68k)
