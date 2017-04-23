@@ -97,7 +97,7 @@ CR          EQU         $0D
 LF          EQU         $0A
 
 NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
-            DC.B        'Henery Hong, Ryan Palm, Joshua Plantilla',CR,LF
+            DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
             DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
             DC.B        '----------------------------------------',CR,LF,0
             
@@ -109,6 +109,7 @@ END_ADDR    DS.B        40
             
 
             END         START       *LAST LINE
+
 
 *~Font name~Courier New~
 *~Font size~10~
