@@ -9,13 +9,15 @@
 
 START       ORG         $1000       *Start program
             JSR         INTRO       *Display Intro Message
-            JSR         GET_INPUT   *Prompt user for input
+            JSR         GET_INPUT   *Prompt user for input, convert input from ascii to hex and assign to sta_addr and end_addr
             
-            *TODO: Loop over machine code line by line
-            *analyzing each line for instructions, and dumping data lines.
+            *Assuming all input error checking is done before the next call
             
-            JMP         DONE        *End Program
-               
+            *JSR         INIT_LOOP   *Initialize loop variables
+            *JSR         DECODE_LOOP *Enters maine decode loop
+            
+            * final call of program, may need to be removed if we jump directly to DONE from the loop
+            JMP         DONE        *End Program               
                
 *-----------------------INTRO-------------------------------
 INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
@@ -51,7 +53,7 @@ GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
 *--------------------PROC_STA-------------------------------
 PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to hex
             JSR         ASCII_HEX   *Convert input into Hex
-            MOVE.L      D3,STA_ADDR *Move hex to STA_ADDR
+            MOVEA.L     D3,A5       *Move hex to STA_ADDR
             CLR.L       D3          *Clear D3
             RTS                     
 
@@ -59,7 +61,7 @@ PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to he
 PROC_END    *TODO: Check for Null, bad length, odd address, range, convert to hex
             *      does not fall before start
             JSR         ASCII_HEX   *Convert input into Hex
-            MOVE.L      D3,END_ADDR *Move hex to END_ADDR
+            MOVE.L      D3,A6       *Move hex to END_ADDR
             CLR.L       D3          *Clear D3
             RTS
 
@@ -88,6 +90,10 @@ FORMAT      SUBI.B      #$1,D1      *Decrement D2 counter, one character has bee
             ASL.L       #4,D3       *Shift bits to the left to correct position
             BRA         ASCII_HEX   *Branch back to label
             
+*-------------------INIT_LOOP-------------------------------
+*INIT_LOOP   MOVEA.L     
+
+            
 *-----------------------DONE--------------------------------
 DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
             TRAP        #15         *Halt program, Trap#15 task 9
@@ -104,11 +110,12 @@ NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
 STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
 END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
 
-STA_ADDR    DS.B        40
-END_ADDR    DS.B        40
+STA_ADDR    DS.B        80
+END_ADDR    DS.B        80
             
 
             END         START       *LAST LINE
+
 
 
 *~Font name~Courier New~
