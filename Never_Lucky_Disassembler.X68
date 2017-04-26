@@ -654,7 +654,7 @@ OPC4E_E     RTS
 
 OPC4E7_0     RTS
 
-*P-------------------NOP LANDS HERE (4E71)--------------------
+*-------------------NOP LANDS HERE (4E71)--------------------
 OPC4E7_1    MOVE.B      #$AA,D6     *Set good data flag. IF THIS WAS A PARAMERTARIZED INSTRUCTION, NEEDS TO HAPPEN AFTER <EA>/Dn/An...
 
             MOVE.B      #'N',(A4)+
