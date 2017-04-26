@@ -11,13 +11,12 @@ START       ORG         $1000       *Start program
             JSR         INTRO       *Display Intro Message
             JSR         GET_INPUT   *Prompt user for input, convert input from ascii to hex and assign to sta_addr and end_addr
             
-            *Assuming all input error checking is done before the next call
+            *Assuming all input error checking is done before the next call (not yet implemented)
             
-            *JSR         INIT_LOOP   *Initialize loop variables
-            *JSR         DECODE_LOOP *Enters maine decode loop
+            JSR         DECODE_LOOP *Enters maine decode loop
             
             * final call of program, may need to be removed if we jump directly to DONE from the loop
-            JMP         DONE        *End Program               
+            *JMP         DONE        *End Program               
                
 *-----------------------INTRO-------------------------------
 INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
@@ -53,6 +52,8 @@ GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
 *--------------------PROC_STA-------------------------------
 PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to hex
             JSR         ASCII_HEX   *Convert input into Hex
+            
+            *assuming all error checking is done before the next instruction (not yet implemented)
             MOVEA.L     D3,A5       *Move hex to STA_ADDR
             CLR.L       D3          *Clear D3
             RTS                     
@@ -61,6 +62,8 @@ PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to he
 PROC_END    *TODO: Check for Null, bad length, odd address, range, convert to hex
             *      does not fall before start
             JSR         ASCII_HEX   *Convert input into Hex
+            
+            *assuming all error checking is done before the next instruction (not yet implemented)
             MOVE.L      D3,A6       *Move hex to END_ADDR
             CLR.L       D3          *Clear D3
             RTS
@@ -90,9 +93,51 @@ FORMAT      SUBI.B      #$1,D1      *Decrement D2 counter, one character has bee
             ASL.L       #4,D3       *Shift bits to the left to correct position
             BRA         ASCII_HEX   *Branch back to label
             
-*-------------------INIT_LOOP-------------------------------
-*INIT_LOOP   MOVEA.L     
+*-------------------DECODE_LOOP-----------------------------
+DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7
+            
+            LEA         BAD_STR,A3  *Move Bad string constant into A3
+            LEA         GOOD_STR,A4 *Move Good string constant into A4
+            
+            JSR         INIT_STRS   *Initialize Bad and Good Str
+            
+            JSR         IDENTIFY    *Start opcode identification waterfall
+            CMPI.B      #$AA,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
+            BEQ         PRINT_GOOD  *Print good string if good opcode
+            BRA         PRINT_BAD   *Print bad string if bad opcode
+PRINT_GOOD  JSR         PRINT_G     *Jump to Print good string
+PRINT_BAD   JSR         PRINT_B     *Jump to Pring bad string            
+            
+            CMP.W       A5,A6       *Check if we're done
+            BEQ         END_OPT     *if we're done, move to end options (ask user what to do)
+            
+            *Maybe a BGT check here also? would that ever be possible?
+            
+            BRA         DECODE_LOOP * Continue loop
+            
+*-------------------INIT_STRS-----------------------------
+INIT_STRS   JSR         INIT_GOOD   *Initialize the good string
+            JSR         INIT_BAD    *Initialize the bad string
+            RTS
+*-------------------INIT_GOOD-----------------------------
+INIT_GOOD   CLR.L       D0          *Make sure D0 is empty
+            MOVE.W      D0,D7       *Compy opcode into D0 for working with
+            
+            *Add 'Legal: ', then add opcode (must go from hex to ascii)
+            
+            
+            RTS
 
+*-------------------INIT_BAD------------------------------            
+INIT_BAD    CLR.L       D0          *Make sure D0 is empty
+            MOVE.W      D0,D7       *Copy opcode into D0 for working with
+            
+            *Add 'Illegal: ', then add opcode (must go from from hex to ascii)
+            
+            RTS          
+            
+*-------------------END_OPT---------------------------------
+END_OPT     JMP         DONE        *Jump to done for now untill end options logic is implemented
             
 *-----------------------DONE--------------------------------
 DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
@@ -110,8 +155,11 @@ NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
 STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
 END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
 
-STA_ADDR    DS.B        80
-END_ADDR    DS.B        80
+STA_ADDR    DS.B        40
+END_ADDR    DS.B        40
+
+GOOD_STR    DC.B        40
+BAD_STR     DC.B        40
             
 
             END         START       *LAST LINE
