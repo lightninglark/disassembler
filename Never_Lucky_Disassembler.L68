@@ -1,6 +1,10 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
+<<<<<<< HEAD
 Created On: 4/25/2017 6:29:24 PM
+=======
+Created On: 4/25/2017 9:28:05 PM
+>>>>>>> refs/remotes/origin/master
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Never Lucky Disassembler
@@ -15,8 +19,9 @@ Created On: 4/25/2017 6:29:24 PM
 00001000  4EB9 00001018             11              JSR         INTRO       *Display Intro Message
 00001006  4EB9 00001026             12              JSR         GET_INPUT   *Prompt user for input, convert input from ascii to hex and assign to sta_addr and end_addr
 0000100C                            13              
-0000100C                            14              *Assuming all input error checking is done before the next call
+0000100C                            14              *Assuming all input error checking is done before the next call (not yet implemented)
 0000100C                            15              
+<<<<<<< HEAD
 0000100C                            16              *JSR         INIT_LOOP   *Initialize loop variables
 0000100C                            17              *JSR         DECODE_LOOP *Enters maine decode loop
 0000100C                            18              
@@ -226,6 +231,299 @@ Created On: 4/25/2017 6:29:24 PM
 00001341                           222              
 00001341                           223  
 00001341                           224              END         START       *LAST LINE
+=======
+0000100C  4EB9 000010B6             16              JSR         DECODE_LOOP *Enters maine decode loop
+00001012                            17              
+00001012                            18              * final call of program, may need to be removed if we jump directly to DONE from the loop
+00001012                            19              *JMP         DONE        *End Program               
+00001012                            20                 
+00001012                            21  *-----------------------INTRO-------------------------------
+00001012  43F9 00001240             22  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
+00001018  103C 000E                 23              MOVE.B      #14,D0      *Trap task 14, display intro
+0000101C  4E4F                      24              TRAP        #15         
+0000101E  4E75                      25              RTS         
+00001020                            26  
+00001020                            27  *--------------------GET_INPUT------------------------------
+00001020  43F9 000012E7             28  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
+00001026  103C 000E                 29              MOVE.B      #14,D0      *Trap task 14, display start address msg
+0000102A  4E4F                      30              TRAP        #15         
+0000102C                            31              
+0000102C  43F9 0000132B             32              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
+00001032  103C 0002                 33              MOVE.B      #2,D0       *Trap task 2, collect start address from input, length in D1
+00001036  4E4F                      34              TRAP        #15         
+00001038                            35              
+00001038  4EB9 00001062             36              JSR         PROC_STA    *Process Start address, check for errrors and convert to HEX
+0000103E  4281                      37              CLR.L       D1          *Clear input length from D1
+00001040                            38              
+00001040  43F9 0000130A             39              LEA         END_MSG,A1  *Load END_MSG into A1
+00001046  103C 000E                 40              MOVE.B      #14,D0      *Trap task 14, display end address msg
+0000104A  4E4F                      41              TRAP        #15
+0000104C                            42              
+0000104C  43F9 00001353             43              LEA         END_ADDR,A1 *Store input in END_ADDR variable
+00001052  103C 0002                 44              MOVE.B      #2,D0       *Trap task 2, collect end address from input, length in d1
+00001056  4E4F                      45              TRAP        #15         
+00001058                            46              
+00001058  4EB9 0000106E             47              JSR         PROC_END    *Process End Address, check for errors and convert to HEX
+0000105E  4281                      48              CLR.L       D1          *Clear input length from D1
+00001060                            49              
+00001060  4E75                      50              RTS
+00001062                            51              
+00001062                            52  *--------------------PROC_STA-------------------------------
+00001062                            53  PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to hex
+00001062  4EB9 0000107A             54              JSR         ASCII_HEX   *Convert input into Hex
+00001068                            55              
+00001068                            56              *assuming all error checking is done before the next instruction (not yet implemented)
+00001068  2A43                      57              MOVEA.L     D3,A5       *Move hex to STA_ADDR
+0000106A  4283                      58              CLR.L       D3          *Clear D3
+0000106C  4E75                      59              RTS                     
+0000106E                            60  
+0000106E                            61  *--------------------PROC_END-------------------------------
+0000106E                            62  PROC_END    *TODO: Check for Null, bad length, odd address, range, convert to hex
+0000106E                            63              *      does not fall before start
+0000106E  4EB9 0000107A             64              JSR         ASCII_HEX   *Convert input into Hex
+00001074                            65              
+00001074                            66              *assuming all error checking is done before the next instruction (not yet implemented)
+00001074  2C43                      67              MOVE.L      D3,A6       *Move hex to END_ADDR
+00001076  4283                      68              CLR.L       D3          *Clear D3
+00001078  4E75                      69              RTS
+0000107A                            70  
+0000107A                            71  *-------------------ASCII_HEX-------------------------------
+0000107A  0C01 0000                 72  ASCII_HEX   CMPI.B      #$0,D1      *See if all characters are converted
+0000107E  6700 0012                 73              BEQ         AH_DONE     *End subroutine if all converted
+00001082  1419                      74              MOVE.B      (A1)+,D2    *Move first ASCII hex value into D2
+00001084  183C 0039                 75              MOVE.B      #$39,D4     *Number to compare input to to select num or letter 
+00001088  B404                      76              CMP.B       D4,D2       *Check if ascii code is for a number or letter
+0000108A  6F00 0008                 77              BLE         NUM         *Codes less than $39 imply a number, so branch
+0000108E  6000 000E                 78              BRA         LET         *If not a number, must be a letter.            
+00001092  4E75                      79  AH_DONE     RTS
+00001094                            80  
+00001094  183C 0030                 81  NUM         MOVE.B      #$30,D4     *move $30 into D4 (ammount to sub from value if number)
+00001098  9404                      82              SUB.B       D4,D2       *convert to hexadecimal number
+0000109A  6000 000C                 83              BRA         FORMAT      *branch to subroutine to store converted hex number
+0000109E                            84              
+0000109E  183C 0037                 85  LET         MOVE.B      #$37,D4     *move $37 into D4 (ammount to sub from value if letter)
+000010A2  9404                      86              SUB.B       D4,D2       *convert to hexadecimal letter
+000010A4  6000 0002                 87              BRA         FORMAT      *branch to subroutine to store converted hex letter
+000010A8                            88  
+000010A8  5301                      89  FORMAT      SUBI.B      #$1,D1      *Decrement D2 counter, one character has been converted
+000010AA  D602                      90              ADD.B       D2,D3       *Store converted number in D3
+000010AC  0C01 0000                 91              CMPI.B      #$0,D1      *Check if we're all done converting
+000010B0  67C8                      92              BEQ         ASCII_HEX   *If not continue conversion
+000010B2  E983                      93              ASL.L       #4,D3       *Shift bits to the left to correct position
+000010B4  60C4                      94              BRA         ASCII_HEX   *Branch back to label
+000010B6                            95              
+000010B6                            96  *-------------------DECODE_LOOP-----------------------------
+000010B6  3E1D                      97  DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7
+000010B8                            98              
+000010B8  47F9 000013BC             99              LEA         BAD_STR,A3  *Move Bad string constant into A3
+000010BE  49F9 0000137C            100              LEA         GOOD_STR,A4 *Move Good string constant into A4
+000010C4                           101              
+000010C4  4EB9 000010F4            102              JSR         INIT_STRS   *Initialize Bad and Good Str
+000010CA                           103              
+000010CA                           104              *JSR         IDENTIFY    *Start opcode identification waterfall
+000010CA                           105              
+000010CA                           106              *MOVE.B      #$AA,D6     *TESTING ONLY
+000010CA                           107              
+000010CA  0C06 00AA                108              CMPI.B      #$AA,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
+000010CE  6700 0006                109              BEQ         PRINT_GOOD  *Print good string if good opcode
+000010D2  6000 000C                110              BRA         PRINT_BAD   *Print bad string if bad opcode
+000010D6  4EB9 00001210            111  PRINT_GOOD  JSR         PRINT_G     *Jump to Print good string
+000010DC  6000 000C                112              BRA         CONTINUE    *Continue the loop
+000010E0  4EB9 00001222            113  PRINT_BAD   JSR         PRINT_B     *Jump to Pring bad string
+000010E6  6000 0002                114              BRA         CONTINUE    *Continue the loop            
+000010EA                           115              
+000010EA  BCCD                     116  CONTINUE    CMP.W       A5,A6       *Check if we're done
+000010EC  6700 0146                117              BEQ         END_OPT     *if we're done, move to end options (ask user what to do)
+000010F0                           118              
+000010F0  4286                     119              CLR.L       D6          *Clear the bad/good flag register
+000010F2                           120              
+000010F2                           121              *Maybe a BGT check here also? would that ever be possible?
+000010F2                           122              *Need to implement line/page display (one page at a time via enter)
+000010F2                           123              
+000010F2  60C2                     124              BRA         DECODE_LOOP * Continue loop
+000010F4                           125              
+000010F4                           126  *-------------------INIT_STRS-----------------------------
+000010F4  4EB9 00001102            127  INIT_STRS   JSR         INIT_GOOD   *Initialize the good string
+000010FA  4EB9 0000113E            128              JSR         INIT_BAD    *Initialize the bad string
+00001100  4E75                     129              RTS
+00001102                           130  *-------------------INIT_GOOD-----------------------------
+00001102  18FC 004C                131  INIT_GOOD   MOVE.B      #'L',(A4)+  *Add to good string  
+00001106  18FC 0065                132              MOVE.B      #'e',(A4)+ 
+0000110A  18FC 0067                133              MOVE.B      #'g',(A4)+ 
+0000110E  18FC 0061                134              MOVE.B      #'a',(A4)+ 
+00001112  18FC 006C                135              MOVE.B      #'l',(A4)+ 
+00001116  18FC 003A                136              MOVE.B      #':',(A4)+
+0000111A  18FC 0020                137              MOVE.B      #' ',(A4)+ 
+0000111E  18FC 0024                138              MOVE.B      #'$',(A4)+ 
+00001122                           139              
+00001122  4EB9 000011C8            140              JSR         HEX_ASCII_G *Now convert opcode to ASCII
+00001128                           141              
+00001128  18FC 0020                142              MOVE.B      #' ',(A4)+  *Add spaces after memory location added
+0000112C  18FC 0020                143              MOVE.B      #' ',(A4)+
+00001130  18FC 0020                144              MOVE.B      #' ',(A4)+
+00001134  18FC 0020                145              MOVE.B      #' ',(A4)+
+00001138  18FC 0020                146              MOVE.B      #' ',(A4)+
+0000113C                           147              
+0000113C                           148              *Add 'Legal: ', then add opcode (must go from hex to ascii)
+0000113C                           149              
+0000113C                           150              
+0000113C  4E75                     151              RTS
+0000113E                           152  
+0000113E                           153  *-------------------INIT_BAD------------------------------            
+0000113E  16FC 0049                154  INIT_BAD    MOVE.B      #'I',(A3)+ *Add to bad string
+00001142  16FC 006C                155              MOVE.B      #'l',(A3)+ 
+00001146  16FC 006C                156              MOVE.B      #'l',(A3)+    
+0000114A  16FC 0065                157              MOVE.B      #'e',(A3)+ 
+0000114E  16FC 0067                158              MOVE.B      #'g',(A3)+ 
+00001152  16FC 0061                159              MOVE.B      #'a',(A3)+ 
+00001156  16FC 006C                160              MOVE.B      #'l',(A3)+ 
+0000115A  16FC 003A                161              MOVE.B      #':',(A3)+
+0000115E  16FC 0020                162              MOVE.B      #' ',(A3)+ 
+00001162  16FC 0024                163              MOVE.B      #'$',(A3)+  
+00001166                           164              
+00001166  4EB9 00001182            165              JSR         HEX_ASCII_B *Now convert opcode to ASCII
+0000116C                           166              
+0000116C  18FC 0020                167              MOVE.B      #' ',(A4)+  *Add spaces after bad code added
+00001170  18FC 0020                168              MOVE.B      #' ',(A4)+
+00001174  18FC 0020                169              MOVE.B      #' ',(A4)+
+00001178  18FC 0020                170              MOVE.B      #' ',(A4)+
+0000117C  18FC 0020                171              MOVE.B      #' ',(A4)+
+00001180                           172              
+00001180                           173              *Add 'Illegal: ', then add opcode (must go from from hex to ascii)
+00001180                           174              
+00001180  4E75                     175              RTS
+00001182                           176              
+00001182                           177  *-------------------HEX_ASCII_B-------------------------------
+00001182  4280                     178  HEX_ASCII_B CLR.L       D0          *Make sure D0 is empty (Counter)
+00001184  4281                     179              CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
+00001186  4282                     180              CLR.L       D2          *Make sure D2 is empty (each individual char)
+00001188  4283                     181              CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+0000118A  3207                     182              MOVE.W      D7,D1       *Copy opcode into D0 for working with
+0000118C  103C 0004                183              MOVE.B      #$4,D0      *Counter
+00001190  6000 0002                184              BRA         ISO_DIG_B   *Begin isolating chars
+00001194                           185              
+00001194  E959                     186  ISO_DIG_B   ROL.W       #4,D1       *Move first significant hex char to least sig position
+00001196                           187              
+00001196  2401                     188              MOVE.L      D1,D2       *Move to D2 to isolate least sig hex char
+00001198                           189              
+00001198  163C 001C                190              MOVE.B      #28,D3      *Shift left 28 times
+0000119C  E7AA                     191              LSL.L       D3,D2       *Isolated hex digit now is $X0000000
+0000119E  E99A                     192              ROL.L       #4,D2       *Isolated hex digit is now $0000000X
+000011A0                           193              
+000011A0  0C02 0009                194              CMPI.B      #$9,D2      *Is it a number?
+000011A4  6F00 0006                195              BLE         NUM_B       *If it is, process number
+000011A8  6000 000A                196              BRA         LET_B       *If not, process letter
+000011AC                           197  
+000011AC  0602 0030                198  NUM_B       ADDI.B      #$30,D2     *Make it an ascii number
+000011B0  6000 000A                199              BRA         ADD_CHAR_B  *add to strings and continue
+000011B4                           200              
+000011B4  0602 0037                201  LET_B       ADDI.B      #$37,D2     *Make it an ascii letter
+000011B8  6000 0002                202              BRA         ADD_CHAR_B  *add to strings and continue
+000011BC                           203              
+000011BC  16C2                     204  ADD_CHAR_B  MOVE.B      D2,(A3)+    *Add to bad data string
+000011BE  5300                     205              SUBI.B      #$1,D0      *decrement counter
+000011C0  0C00 0000                206              CMPI.B      #$0,D0      *Check if we're done            
+000011C4  6ECE                     207              BGT         ISO_DIG_B   *If not, continue tranlation   
+000011C6                           208              
+000011C6  4E75                     209              RTS
+000011C8                           210              
+000011C8                           211  *-------------------HEX_ASCII_G-------------------------------            
+000011C8  4280                     212  HEX_ASCII_G CLR.L       D0          *Make sure D0 is empty (Counter)
+000011CA  4281                     213              CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
+000011CC  4282                     214              CLR.L       D2          *Make sure D2 is empty (each individual char)
+000011CE  4283                     215              CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+000011D0  220D                     216              MOVE.L      A5,D1       *Copy address into D7
+000011D2  5501                     217              SUBI.B      #2,D1       *Move addres back one byte (for post increment)
+000011D4  103C 0008                218              MOVE.B      #$8,D0      *Counter
+000011D8  6000 0002                219              BRA         ISO_DIG_G   *Begin isolating chars
+000011DC                           220              
+000011DC  E999                     221  ISO_DIG_G   ROL.L       #4,D1       *Move first significant hex char to least sig position
+000011DE                           222              
+000011DE  2401                     223              MOVE.L      D1,D2       *Move to D2 to isolate least sig hex char
+000011E0                           224              
+000011E0  163C 001C                225              MOVE.B      #28,D3      *Shift left 28 times
+000011E4  E7AA                     226              LSL.L       D3,D2       *Isolated hex digit now is $X0000000
+000011E6  E99A                     227              ROL.L       #4,D2       *Isolated hex digit is now $0000000X
+000011E8                           228              
+000011E8  0C02 0009                229              CMPI.B      #$9,D2      *Is it a number?
+000011EC  6F00 0006                230              BLE         NUM_G       *If it is, process number
+000011F0  6000 000A                231              BRA         LET_G       *If not, process letter
+000011F4                           232              
+000011F4  0602 0030                233  NUM_G       ADDI.B      #$30,D2     *Make it an ascii number
+000011F8  6000 000A                234              BRA         ADD_CHAR_G  *add to strings and continue
+000011FC                           235              
+000011FC  0602 0037                236  LET_G       ADDI.B      #$37,D2     *Make it an ascii letter
+00001200  6000 0002                237              BRA         ADD_CHAR_G  *add to strings and continue
+00001204                           238  
+00001204  18C2                     239  ADD_CHAR_G  MOVE.B      D2,(A4)+    *Add to the good data string
+00001206  5300                     240              SUBI.B      #$1,D0      *decrement counter
+00001208  0C00 0000                241              CMPI.B      #$0,D0      *Check if we're done            
+0000120C  6ECE                     242              BGT         ISO_DIG_G     *If not, continue tranlation   
+0000120E                           243              
+0000120E  4E75                     244              RTS
+00001210                           245              
+00001210                           246  *-------------------PRINT_G---------------------------------
+00001210  16FC 0000                247  PRINT_G     MOVE.B      #$00,(A3)+  *Move null to end of string for printing
+00001214  43F9 0000137C            248              LEA         GOOD_STR,A1 *Load good data for printing
+0000121A  103C 000D                249              MOVE.B      #13,D0      *Trap task 13, display null terminated string
+0000121E  4E4F                     250              TRAP        #15         *Display string
+00001220                           251            
+00001220  4E75                     252              RTS 
+00001222                           253  
+00001222                           254  *-------------------PRINT_B---------------------------------
+00001222  18FC 0000                255  PRINT_B     MOVE.B      #$00,(A4)+  *Move null to end of string for printing
+00001226  43F9 000013BC            256              LEA         BAD_STR,A1 *Load good data for printing
+0000122C  103C 000D                257              MOVE.B      #13,D0      *Trap task 13, display null terminated string
+00001230  4E4F                     258              TRAP        #15         *Display string
+00001232                           259              
+00001232  4E75                     260              RTS 
+00001234                           261  
+00001234                           262  *-------------------END_OPT---------------------------------
+00001234  4EF9 0000123A            263  END_OPT     JMP         DONE        *Jump to done for now untill end options logic is implemented
+0000123A                           264              
+0000123A                           265  *-----------------------DONE--------------------------------
+0000123A  103C 0009                266  DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
+0000123E  4E4F                     267              TRAP        #15         *Halt program, Trap#15 task 9
+00001240                           268              
+00001240                           269  *---------------Variables and Constants---------------------
+00001240  =0000000D                270  CR          EQU         $0D
+00001240  =0000000A                271  LF          EQU         $0A
+00001240                           272  
+00001240= 2D 2D 2D 2D 2D 2D ...    273  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
+0000126A= 48 65 6E 72 79 20 ...    274              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
+00001293= 43 53 53 20 34 32 ...    275              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
+000012BC= 2D 2D 2D 2D 2D 2D ...    276              DC.B        '----------------------------------------',CR,LF,0
+000012E7                           277              
+000012E7= 45 6E 74 65 72 20 ...    278  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
+0000130A= 45 6E 74 65 72 20 ...    279  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
+0000132B                           280  
+0000132B                           281  STA_ADDR    DS.B        40
+00001353                           282  END_ADDR    DS.B        40
+0000137B                           283  
+0000137C= 00000001                 284  GOOD_STR    DC.L        1
+00001380                           285  
+00001380= 00000050                 286  SPACER1     DC.L        80
+00001384= 00000050                 287  SPACER2     DC.L        80
+00001388= 00000050                 288  SPACER3     DC.L        80
+0000138C= 00000050                 289  SPACER4     DC.L        80
+00001390= 00000050                 290  SPACER5     DC.L        80
+00001394= 00000050                 291  SPACER6     DC.L        80
+00001398= 00000050                 292  SPACER7     DC.L        80
+0000139C= 00000050                 293  SPACER8     DC.L        80
+000013A0= 00000050                 294  SPACER9     DC.L        80
+000013A4= 00000050                 295  SPACERA     DC.L        80
+000013A8= 00000050                 296  SPACERB     DC.L        80
+000013AC= 00000050                 297  SPACERC     DC.L        80
+000013B0= 00000050                 298  SPACERD     DC.L        80
+000013B4= 00000050                 299  SPACERE     DC.L        80
+000013B8= 00000050                 300  SPACERF     DC.L        80
+000013BC                           301  
+000013BC= 00000001                 302  BAD_STR     DC.L        1
+000013C0                           303  
+000013C0= 00000050                 304  SPACERG     DC.L        80
+000013C4                           305  
+000013C4                           306              END         START       *LAST LINE
+>>>>>>> refs/remotes/origin/master
 
 No errors detected
 No warnings generated
@@ -234,6 +532,7 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
+<<<<<<< HEAD
 AH_DONE             1098
 ASCII_HEX           1080
 CR                  D
@@ -283,3 +582,61 @@ PROC_STA            1068
 START               1000
 STA_ADDR            12A1
 STA_MSG             125D
+=======
+ADD_CHAR_B          11BC
+ADD_CHAR_G          1204
+AH_DONE             1092
+ASCII_HEX           107A
+BAD_STR             13BC
+CONTINUE            10EA
+CR                  D
+DECODE_LOOP         10B6
+DONE                123A
+END_ADDR            1353
+END_MSG             130A
+END_OPT             1234
+FORMAT              10A8
+GET_INPUT           1020
+GOOD_STR            137C
+HEX_ASCII_B         1182
+HEX_ASCII_G         11C8
+INIT_BAD            113E
+INIT_GOOD           1102
+INIT_STRS           10F4
+INTRO               1012
+ISO_DIG_B           1194
+ISO_DIG_G           11DC
+LET                 109E
+LET_B               11B4
+LET_G               11FC
+LF                  A
+NL_INTRO            1240
+NUM                 1094
+NUM_B               11AC
+NUM_G               11F4
+PRINT_B             1222
+PRINT_BAD           10E0
+PRINT_G             1210
+PRINT_GOOD          10D6
+PROC_END            106E
+PROC_STA            1062
+SPACER1             1380
+SPACER2             1384
+SPACER3             1388
+SPACER4             138C
+SPACER5             1390
+SPACER6             1394
+SPACER7             1398
+SPACER8             139C
+SPACER9             13A0
+SPACERA             13A4
+SPACERB             13A8
+SPACERC             13AC
+SPACERD             13B0
+SPACERE             13B4
+SPACERF             13B8
+SPACERG             13C0
+START               1000
+STA_ADDR            132B
+STA_MSG             12E7
+>>>>>>> refs/remotes/origin/master
