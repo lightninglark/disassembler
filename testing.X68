@@ -4,9 +4,11 @@
 * Date       :
 * Description:
 *-----------------------------------------------------------
-START       ORG         $7000   *where data gets loaded into memory in disassembler
+START       ORG         $5000   *where data gets loaded into memory in disassembler
 
-            NOP                 *look for machine code at ORG
+            NOP
+           * MOVE.B      #$00,D0
+            * NOP                 *look for machine code at ORG
 
             SIMHALT             ; halt simulator
 

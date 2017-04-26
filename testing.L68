@@ -1,6 +1,6 @@
 00005000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 4/25/2017 8:15:19 PM
+Created On: 4/25/2017 8:50:41 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -10,13 +10,15 @@ Created On: 4/25/2017 8:15:19 PM
 00000000                             6  *-----------------------------------------------------------
 00005000                             7  START       ORG         $5000   *where data gets loaded into memory in disassembler
 00005000                             8  
-00005000  4E71                       9              NOP                 *look for machine code at ORG
-00005002                            10  
-00005002  FFFF FFFF                 11              SIMHALT             ; halt simulator
-00005006                            12  
-00005006                            13  * Put variables and constants here
-00005006                            14  
-00005006                            15      END    START        ; last line of source
+00005000  4E71                       9              NOP
+00005002  103C 0000                 10              MOVE.B      #$00,D0
+00005006  4E71                      11              NOP                 *look for machine code at ORG
+00005008                            12  
+00005008  FFFF FFFF                 13              SIMHALT             ; halt simulator
+0000500C                            14  
+0000500C                            15  * Put variables and constants here
+0000500C                            16  
+0000500C                            17      END    START        ; last line of source
 
 No errors detected
 No warnings generated

@@ -174,15 +174,41 @@ INIT_BAD    MOVE.B      #'I',(A3)+ *Add to bad string
             
             RTS
             
-*-------------------HEX_ASCII-------------------------------
+*-------------------HEX_ASCII_B-------------------------------
 HEX_ASCII_B CLR.L       D0          *Make sure D0 is empty (Counter)
             CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
             CLR.L       D2          *Make sure D2 is empty (each individual char)
             CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
             MOVE.W      D7,D1       *Copy opcode into D0 for working with
             MOVE.B      #$4,D0      *Counter
-            BRA         ISO_DIG     *Begin isolating chars
+            BRA         ISO_DIG_B   *Begin isolating chars
             
+ISO_DIG_B   ROL.W       #4,D1       *Move first significant hex char to least sig position
+            
+            MOVE.L      D1,D2       *Move to D2 to isolate least sig hex char
+            
+            MOVE.B      #28,D3      *Shift left 28 times
+            LSL.L       D3,D2       *Isolated hex digit now is $X0000000
+            ROL.L       #4,D2       *Isolated hex digit is now $0000000X
+            
+            CMPI.B      #$9,D2      *Is it a number?
+            BLE         NUM_B       *If it is, process number
+            BRA         LET_B       *If not, process letter
+
+NUM_B       ADDI.B      #$30,D2     *Make it an ascii number
+            BRA         ADD_CHAR_B  *add to strings and continue
+            
+LET_B       ADDI.B      #$37,D2     *Make it an ascii letter
+            BRA         ADD_CHAR_B  *add to strings and continue
+            
+ADD_CHAR_B  MOVE.B      D2,(A3)+    *Add to bad data string
+            SUBI.B      #$1,D0      *decrement counter
+            CMPI.B      #$0,D0      *Check if we're done            
+            BGT         ISO_DIG_B   *If not, continue tranlation   
+            
+            RTS
+            
+*-------------------HEX_ASCII_G-------------------------------            
 HEX_ASCII_G CLR.L       D0          *Make sure D0 is empty (Counter)
             CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
             CLR.L       D2          *Make sure D2 is empty (each individual char)
@@ -190,31 +216,30 @@ HEX_ASCII_G CLR.L       D0          *Make sure D0 is empty (Counter)
             MOVE.L      A6,D1       *Copy address into D7
             SUBI.B      #2,D1       *Move addres back one byte (for post increment)
             MOVE.B      #$8,D0      *Counter
-            BRA         ISO_DIG     *Begin isolating chars
+            BRA         ISO_DIG_G   *Begin isolating chars
             
-ISO_DIG     ROL.W       #4,D1       *Move first significant hex char to least sig position
+ISO_DIG_G   ROL.L       #4,D1       *Move first significant hex char to least sig position
             
             MOVE.L      D1,D2       *Move to D2 to isolate least sig hex char
             
-            MOVE.B      #27,D3      *Shift left 27 times
+            MOVE.B      #28,D3      *Shift left 28 times
             LSL.L       D3,D2       *Isolated hex digit now is $X0000000
             ROL.L       #4,D2       *Isolated hex digit is now $0000000X
             
             CMPI.B      #$9,D2      *Is it a number?
-            BLE         NUM1        *If it is, process number
-            BRA         LET1        *If not, process letter
+            BLE         NUM_G       *If it is, process number
+            BRA         LET_G       *If not, process letter
             
-NUM1        ADDI.B      #$30,D2     *Make it an ascii number
-            BRA         ADD_CHAR    *add to strings and continue
+NUM_G       ADDI.B      #$30,D2     *Make it an ascii number
+            BRA         ADD_CHAR_G  *add to strings and continue
             
-LET1        ADDI.B      #$37,D2     *Make it an ascii letter
-            BRA         ADD_CHAR    *add to strings and continue
+LET_G       ADDI.B      #$37,D2     *Make it an ascii letter
+            BRA         ADD_CHAR_G  *add to strings and continue
 
-ADD_CHAR    MOVE.B      D2,(A3)+    *Add to bad data string
-            MOVE.B      D2,(A4)+    *Add to the good data string
+ADD_CHAR_G  MOVE.B      D2,(A4)+    *Add to the good data string
             SUBI.B      #$1,D0      *decrement counter
             CMPI.B      #$0,D0      *Check if we're done            
-            BGT         ISO_DIG     *If not, continue tranlation   
+            BGT         ISO_DIG_G     *If not, continue tranlation   
             
             RTS
             
@@ -257,11 +282,23 @@ STA_ADDR    DS.B        40
 END_ADDR    DS.B        40
 
 GOOD_STR    DC.L        1
+
 SPACER1     DC.L        80
 SPACER2     DC.L        80
 SPACER3     DC.L        80
 SPACER4     DC.L        80
 SPACER5     DC.L        80
+SPACER6     DC.L        80
+SPACER7     DC.L        80
+SPACER8     DC.L        80
+SPACER9     DC.L        80
+SPACERA     DC.L        80
+SPACERB     DC.L        80
+SPACERC     DC.L        80
+SPACERD     DC.L        80
+SPACERE     DC.L        80
+SPACERF     DC.L        80
+
 BAD_STR     DC.L        1
             
 
