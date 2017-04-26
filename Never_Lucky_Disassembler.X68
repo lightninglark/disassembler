@@ -54,6 +54,7 @@ PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to he
             JSR         ASCII_HEX   *Convert input into Hex
             
             *assuming all error checking is done before the next instruction (not yet implemented)
+            
             MOVEA.L     D3,A5       *Move hex to STA_ADDR
             CLR.L       D3          *Clear D3
             RTS                     
@@ -64,6 +65,7 @@ PROC_END    *TODO: Check for Null, bad length, odd address, range, convert to he
             JSR         ASCII_HEX   *Convert input into Hex
             
             *assuming all error checking is done before the next instruction (not yet implemented)
+            
             MOVE.L      D3,A6       *Move hex to END_ADDR
             CLR.L       D3          *Clear D3
             RTS
@@ -95,6 +97,9 @@ FORMAT      SUBI.B      #$1,D1      *Decrement D2 counter, one character has bee
             
 *-------------------DECODE_LOOP-----------------------------
 DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7
+                
+            CMPI.L      #0,D7       *See if it's a blank line
+            BEQ         CONTINUE    *If it is, skip.      
             
             LEA         BAD_STR,A3  *Move Bad string constant into A3
             LEA         GOOD_STR,A4 *Move Good string constant into A4
@@ -102,8 +107,6 @@ DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7
             JSR         INIT_STRS   *Initialize Bad and Good Str
             
             JSR         IDENTIFY    *Start opcode identification waterfall
-            
-            *MOVE.B      #$AA,D6     *TESTING ONLY
             
             CMPI.B      #$AA,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
             BEQ         PRINT_GOOD  *Print good string if good opcode
@@ -150,7 +153,7 @@ INIT_GOOD   MOVE.B      #'L',(A4)+  *Add to good string
             RTS
 
 *-------------------INIT_BAD------------------------------            
-INIT_BAD    MOVE.B      #'I',(A3)+ *Add to bad string
+INIT_BAD    MOVE.B      #'I',(A3)+  *Add to bad string
             MOVE.B      #'l',(A3)+ 
             MOVE.B      #'l',(A3)+    
             MOVE.B      #'e',(A3)+ 
@@ -235,7 +238,7 @@ LET_G       ADDI.B      #$37,D2     *Make it an ascii letter
 ADD_CHAR_G  MOVE.B      D2,(A4)+    *Add to the good data string
             SUBI.B      #$1,D0      *decrement counter
             CMPI.B      #$0,D0      *Check if we're done            
-            BGT         ISO_DIG_G     *If not, continue tranlation   
+            BGT         ISO_DIG_G    *If not, continue tranlation   
             
             RTS
 *============================================================
@@ -273,7 +276,7 @@ OC_3        CMP.B       #$3,D2
             BNE         OC_4
             JSR         OPC_3 
             RTS
-           
+*OC_4 USED           
 OC_4        CMP.B       #$4,D2      *Where NOP SHOULD LAND
             BNE         OC_5
             JSR         OPC_4
@@ -338,7 +341,7 @@ OC_E        JSR         OPC_E     *If first hex value is not 0-D, it must be E. 
 *         four digits of the machine code are 0000
 *         Possible instructions are: ADDI, SUBI    
 *-----------------------------------------------------------           
-OPC_0     RTS *Placeholder          
+OPC_0     RTS          
 OPC_1     RTS
 OPC_2     RTS
 OPC_3     RTS
@@ -353,17 +356,17 @@ OPC_3     RTS
 OPC_4       CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
-            LSL.W       #4,D2       *Clear most sig two hex digits
-            MOVE.B      #12,D1       *Moves 8 into D1
-            LSR.W       D1,D2       *Shifts 8 right to isolate Digit we're working with at $0000000X
+            LSL.W       #4,D2       *Clear the most sig hex digit
+            MOVE.B      #12,D1      *Moves 12 into D1
+            LSR.W       D1,D2       *Shifts 12 right to isolate Digit we're working with at $0000000X
                         
 OC4_0       CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-            BNE         OC4_1     *If the first hex value is not 0, branch and see if its 1
-            JSR         OPC4_0     *If the first hex value is 0, jump to First_0
+            BNE         OC4_1       *If the first hex value is not 0, branch and see if its 1
+            JSR         OPC4_0      *If the first hex value is 0, jump to First_0
             RTS                     *Finished all jumping; whole instruction should be identified at this point
             
 OC4_1       CMP.B       #$1,D2
-            BNE         OC4_2         *If the first hex value is not 2, branch and see if its 3, and so on
+            BNE         OC4_2       *If the first hex value is not 2, branch and see if its 3, and so on
             JSR         OPC4_1 
             RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
            
@@ -428,6 +431,7 @@ OC4_D       CMP.B       #$D,D2
             RTS
             
 *Maybe not? Illegal characters like $W mind fine there way into testing file, may need a ILLEGAL else case
+*OC4_E USED                         WHERE NOP LANDS
 OC4_E       JSR         OPC4_E     *If first hex value is not 0-D, it must be E. Branch to First_E
             RTS
                                               
@@ -464,20 +468,18 @@ OPC4_D      RTS
 *-------------------NOP LANDS HERE---------------------------------
 OPC4_E      CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-            CLR.L       D1
-            MOVE.B      #8,D1
-            LSL.L       D1,D2      *Clear most three sig hex digit
-            CLR.L       D1
-            MOVE.B      #12,D1       *Moves 4 into D1
-            LSR.W       D1,D2       *Shifts 4
+            CLR.L       D1      
+            LSL.L       #8,D2       *Clear the two most significant hex digits
+            MOVE.B      #12,D1      *Moves 12 into D1 for shifting
+            LSR.W       D1,D2       *Shifts 12 to the right, THIRD hex digit lands $0000000X
                         
 OC4E_0      CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-            BNE         OC4E_1     *If the first hex value is not 0, branch and see if its 1
+            BNE         OC4E_1      *If the first hex value is not 0, branch and see if its 1
             JSR         OPC4E_0     *If the first hex value is 0, jump to First_0
             RTS                     *Finished all jumping; whole instruction should be identified at this point
             
 OC4E_1      CMP.B       #$1,D2
-            BNE         OC4E_2         *If the first hex value is not 2, branch and see if its 3, and so on
+            BNE         OC4E_2      *If the first hex value is not 2, branch and see if its 3, and so on
             JSR         OPC4E_1 
             RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
            
@@ -505,8 +507,8 @@ OC4E_6      CMP.B       #$6,D2
             BNE         OC4E_7
             JSR         OPC4E_6
             RTS
-            
-OC4E_7      CMP.B       #$7,D2
+*OC4E_7 USED            
+OC4E_7      CMP.B       #$7,D2      *NOP LANDS HERE
             BNE         OC4E_8
             JSR         OPC4E_7
             RTS
@@ -559,17 +561,17 @@ OPC4E_6     RTS
 OPC4E_7     CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
-            MOVE.B      #12,D1
-            LSL.W       D1,D2      *Moves 28 into D1
-            LSR.W       D1,D2       *Shifts 28 bits so the remaining contents = the left 4 bits of D7
+            MOVE.B      #12,D1      *Move 12 into D1 for shifting
+            LSL.W       D1,D2       *Clear the three most significant hex digits
+            LSR.W       D1,D2       *Shift right 12 spaces to make working digit $0000000X
                         
 OC4E7_0     CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
             BNE         OC4E7_1     *If the first hex value is not 0, branch and see if its 1
-            JSR         OPC4E7_0     *If the first hex value is 0, jump to First_0
+            JSR         OPC4E7_0    *If the first hex value is 0, jump to First_0
             RTS                     *Finished all jumping; whole instruction should be identified at this point
-            
-OC4E7_1     CMP.B       #$1,D2
-            BNE         OC4E7_2         *If the first hex value is not 2, branch and see if its 3, and so on
+*OC4E7_1 USED            
+OC4E7_1     CMP.B       #$1,D2      *NOP LANDS HERE
+            BNE         OC4E7_2     *If the first hex value is not 2, branch and see if its 3, and so on
             JSR         OPC4E7_1 
             RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
            
@@ -653,12 +655,11 @@ OPC4E_E     RTS
 OPC4E7_0     RTS
 
 *P-------------------NOP LANDS HERE (4E71)--------------------
-OPC4E7_1    MOVE.B      #$AA,D6     *Set good data flag
+OPC4E7_1    MOVE.B      #$AA,D6     *Set good data flag. IF THIS WAS A PARAMERTARIZED INSTRUCTION, NEEDS TO HAPPEN AFTER <EA>/Dn/An...
 
             MOVE.B      #'N',(A4)+
             MOVE.B      #'O',(A4)+
             MOVE.B      #'P',(A4)+
-            *MOVE.B      #' ',(A4)+
             
             *IF this was a  paramertarize instruction, we'd jump to <EA> decode here
             RTS
