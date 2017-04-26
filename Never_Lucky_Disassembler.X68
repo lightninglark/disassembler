@@ -132,7 +132,9 @@ INIT_GOOD   MOVE.B      #'L',(A4)+  *Add to good string
             MOVE.B      #'e',(A4)+ 
             MOVE.B      #'g',(A4)+ 
             MOVE.B      #'a',(A4)+ 
-            MOVE.B      #'l',(A4)+ 
+            MOVE.B      #'l',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+ 
             MOVE.B      #':',(A4)+
             MOVE.B      #' ',(A4)+ 
             MOVE.B      #'$',(A4)+ 
@@ -140,9 +142,6 @@ INIT_GOOD   MOVE.B      #'L',(A4)+  *Add to good string
             JSR         HEX_ASCII_G *Now convert opcode to ASCII
             
             MOVE.B      #' ',(A4)+  *Add spaces after memory location added
-            MOVE.B      #' ',(A4)+
-            MOVE.B      #' ',(A4)+
-            MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
             
             *Add 'Legal: ', then add opcode (must go from hex to ascii)
@@ -165,9 +164,6 @@ INIT_BAD    MOVE.B      #'I',(A3)+ *Add to bad string
             JSR         HEX_ASCII_B *Now convert opcode to ASCII
             
             MOVE.B      #' ',(A4)+  *Add spaces after bad code added
-            MOVE.B      #' ',(A4)+
-            MOVE.B      #' ',(A4)+
-            MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
             
             *Add 'Illegal: ', then add opcode (must go from from hex to ascii)
@@ -662,6 +658,7 @@ OPC4E7_1    MOVE.B      #$AA,D6     *Set good data flag
             MOVE.B      #'N',(A4)+
             MOVE.B      #'O',(A4)+
             MOVE.B      #'P',(A4)+
+            *MOVE.B      #' ',(A4)+
             
             *IF this was a  paramertarize instruction, we'd jump to <EA> decode here
             RTS
@@ -682,7 +679,8 @@ OPC4E7_E     RTS
 
             
 *-------------------PRINT_G---------------------------------
-PRINT_G     MOVE.B      #$00,(A3)+  *Move null to end of string for printing
+PRINT_G     MOVE.B      #' ',(A4)+
+            MOVE.B      #$00,(A3)+  *Move null to end of string for printing
             LEA         GOOD_STR,A1 *Load good data for printing
             MOVE.B      #13,D0      *Trap task 13, display null terminated string
             TRAP        #15         *Display string
@@ -690,7 +688,8 @@ PRINT_G     MOVE.B      #$00,(A3)+  *Move null to end of string for printing
             RTS 
 
 *-------------------PRINT_B---------------------------------
-PRINT_B     MOVE.B      #$00,(A4)+  *Move null to end of string for printing
+PRINT_B     MOVE.B      #' ',(A4)+
+            MOVE.B      #$00,(A4)+  *Move null to end of string for printing
             LEA         BAD_STR,A1 *Load good data for printing
             MOVE.B      #13,D0      *Trap task 13, display null terminated string
             TRAP        #15         *Display string
