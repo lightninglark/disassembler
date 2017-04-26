@@ -7,8 +7,8 @@
 START       ORG         $5000   *where data gets loaded into memory in disassembler
 
             NOP
-           * MOVE.B      #$00,D0
-            * NOP                 *look for machine code at ORG
+            MOVE.B      #$00,D0
+            NOP                 *look for machine code at ORG
 
             SIMHALT             ; halt simulator
 

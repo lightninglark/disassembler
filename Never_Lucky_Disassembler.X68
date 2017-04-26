@@ -103,7 +103,7 @@ DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7
             
             *JSR         IDENTIFY    *Start opcode identification waterfall
             
-            MOVE.B      #$AA,D6     *TESTING ONLY
+            *MOVE.B      #$AA,D6     *TESTING ONLY
             
             CMPI.B      #$AA,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
             BEQ         PRINT_GOOD  *Print good string if good opcode
@@ -213,7 +213,7 @@ HEX_ASCII_G CLR.L       D0          *Make sure D0 is empty (Counter)
             CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
             CLR.L       D2          *Make sure D2 is empty (each individual char)
             CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
-            MOVE.L      A6,D1       *Copy address into D7
+            MOVE.L      A5,D1       *Copy address into D7
             SUBI.B      #2,D1       *Move addres back one byte (for post increment)
             MOVE.B      #$8,D0      *Counter
             BRA         ISO_DIG_G   *Begin isolating chars
@@ -300,7 +300,8 @@ SPACERE     DC.L        80
 SPACERF     DC.L        80
 
 BAD_STR     DC.L        1
-            
+
+SPACERG     DC.L        80
 
             END         START       *LAST LINE
 
