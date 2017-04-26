@@ -301,9 +301,24 @@ SPACERF     DC.L        80
 
 BAD_STR     DC.L        1
 
-SPACERG     DC.L        80
+SPACER11    DC.L        80
+SPACER22    DC.L        80
+SPACER33    DC.L        80
+SPACER44    DC.L        80
+SPACER55    DC.L        80
+SPACER66    DC.L        80
+SPACER77    DC.L        80
+SPACER88    DC.L        80
+SPACER99    DC.L        80
+SPACERAA    DC.L        80
+SPACERBB    DC.L        80
+SPACERCC    DC.L        80
+SPACERDD    DC.L        80
+SPACEREE    DC.L        80
+SPACERFF    DC.L        80
 
             END         START       *LAST LINE
+
 
 
 
