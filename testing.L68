@@ -1,0 +1,28 @@
+00005000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 4/25/2017 8:15:19 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00005000                             7  START       ORG         $5000   *where data gets loaded into memory in disassembler
+00005000                             8  
+00005000  4E71                       9              NOP                 *look for machine code at ORG
+00005002                            10  
+00005002  FFFF FFFF                 11              SIMHALT             ; halt simulator
+00005006                            12  
+00005006                            13  * Put variables and constants here
+00005006                            14  
+00005006                            15      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+START               5000
