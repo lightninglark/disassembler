@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 4/25/2017 4:16:34 PM
+Created On: 4/25/2017 6:26:24 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Never Lucky Disassembler
@@ -12,113 +12,220 @@ Created On: 4/25/2017 4:16:34 PM
 00000000                             8  *-----------------------------------------------------------
 00000000                             9  
 00001000                            10  START       ORG         $1000       *Start program
-00001000  4EB9 00001012             11              JSR         INTRO       *Display Intro Message
-00001006  4EB9 00001020             12              JSR         GET_INPUT   *Prompt user for input, convert input from ascii to hex and assign to sta_addr and end_addr
+00001000  4EB9 00001018             11              JSR         INTRO       *Display Intro Message
+00001006  4EB9 00001026             12              JSR         GET_INPUT   *Prompt user for input, convert input from ascii to hex and assign to sta_addr and end_addr
 0000100C                            13              
 0000100C                            14              *Assuming all input error checking is done before the next call
 0000100C                            15              
 0000100C                            16              *JSR         INIT_LOOP   *Initialize loop variables
 0000100C                            17              *JSR         DECODE_LOOP *Enters maine decode loop
 0000100C                            18              
-0000100C                            19              * final call of program, may need to be removed if we jump directly to DONE from the loop
-0000100C  4EF9 000010B6             20              JMP         DONE        *End Program               
-00001012                            21                 
-00001012                            22  *-----------------------INTRO-------------------------------
-00001012  43F9 000010BC             23  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
-00001018  103C 000E                 24              MOVE.B      #14,D0      *Trap task 14, display intro
-0000101C  4E4F                      25              TRAP        #15         
-0000101E  4E75                      26              RTS         
-00001020                            27  
-00001020                            28  *--------------------GET_INPUT------------------------------
-00001020  43F9 00001163             29  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
-00001026  103C 000E                 30              MOVE.B      #14,D0      *Trap task 14, display start address msg
-0000102A  4E4F                      31              TRAP        #15         
-0000102C                            32              
-0000102C  43F9 000011A7             33              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
-00001032  103C 0002                 34              MOVE.B      #2,D0       *Trap task 2, collect start address from input, length in D1
-00001036  4E4F                      35              TRAP        #15         
-00001038                            36              
-00001038  4EB9 00001062             37              JSR         PROC_STA    *Process Start address, check for errrors and convert to HEX
-0000103E  4281                      38              CLR.L       D1          *Clear input length from D1
-00001040                            39              
-00001040  43F9 00001186             40              LEA         END_MSG,A1  *Load END_MSG into A1
-00001046  103C 000E                 41              MOVE.B      #14,D0      *Trap task 14, display end address msg
-0000104A  4E4F                      42              TRAP        #15
-0000104C                            43              
-0000104C  43F9 000011F7             44              LEA         END_ADDR,A1 *Store input in END_ADDR variable
-00001052  103C 0002                 45              MOVE.B      #2,D0       *Trap task 2, collect end address from input, length in d1
-00001056  4E4F                      46              TRAP        #15         
-00001058                            47              
-00001058  4EB9 0000106E             48              JSR         PROC_END    *Process End Address, check for errors and convert to HEX
-0000105E  4281                      49              CLR.L       D1          *Clear input length from D1
-00001060                            50              
-00001060  4E75                      51              RTS
-00001062                            52              
-00001062                            53  *--------------------PROC_STA-------------------------------
-00001062                            54  PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to hex
-00001062  4EB9 0000107A             55              JSR         ASCII_HEX   *Convert input into Hex
-00001068  2A43                      56              MOVEA.L     D3,A5 *Move hex to STA_ADDR
-0000106A  4283                      57              CLR.L       D3          *Clear D3
-0000106C  4E75                      58              RTS                     
-0000106E                            59  
-0000106E                            60  *--------------------PROC_END-------------------------------
-0000106E                            61  PROC_END    *TODO: Check for Null, bad length, odd address, range, convert to hex
-0000106E                            62              *      does not fall before start
-0000106E  4EB9 0000107A             63              JSR         ASCII_HEX   *Convert input into Hex
-00001074  2C43                      64              MOVE.L      D3,A6 *Move hex to END_ADDR
-00001076  4283                      65              CLR.L       D3          *Clear D3
-00001078  4E75                      66              RTS
-0000107A                            67  
-0000107A                            68  *-------------------ASCII_HEX-------------------------------
-0000107A  0C01 0000                 69  ASCII_HEX   CMPI.B      #$0,D1      *See if all characters are converted
-0000107E  6700 0012                 70              BEQ         AH_DONE     *End subroutine if all converted
-00001082  1419                      71              MOVE.B      (A1)+,D2    *Move first ASCII hex value into D2
-00001084  183C 0039                 72              MOVE.B      #$39,D4     *Number to compare input to to select num or letter 
-00001088  B404                      73              CMP.B       D4,D2       *Check if ascii code is for a number or letter
-0000108A  6F00 0008                 74              BLE         NUM         *Codes less than $39 imply a number, so branch
-0000108E  6000 000E                 75              BRA         LET         *If not a number, must be a letter.            
-00001092  4E75                      76  AH_DONE     RTS
-00001094                            77  
-00001094  183C 0030                 78  NUM         MOVE.B      #$30,D4     *move $30 into D4 (ammount to sub from value if number)
-00001098  9404                      79              SUB.B       D4,D2       *convert to hexadecimal number
-0000109A  6000 000C                 80              BRA         FORMAT      *branch to subroutine to store converted hex number
-0000109E                            81              
-0000109E  183C 0037                 82  LET         MOVE.B      #$37,D4     *move $37 into D4 (ammount to sub from value if letter)
-000010A2  9404                      83              SUB.B       D4,D2       *convert to hexadecimal letter
-000010A4  6000 0002                 84              BRA         FORMAT      *branch to subroutine to store converted hex letter
-000010A8                            85  
-000010A8  5301                      86  FORMAT      SUBI.B      #$1,D1      *Decrement D2 counter, one character has been converted
-000010AA  D602                      87              ADD.B       D2,D3       *Store converted number in D3
-000010AC  0C01 0000                 88              CMPI.B      #$0,D1      *Check if we're all done converting
-000010B0  67C8                      89              BEQ         ASCII_HEX   *If not continue conversion
-000010B2  E983                      90              ASL.L       #4,D3       *Shift bits to the left to correct position
-000010B4  60C4                      91              BRA         ASCII_HEX   *Branch back to label
-000010B6                            92              
-000010B6                            93  *-------------------INIT_LOOP-------------------------------
-000010B6                            94  *INIT_LOOP   MOVEA.L     
-000010B6                            95  
-000010B6                            96              
-000010B6                            97  *-----------------------DONE--------------------------------
-000010B6  103C 0009                 98  DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
-000010BA  4E4F                      99              TRAP        #15         *Halt program, Trap#15 task 9
-000010BC                           100              
-000010BC                           101  *---------------Variables and Constants---------------------
-000010BC  =0000000D                102  CR          EQU         $0D
-000010BC  =0000000A                103  LF          EQU         $0A
-000010BC                           104  
-000010BC= 2D 2D 2D 2D 2D 2D ...    105  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
-000010E6= 48 65 6E 72 79 20 ...    106              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
-0000110F= 43 53 53 20 34 32 ...    107              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
-00001138= 2D 2D 2D 2D 2D 2D ...    108              DC.B        '----------------------------------------',CR,LF,0
-00001163                           109              
-00001163= 45 6E 74 65 72 20 ...    110  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
-00001186= 45 6E 74 65 72 20 ...    111  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
-000011A7                           112  
-000011A7                           113  STA_ADDR    DS.B        80
-000011F7                           114  END_ADDR    DS.B        80
-00001247                           115              
-00001247                           116  
-00001247                           117              END         START       *LAST LINE
+0000100C  4EB9 000010BC             19              JSR         IDENTIFY
+00001012                            20              * final call of program, may need to be removed if we jump directly to DONE from the loop
+00001012  4EF9 000011B0             21              JMP         DONE        *End Program               
+00001018                            22                 
+00001018                            23  *-----------------------INTRO-------------------------------
+00001018  43F9 000011B6             24  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
+0000101E  103C 000E                 25              MOVE.B      #14,D0      *Trap task 14, display intro
+00001022  4E4F                      26              TRAP        #15         
+00001024  4E75                      27              RTS         
+00001026                            28  
+00001026                            29  *--------------------GET_INPUT------------------------------
+00001026  43F9 0000125D             30  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
+0000102C  103C 000E                 31              MOVE.B      #14,D0      *Trap task 14, display start address msg
+00001030  4E4F                      32              TRAP        #15         
+00001032                            33              
+00001032  43F9 000012A1             34              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
+00001038  103C 0002                 35              MOVE.B      #2,D0       *Trap task 2, collect start address from input, length in D1
+0000103C  4E4F                      36              TRAP        #15         
+0000103E                            37              
+0000103E  4EB9 00001068             38              JSR         PROC_STA    *Process Start address, check for errrors and convert to HEX
+00001044  4281                      39              CLR.L       D1          *Clear input length from D1
+00001046                            40              
+00001046  43F9 00001280             41              LEA         END_MSG,A1  *Load END_MSG into A1
+0000104C  103C 000E                 42              MOVE.B      #14,D0      *Trap task 14, display end address msg
+00001050  4E4F                      43              TRAP        #15
+00001052                            44              
+00001052  43F9 000012F1             45              LEA         END_ADDR,A1 *Store input in END_ADDR variable
+00001058  103C 0002                 46              MOVE.B      #2,D0       *Trap task 2, collect end address from input, length in d1
+0000105C  4E4F                      47              TRAP        #15         
+0000105E                            48              
+0000105E  4EB9 00001074             49              JSR         PROC_END    *Process End Address, check for errors and convert to HEX
+00001064  4281                      50              CLR.L       D1          *Clear input length from D1
+00001066                            51              
+00001066  4E75                      52              RTS
+00001068                            53              
+00001068                            54  *--------------------PROC_STA-------------------------------
+00001068                            55  PROC_STA    *TODO: Check for Null, bad length, ODD address, range, convert to hex
+00001068  4EB9 00001080             56              JSR         ASCII_HEX   *Convert input into Hex
+0000106E  2A43                      57              MOVEA.L     D3,A5       *Move hex to STA_ADDR
+00001070  4283                      58              CLR.L       D3          *Clear D3
+00001072  4E75                      59              RTS                     
+00001074                            60  
+00001074                            61  *--------------------PROC_END-------------------------------
+00001074                            62  PROC_END    *TODO: Check for Null, bad length, odd address, range, convert to hex
+00001074                            63              *      does not fall before start
+00001074  4EB9 00001080             64              JSR         ASCII_HEX   *Convert input into Hex
+0000107A  2C43                      65              MOVE.L      D3,A6       *Move hex to END_ADDR
+0000107C  4283                      66              CLR.L       D3          *Clear D3
+0000107E  4E75                      67              RTS
+00001080                            68  
+00001080                            69  *-------------------ASCII_HEX-------------------------------
+00001080  0C01 0000                 70  ASCII_HEX   CMPI.B      #$0,D1      *See if all characters are converted
+00001084  6700 0012                 71              BEQ         AH_DONE     *End subroutine if all converted
+00001088  1419                      72              MOVE.B      (A1)+,D2    *Move first ASCII hex value into D2
+0000108A  183C 0039                 73              MOVE.B      #$39,D4     *Number to compare input to to select num or letter 
+0000108E  B404                      74              CMP.B       D4,D2       *Check if ascii code is for a number or letter
+00001090  6F00 0008                 75              BLE         NUM         *Codes less than $39 imply a number, so branch
+00001094  6000 000E                 76              BRA         LET         *If not a number, must be a letter.            
+00001098  4E75                      77  AH_DONE     RTS
+0000109A                            78  
+0000109A  183C 0030                 79  NUM         MOVE.B      #$30,D4     *move $30 into D4 (ammount to sub from value if number)
+0000109E  9404                      80              SUB.B       D4,D2       *convert to hexadecimal number
+000010A0  6000 000C                 81              BRA         FORMAT      *branch to subroutine to store converted hex number
+000010A4                            82              
+000010A4  183C 0037                 83  LET         MOVE.B      #$37,D4     *move $37 into D4 (ammount to sub from value if letter)
+000010A8  9404                      84              SUB.B       D4,D2       *convert to hexadecimal letter
+000010AA  6000 0002                 85              BRA         FORMAT      *branch to subroutine to store converted hex letter
+000010AE                            86  
+000010AE  5301                      87  FORMAT      SUBI.B      #$1,D1      *Decrement D2 counter, one character has been converted
+000010B0  D602                      88              ADD.B       D2,D3       *Store converted number in D3
+000010B2  0C01 0000                 89              CMPI.B      #$0,D1      *Check if we're all done converting
+000010B6  67C8                      90              BEQ         ASCII_HEX   *If not continue conversion
+000010B8  E983                      91              ASL.L       #4,D3       *Shift bits to the left to correct position
+000010BA  60C4                      92              BRA         ASCII_HEX   *Branch back to label
+000010BC                            93              
+000010BC                            94  *-------------------INIT_LOOP-------------------------------
+000010BC                            95  *INIT_LOOP   MOVEA.L     
+000010BC                            96  
+000010BC                            97  *-----------------------IDENTIFY----------------------------
+000010BC                            98  * Purpose: IDENTIFY_LOOP takes a data register input (D7) and identifies what instruction it is.
+000010BC                            99  *          $AA is saved to D6 if OPCode is determined to be correct, or $FF if incorrect
+000010BC                           100  *          ie) <D7> = input <D6> = $AA
+000010BC                           101  * Assumption: When loop is called, D7 contains the next new machine code instruction
+000010BC                           102  *-----------------------------------------------------------
+000010BC  2407                     103  IDENTIFY    MOVE.L      D7,D2       *Copies D7 contents to D2 for manipulation
+000010BE  123C 003C                104              MOVE.B      #60,D1      *Moves 60 into D1
+000010C2  E2AA                     105              LSR.L       D1,D2      *Shifts 60 bits so the remaining contents = the left 4 bits of D7
+000010C4  D602                     106              ADD.B       D2,D3       *Copies those 4 bits (ie leftmost 4 bits of D7) into D3
+000010C6                           107              
+000010C6  B63C 0000                108  F_CMP_0     CMP.B       #$0,D3      *Following section determines what hex value the first 4 digits are
+000010CA  6600 000A                109              BNE         F_CMP_1     *If the first hex value is not 0, branch and see if its 1
+000010CE  4EB9 000011AE            110              JSR         FIRST_0     *If the first hex value is 0, jump to First_0
+000010D4  4E75                     111              RTS
+000010D6                           112              
+000010D6  B63C 0001                113  F_CMP_1     CMP.B       #$1,D3
+000010DA  6600 000A                114              BNE         F_CMP_2     *If the first hex value is not 2, branch and see if its 3, and so on
+000010DE  4EB9 000011B0            115              JSR         FIRST_1 
+000010E4  4E75                     116              RTS
+000010E6                           117             
+000010E6  B63C 0002                118  F_CMP_2     CMP.B       #$2,D3
+000010EA  6600 000A                119              BNE         F_CMP_3 
+000010EE  4EB9 000011B0            120              JSR         FIRST_2
+000010F4  4E75                     121              RTS
+000010F6                           122              
+000010F6  B63C 0003                123  F_CMP_3     CMP.B       #$3,D3
+000010FA  6600 000A                124              BNE         F_CMP_4
+000010FE  4EB9 000011B0            125              JSR         FIRST_3 
+00001104  4E75                     126              RTS
+00001106                           127             
+00001106  B63C 0004                128  F_CMP_4     CMP.B       #$4,D3
+0000110A  6600 000A                129              BNE         F_CMP_5
+0000110E  4EB9 000011B0            130              JSR         FIRST_4
+00001114  4E75                     131              RTS
+00001116                           132              
+00001116  B63C 0005                133  F_CMP_5     CMP.B       #$5,D3
+0000111A  6600 000A                134              BNE         F_CMP_6
+0000111E  4EB9 000011B0            135              JSR         FIRST_5
+00001124  4E75                     136              RTS
+00001126                           137              
+00001126  B63C 0006                138  F_CMP_6     CMP.B       #$6,D3
+0000112A  6600 000A                139              BNE         F_CMP_7
+0000112E  4EB9 000011B0            140              JSR         FIRST_6
+00001134  4E75                     141              RTS
+00001136                           142              
+00001136  B63C 0007                143  F_CMP_7     CMP.B       #$7,D3
+0000113A  6600 000A                144              BNE         F_CMP_8
+0000113E  4EB9 000011B0            145              JSR         FIRST_7
+00001144  4E75                     146              RTS
+00001146                           147              
+00001146  B63C 0008                148  F_CMP_8     CMP.B       #$8,D3
+0000114A  6600 000A                149              BNE         F_CMP_9
+0000114E  4EB9 000011B0            150              JSR         FIRST_8
+00001154  4E75                     151              RTS
+00001156                           152              
+00001156  B63C 0009                153  F_CMP_9     CMP.B       #$9,D3
+0000115A  6600 000A                154              BNE         F_CMP_A
+0000115E  4EB9 000011B0            155              JSR         FIRST_9
+00001164  4E75                     156              RTS
+00001166                           157              
+00001166  B63C 000A                158  F_CMP_A     CMP.B       #$A,D3
+0000116A  6600 000A                159              BNE         F_CMP_B
+0000116E  4EB9 000011B0            160              JSR         FIRST_A
+00001174  4E75                     161              RTS
+00001176                           162              
+00001176  B63C 000B                163  F_CMP_B     CMP.B       #$B,D3
+0000117A  6600 000A                164              BNE         F_CMP_C
+0000117E  4EB9 000011B0            165              JSR         FIRST_B
+00001184  4E75                     166              RTS
+00001186                           167              
+00001186  B63C 000C                168  F_CMP_C     CMP.B       #$C,D3
+0000118A  6600 000A                169              BNE         F_CMP_D
+0000118E  4EB9 000011B0            170              JSR         FIRST_C
+00001194  4E75                     171              RTS
+00001196                           172              
+00001196  B63C 000D                173  F_CMP_D     CMP.B       #$D,D3
+0000119A  6600 000A                174              BNE         F_CMP_E
+0000119E  4EB9 000011B0            175              JSR         FIRST_D
+000011A4  4E75                     176              RTS
+000011A6                           177              
+000011A6  4EB9 000011B0            178  F_CMP_E     JSR         FIRST_E     *If first hex value is not 0-D, it must be E. Branch to First_E
+000011AC  4E75                     179              RTS
+000011AE                           180                          
+000011AE                           181  
+000011AE                           182  *------------------------First_0----------------------------
+000011AE                           183  *Purpose: First_0 is a subroutine of IDENTIFY. If First_0 is branched to, that means the first
+000011AE                           184  *         four digits of the machine code are 0000.
+000011AE                           185  *         Possible instructions are: ADDI, SUBI    
+000011AE                           186  *-----------------------------------------------------------           
+000011AE  4E75                     187  FIRST_0 RTS *Placeholder
+000011B0                           188            
+000011B0                           189  FIRST_1
+000011B0                           190  FIRST_2
+000011B0                           191  FIRST_3
+000011B0                           192  FIRST_4
+000011B0                           193  FIRST_5
+000011B0                           194  FIRST_6
+000011B0                           195  FIRST_7
+000011B0                           196  FIRST_8
+000011B0                           197  FIRST_9
+000011B0                           198  FIRST_A
+000011B0                           199  FIRST_B
+000011B0                           200  FIRST_C
+000011B0                           201  FIRST_D
+000011B0                           202  FIRST_E
+000011B0                           203              
+000011B0                           204  *-----------------------DONE--------------------------------
+000011B0  103C 0009                205  DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
+000011B4  4E4F                     206              TRAP        #15         *Halt program, Trap#15 task 9
+000011B6                           207              
+000011B6                           208  *---------------Variables and Constants---------------------
+000011B6  =0000000D                209  CR          EQU         $0D
+000011B6  =0000000A                210  LF          EQU         $0A
+000011B6                           211  
+000011B6= 2D 2D 2D 2D 2D 2D ...    212  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
+000011E0= 48 65 6E 72 79 20 ...    213              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
+00001209= 43 53 53 20 34 32 ...    214              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
+00001232= 2D 2D 2D 2D 2D 2D ...    215              DC.B        '----------------------------------------',CR,LF,0
+0000125D                           216              
+0000125D= 45 6E 74 65 72 20 ...    217  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
+00001280= 45 6E 74 65 72 20 ...    218  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
+000012A1                           219  
+000012A1                           220  STA_ADDR    DS.B        80
+000012F1                           221  END_ADDR    DS.B        80
+00001341                           222              
+00001341                           223  
+00001341                           224              END         START       *LAST LINE
 
 No errors detected
 No warnings generated
@@ -127,21 +234,52 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-AH_DONE             1092
-ASCII_HEX           107A
+AH_DONE             1098
+ASCII_HEX           1080
 CR                  D
-DONE                10B6
-END_ADDR            11F7
-END_MSG             1186
-FORMAT              10A8
-GET_INPUT           1020
-INTRO               1012
-LET                 109E
+DONE                11B0
+END_ADDR            12F1
+END_MSG             1280
+FIRST_0             11AE
+FIRST_1             11B0
+FIRST_2             11B0
+FIRST_3             11B0
+FIRST_4             11B0
+FIRST_5             11B0
+FIRST_6             11B0
+FIRST_7             11B0
+FIRST_8             11B0
+FIRST_9             11B0
+FIRST_A             11B0
+FIRST_B             11B0
+FIRST_C             11B0
+FIRST_D             11B0
+FIRST_E             11B0
+FORMAT              10AE
+F_CMP_0             10C6
+F_CMP_1             10D6
+F_CMP_2             10E6
+F_CMP_3             10F6
+F_CMP_4             1106
+F_CMP_5             1116
+F_CMP_6             1126
+F_CMP_7             1136
+F_CMP_8             1146
+F_CMP_9             1156
+F_CMP_A             1166
+F_CMP_B             1176
+F_CMP_C             1186
+F_CMP_D             1196
+F_CMP_E             11A6
+GET_INPUT           1026
+IDENTIFY            10BC
+INTRO               1018
+LET                 10A4
 LF                  A
-NL_INTRO            10BC
-NUM                 1094
-PROC_END            106E
-PROC_STA            1062
+NL_INTRO            11B6
+NUM                 109A
+PROC_END            1074
+PROC_STA            1068
 START               1000
-STA_ADDR            11A7
-STA_MSG             1163
+STA_ADDR            12A1
+STA_MSG             125D

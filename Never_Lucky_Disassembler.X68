@@ -16,6 +16,7 @@ START       ORG         $1000       *Start program
             *JSR         INIT_LOOP   *Initialize loop variables
             *JSR         DECODE_LOOP *Enters maine decode loop
             
+            JSR         IDENTIFY
             * final call of program, may need to be removed if we jump directly to DONE from the loop
             JMP         DONE        *End Program               
                
@@ -93,6 +94,112 @@ FORMAT      SUBI.B      #$1,D1      *Decrement D2 counter, one character has bee
 *-------------------INIT_LOOP-------------------------------
 *INIT_LOOP   MOVEA.L     
 
+*-----------------------IDENTIFY----------------------------
+* Purpose: IDENTIFY_LOOP takes a data register input (D7) and identifies what instruction it is.
+*          $AA is saved to D6 if OPCode is determined to be correct, or $FF if incorrect
+*          ie) <D7> = input <D6> = $AA
+* Assumption: When loop is called, D7 contains the next new machine code instruction
+*-----------------------------------------------------------
+IDENTIFY    MOVE.L      D7,D2       *Copies D7 contents to D2 for manipulation
+            MOVE.B      #60,D1      *Moves 60 into D1
+            LSR.L       D1,D2      *Shifts 60 bits so the remaining contents = the left 4 bits of D7
+            ADD.B       D2,D3       *Copies those 4 bits (ie leftmost 4 bits of D7) into D3
+            
+F_CMP_0     CMP.B       #$0,D3      *Following section determines what hex value the first 4 digits are
+            BNE         F_CMP_1     *If the first hex value is not 0, branch and see if its 1
+            JSR         FIRST_0     *If the first hex value is 0, jump to First_0
+            RTS
+            
+F_CMP_1     CMP.B       #$1,D3
+            BNE         F_CMP_2     *If the first hex value is not 2, branch and see if its 3, and so on
+            JSR         FIRST_1 
+            RTS
+           
+F_CMP_2     CMP.B       #$2,D3
+            BNE         F_CMP_3 
+            JSR         FIRST_2
+            RTS
+            
+F_CMP_3     CMP.B       #$3,D3
+            BNE         F_CMP_4
+            JSR         FIRST_3 
+            RTS
+           
+F_CMP_4     CMP.B       #$4,D3
+            BNE         F_CMP_5
+            JSR         FIRST_4
+            RTS
+            
+F_CMP_5     CMP.B       #$5,D3
+            BNE         F_CMP_6
+            JSR         FIRST_5
+            RTS
+            
+F_CMP_6     CMP.B       #$6,D3
+            BNE         F_CMP_7
+            JSR         FIRST_6
+            RTS
+            
+F_CMP_7     CMP.B       #$7,D3
+            BNE         F_CMP_8
+            JSR         FIRST_7
+            RTS
+            
+F_CMP_8     CMP.B       #$8,D3
+            BNE         F_CMP_9
+            JSR         FIRST_8
+            RTS
+            
+F_CMP_9     CMP.B       #$9,D3
+            BNE         F_CMP_A
+            JSR         FIRST_9
+            RTS
+            
+F_CMP_A     CMP.B       #$A,D3
+            BNE         F_CMP_B
+            JSR         FIRST_A
+            RTS
+            
+F_CMP_B     CMP.B       #$B,D3
+            BNE         F_CMP_C
+            JSR         FIRST_B
+            RTS
+            
+F_CMP_C     CMP.B       #$C,D3
+            BNE         F_CMP_D
+            JSR         FIRST_C
+            RTS
+            
+F_CMP_D     CMP.B       #$D,D3
+            BNE         F_CMP_E
+            JSR         FIRST_D
+            RTS
+            
+F_CMP_E     JSR         FIRST_E     *If first hex value is not 0-D, it must be E. Branch to First_E
+            RTS
+                        
+
+*------------------------First_0----------------------------
+*Purpose: First_0 is a subroutine of IDENTIFY. If First_0 is branched to, that means the first
+*         four digits of the machine code are 0000.
+*         Possible instructions are: ADDI, SUBI    
+*-----------------------------------------------------------           
+FIRST_0 RTS *Placeholder
+          
+FIRST_1
+FIRST_2
+FIRST_3
+FIRST_4
+FIRST_5
+FIRST_6
+FIRST_7
+FIRST_8
+FIRST_9
+FIRST_A
+FIRST_B
+FIRST_C
+FIRST_D
+FIRST_E
             
 *-----------------------DONE--------------------------------
 DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
@@ -115,6 +222,7 @@ END_ADDR    DS.B        80
             
 
             END         START       *LAST LINE
+
 
 
 
