@@ -95,10 +95,10 @@ FORMAT      SUBI.B      #$1,D1      *Decrement D2 counter, one character has bee
 *INIT_LOOP   MOVEA.L     
 
 *-----------------------IDENTIFY----------------------------
-* Purpose: IDENTIFY_LOOP takes a data register input (D7) and identifies what instruction it is.
+* Purpose: IDENTIFY takes a data register input (D7) and identifies what instruction it is.
 *          $AA is saved to D6 if OPCode is determined to be correct, or $FF if incorrect
 *          ie) <D7> = input <D6> = $AA
-* Assumption: When loop is called, D7 contains the next new machine code instruction
+* Assumption: Whenever IDENTIFY is called, D7 contains the next new machine code instruction
 *-----------------------------------------------------------
 IDENTIFY    MOVE.L      D7,D2       *Copies D7 contents to D2 for manipulation
             MOVE.B      #60,D1      *Moves 60 into D1
@@ -108,12 +108,12 @@ IDENTIFY    MOVE.L      D7,D2       *Copies D7 contents to D2 for manipulation
 F_CMP_0     CMP.B       #$0,D3      *Following section determines what hex value the first 4 digits are
             BNE         F_CMP_1     *If the first hex value is not 0, branch and see if its 1
             JSR         FIRST_0     *If the first hex value is 0, jump to First_0
-            RTS
+            RTS                     *Finished all jumping; whole instruction should be identified at this point
             
 F_CMP_1     CMP.B       #$1,D3
             BNE         F_CMP_2     *If the first hex value is not 2, branch and see if its 3, and so on
             JSR         FIRST_1 
-            RTS
+            RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
            
 F_CMP_2     CMP.B       #$2,D3
             BNE         F_CMP_3 
@@ -181,7 +181,7 @@ F_CMP_E     JSR         FIRST_E     *If first hex value is not 0-D, it must be E
 
 *------------------------First_0----------------------------
 *Purpose: First_0 is a subroutine of IDENTIFY. If First_0 is branched to, that means the first
-*         four digits of the machine code are 0000.
+*         four digits of the machine code are 0000
 *         Possible instructions are: ADDI, SUBI    
 *-----------------------------------------------------------           
 FIRST_0 RTS *Placeholder
@@ -189,6 +189,14 @@ FIRST_0 RTS *Placeholder
 FIRST_1
 FIRST_2
 FIRST_3
+
+*------------------------First_0----------------------------
+*Purpose: First_4 is a subroutine of IDENTIFY. If First_4 is branched to, that means the first
+*         four digits of the machine code are 0100
+*         Possible instructions are: NOP, MOVEM, LEA, JSR, RTS
+*
+*         Next 3 bits of instruction code help determine what the instruction is    
+*----------------------------------------------------------- 
 FIRST_4
 FIRST_5
 FIRST_6
