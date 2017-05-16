@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/16/2017 3:33:49 PM
+Created On: 5/16/2017 3:40:16 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Never Lucky Disassembler
@@ -106,7 +106,7 @@ Created On: 5/16/2017 3:33:49 PM
 000010C4                           102              
 000010C4  4EB9 000010FA            103              JSR         INIT_STRS   *Initialize Bad and Good Str
 000010CA                           104              
-000010CA  4EB9 0000123E            105              JSR         IDENTIFY    *Start opcode identification waterfall
+000010CA  4EB9 0000123E            105              JSR         JMP_TBL    *Start opcode identification waterfall
 000010D0                           106              
 000010D0  0C06 00AA                107              CMPI.B      #$AA,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
 000010D4  6700 0006                108              BEQ         PRINT_GOOD  *Print good string if good opcode
@@ -271,7 +271,7 @@ Created On: 5/16/2017 3:33:49 PM
 0000123E                           267              INCLUDE     'Never_Lucky_Jump_Tables.x68' *Include jump tables file
 0000123E                           268  
 0000123E                           269  
-0000123E  4282                     270  IDENTIFY    CLR.L       D2
+0000123E  4282                     270  JMP_TBL    CLR.L       D2
 00001240  3407                     271              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
 00001242  4281                     272              CLR.L       D1
 00001244  123C 000C                273              MOVE.B      #12,D1      *Moves 12 into D1
@@ -741,13 +741,13 @@ GET_INPUT           1020
 GOOD_STR            17D0
 HEX_ASCII_B         1178
 HEX_ASCII_G         11BE
-IDENTIFY            123E
 INIT_BAD            1140
 INIT_GOOD           1108
 INIT_STRS           10FA
 INTRO               1012
 ISO_DIG_B           118A
 ISO_DIG_G           11D2
+JMP_TBL             123E
 LET                 109E
 LET_B               11AA
 LET_G               11F2

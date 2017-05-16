@@ -102,7 +102,7 @@ DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7
             
             JSR         INIT_STRS   *Initialize Bad and Good Str
             
-            JSR         IDENTIFY    *Start opcode identification waterfall
+            JSR         JMP_TBL    *Start opcode identification waterfall
             
             CMPI.B      #$AA,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
             BEQ         PRINT_GOOD  *Print good string if good opcode

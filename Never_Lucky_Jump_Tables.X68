@@ -15,7 +15,7 @@
 *          ie) <D7> = input <D6> = $AA
 * Assumption: Whenever IDENTIFY is called, D7 contains the next new machine code instruction
 *-----------------------------------------------------------
-IDENTIFY    CLR.L       D2
+JMP_TBL    CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
             MOVE.B      #12,D1      *Moves 12 into D1
