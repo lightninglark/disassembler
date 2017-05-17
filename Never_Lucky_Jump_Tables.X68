@@ -5,413 +5,176 @@
 * Description:
 *-----------------------------------------------------------
 
+*-----------------------JMP_TBL------------------------------
+* Purpose: JMP_TBL takes a data register input (D7) and navigates to the correct OPCODE table
+*          entry.
+*          $FF is saved to D6 if OPCode is determined to be incorrect
+* Assumption: Whenever JMP_TBL is called, D7 contains the next new machine code instruction
+*------------------------------------------------------------
 *============================================================
 *===================ID FIRST OPCODE DIGIT====================
 *============================================================
-
-*-----------------------IDENTIFY----------------------------
-* Purpose: IDENTIFY takes a data register input (D7) and identifies what instruction it is.
-*          $AA is saved to D6 if OPCode is determined to be correct, or $FF if incorrect
-*          ie) <D7> = input <D6> = $AA
-* Assumption: Whenever IDENTIFY is called, D7 contains the next new machine code instruction
-*-----------------------------------------------------------
-JMP_TBL    CLR.L       D2
+JMP_TBL     CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
             MOVE.B      #12,D1      *Moves 12 into D1
             LSR.W       D1,D2       *Shifts 12 bits so the remaining contents = the left 4 bits of D7
                         
-OC_0        CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-            BNE         OC_1        *If the first hex value is not 0, branch and see if its 1
-            JSR         OPC_0       *If the first hex value is 0, jump to First_0
+JMP_0       CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
+            BNE         JMP_1       *If the first hex value is not 0, branch and see if its 1
+            JSR         JMP_0X      *If the first hex value is 0, jump to JMP_0X to determine the next set of digits
             RTS                     *Finished all jumping; whole instruction should be identified at this point
             
-OC_1        CMP.B       #$1,D2
-            BNE         OC_2        *If the first hex value is not 2, branch and see if its 3, and so on
-            JSR         OPC_1 
+JMP_1       CMP.B       #$1,D2
+            BNE         JMP_2       *If the first hex value is not 2, branch and see if its 3, and so on
+            JSR         OPC_1XXX    *If the first hex value is 1, the instruction is determined to be MOVE.B. Jump to OPC_1XXX in OPCODE table.
             RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
            
-OC_2        CMP.B       #$2,D2
-            BNE         OC_3 
-            JSR         OPC_2
+JMP_2       CMP.B       #$2,D2
+            BNE         JMP_3 
+            JSR         JMP_2X      *If the first hex value is 2, jump to JMP_2X to determine the next set of digits
             RTS
             
-OC_3        CMP.B       #$3,D2
-            BNE         OC_4
-            JSR         OPC_3 
+JMP_3       CMP.B       #$3,D2
+            BNE         JMP_4
+            JSR         JMP_3X      *If the first hex value is 3, jump to JMP_3X to determine the next set of digits
             RTS
-*OC_4 USED           
-OC_4        CMP.B       #$4,D2      *Where NOP SHOULD LAND
-            BNE         OC_5
-            JSR         OPC_4
-            RTS
-            
-OC_5        CMP.B       #$5,D2
-            BNE         OC_6
-            JSR         OPC_5
+         
+JMP_4       CMP.B       #$4,D2      *Where NOP SHOULD LAND
+            BNE         JMP_5
+            JSR         JMP_4X      *If the first hex value is 4, jump to JMP_4X to determine the next set of digits
             RTS
             
-OC_6        CMP.B       #$6,D2
-            BNE         OC_7
-            JSR         OPC_6
+JMP_5       CMP.B       #$5,D2
+            BNE         JMP_6
+            JSR         OPC_5XXX    *If the first hex digit is 5, the instruction is determined to be ADDQ. Jump to OPC_5XXX in OPCODE table.
             RTS
             
-OC_7        CMP.B       #$7,D2
-            BNE         OC_8
-            JSR         OPC_7
+JMP_6       CMP.B       #$6,D2
+            BNE         JMP_7
+            JSR         JMP_6X      *If the first hex value is 6, jump to JMP_6X to determine the next set of digits
             RTS
             
-OC_8        CMP.B       #$8,D2
-            BNE         OC_9
-            JSR         OPC_8
+JMP_7       CMP.B       #$7,D2
+            BNE         JMP_8
+            JSR         OPC_7XXX    *If the first hex digit is 7, the instruction is determined to be MOVEQ. Jump to OPC_7XXX in OPCODE table.
             RTS
             
-OC_9        CMP.B       #$9,D2
-            BNE         OC_A
-            JSR         OPC_9
+JMP_8       CMP.B       #$8,D2
+            BNE         JMP_9
+            JSR         JMP_8X      *If the first hex value is 8, jump to JMP_8X to determine the next set of digits
             RTS
             
-OC_A        CMP.B       #$A,D2
-            BNE         OC_B
-            JSR         OPC_A
+JMP_9       CMP.B       #$9,D2
+            BNE         JMP_A
+            JSR         OPC_9XXX    *If the first hex digit is 9, the instruction is determined to be SUB. Jump to OPC_9XXX in OPCODE table.
             RTS
             
-OC_B        CMP.B       #$B,D2
-            BNE         OC_C
-            JSR         OPC_B
+JMP_A       CMP.B       #$A,D2
+            BNE         JMP_B
+            JSR         INVALID     *0xA is an invalid first hex digit. Jump to INVALID
             RTS
             
-OC_C        CMP.B       #$C,D2
-            BNE         OC_D
-            JSR         OPC_C
+JMP_B       CMP.B       #$B,D2
+            BNE         JMP_C
+            JSR         INVALID     *0xB is an invalid first hex digit. Jump to INVALID
             RTS
             
-OC_D        CMP.B       #$D,D2
-            BNE         OC_E
-            JSR         OPC_D
+JMP_C       CMP.B       #$C,D2
+            BNE         JMP_D
+            JSR         JMP_CX      *If the first hex value is C, jump to JMP_CX to determine the next set of digits
             RTS
             
-*Maybe not? Illegal characters like $W mind fine there way into testing file, may need a ILLEGAL else case
-OC_E        JSR         OPC_E     *If first hex value is not 0-D, it must be E. Branch to First_E
+JMP_D       CMP.B       #$D,D2
+            BNE         JMP_E   
+            JSR         JMP_DX      *If the first hex value is D, jump to JMP_DX to determine the next set of digits
+            RTS
+            
+JMP_E       CMP.B       #$F,D2      *If first hex value is not 0-D, it must be E(valid) or F(invalid)
+            BEQ         INVALID     *If first hex value is F, jump to INVALID
+            JSR         JMP_EX      *If the first hex value is E, jump to JMP_EX to determine the next set of digits
             RTS
  
-
 *============================================================
 *==================ID SECOND OPCODE DIGIT====================
 *============================================================
-           
-*------------------------OPC_0----------------------------
-*Purpose: First_0 is a subroutine of IDENTIFY. If First_0 is branched to, that means the first
-*         four digits of the machine code are 0000
-*         Possible instructions are: ADDI, SUBI    
-*-----------------------------------------------------------           
-OPC_0     RTS          
-OPC_1     RTS
-OPC_2     RTS
-OPC_3     RTS
 
-*------------------------OPC_4----------------------------
-*Purpose: First_4 is a subroutine of IDENTIFY. If First_4 is branched to, that means the first
-*         four digits of the machine code are 0100
-*         Possible instructions are: NOP, MOVEM, LEA, JSR, RTS
-*
-*         Next 3 bits of instruction code help determine what the instruction is    
-*----------------------------------------------------------- 
-OPC_4       CLR.L       D2
+* J_CLR4 prepares the data registers for data manipulation on the second input hex digit by isolating the next 4 bits:
+* %0000 XXXX 0000 0000 0000
+J_CLR4      CLR.L       D2                                
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
             LSL.W       #4,D2       *Clear the most sig hex digit
             MOVE.B      #12,D1      *Moves 12 into D1
-            LSR.W       D1,D2       *Shifts 12 right to isolate Digit we're working with at $0000000X
-                        
-OC4_0       CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-            BNE         OC4_1       *If the first hex value is not 0, branch and see if its 1
-            JSR         OPC4_0      *If the first hex value is 0, jump to First_0
-            RTS                     *Finished all jumping; whole instruction should be identified at this point
+            LSR.W       D1,D2       *Shifts 12 right to isolate the bits we're working with
+            RTS                     *Return back to JMP_Xn    
             
-OC4_1       CMP.B       #$1,D2
-            BNE         OC4_2       *If the first hex value is not 2, branch and see if its 3, and so on
-            JSR         OPC4_1 
-            RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
-           
-OC4_2       CMP.B       #$2,D2
-            BNE         OC4_3 
-            JSR         OPC4_2
-            RTS
-            
-OC4_3       CMP.B       #$3,D2
-            BNE         OC4_4
-            JSR         OPC4_3 
-            RTS
-           
-OC4_4       CMP.B       #$4,D2 
-            BNE         OC4_5
-            JSR         OPC4_4
-            RTS
-            
-OC4_5       CMP.B       #$5,D2
-            BNE         OC4_6
-            JSR         OPC4_5
-            RTS
-            
-OC4_6       CMP.B       #$6,D2
-            BNE         OC4_7
-            JSR         OPC4_6
-            RTS
-            
-OC4_7       CMP.B       #$7,D2
-            BNE         OC4_8
-            JSR         OPC4_7
-            RTS
-            
-OC4_8       CMP.B       #$8,D2
-            BNE         OC4_9
-            JSR         OPC4_8
-            RTS
-            
-OC4_9       CMP.B       #$9,D2
-            BNE         OC4_A
-            JSR         OPC4_9
-            RTS
-            
-OC4_A       CMP.B       #$A,D2
-            BNE         OC4_B
-            JSR         OPC4_A
-            RTS
-            
-OC4_B       CMP.B       #$B,D2
-            BNE         OC4_C
-            JSR         OPC4_B
-            RTS
-            
-OC4_C       CMP.B       #$C,D2
-            BNE         OC4_D
-            JSR         OPC4_C
-            RTS
-            
-OC4_D       CMP.B       #$D,D2
-            BNE         OC4_E
-            JSR         OPC4_D
-            RTS
-            
-*Maybe not? Illegal characters like $W mind fine there way into testing file, may need a ILLEGAL else case
-*OC4_E USED                         WHERE NOP LANDS
-OC4_E       JSR         OPC4_E     *If first hex value is not 0-D, it must be E. Branch to First_E
-            RTS
-                                              
-OPC_5       RTS
-OPC_6       RTS
-OPC_7       RTS
-OPC_8       RTS
-OPC_9       RTS
-OPC_A       RTS
-OPC_B       RTS
-OPC_C       RTS
-OPC_D       RTS
-OPC_E       RTS
-
-*============================================================
-*===================ID THIRD OPCODE DIGIT====================
-*============================================================
-
-OPC4_0      RTS
-OPC4_1      RTS
-OPC4_2      RTS
-OPC4_3      RTS
-OPC4_4      RTS
-OPC4_5      RTS
-OPC4_6      RTS
-OPC4_7      RTS
-OPC4_8      RTS
-OPC4_9      RTS
-OPC4_A      RTS
-OPC4_B      RTS
-OPC4_C      RTS
-OPC4_D      RTS
-
-*-------------------NOP LANDS HERE---------------------------------
-OPC4_E      CLR.L       D2
-            MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-            CLR.L       D1      
-            LSL.L       #8,D2       *Clear the two most significant hex digits
-            MOVE.B      #12,D1      *Moves 12 into D1 for shifting
-            LSR.W       D1,D2       *Shifts 12 to the right, THIRD hex digit lands $0000000X
-                        
-OC4E_0      CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-            BNE         OC4E_1      *If the first hex value is not 0, branch and see if its 1
-            JSR         OPC4E_0     *If the first hex value is 0, jump to First_0
-            RTS                     *Finished all jumping; whole instruction should be identified at this point
-            
-OC4E_1      CMP.B       #$1,D2
-            BNE         OC4E_2      *If the first hex value is not 2, branch and see if its 3, and so on
-            JSR         OPC4E_1 
-            RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
-           
-OC4E_2      CMP.B       #$2,D2
-            BNE         OC4E_3 
-            JSR         OPC4E_2
-            RTS
-            
-OC4E_3      CMP.B       #$3,D2
-            BNE         OC4E_4
-            JSR         OPC4E_3 
-            RTS
-           
-OC4E_4      CMP.B       #$4,D2      
-            BNE         OC4E_5
-            JSR         OPC4E_4
-            RTS
-            
-OC4E_5      CMP.B       #$5,D2
-            BNE         OC4E_6
-            JSR         OPC4E_5
-            RTS
-            
-OC4E_6      CMP.B       #$6,D2
-            BNE         OC4E_7
-            JSR         OPC4E_6
-            RTS
-*OC4E_7 USED            
-OC4E_7      CMP.B       #$7,D2      *NOP LANDS HERE
-            BNE         OC4E_8
-            JSR         OPC4E_7
-            RTS
-            
-OC4E_8      CMP.B       #$8,D2
-            BNE         OC4E_9
-            JSR         OPC4E_8
-            RTS
-            
-OC4E_9      CMP.B       #$9,D2
-            BNE         OC4E_A
-            JSR         OPC4E_9
-            RTS
-            
-OC4E_A      CMP.B       #$A,D2
-            BNE         OC4E_B
-            JSR         OPC4E_A
-            RTS
-            
-OC4E_B      CMP.B       #$B,D2
-            BNE         OC4E_C
-            JSR         OPC4E_B
-            RTS
-            
-OC4E_C      CMP.B       #$C,D2
-            BNE         OC4E_D
-            JSR         OPC4E_C
-            RTS
-            
-OC4E_D      CMP.B       #$D,D2
-            BNE         OC4E_E
-            JSR         OPC4E_D
-            RTS
-            
-*Maybe not? Illegal characters like $W mind fine there way into testing file, may need a ILLEGAL else case
-OC4E_E      JSR         OPC4_E     *If first hex value is not 0-D, it must be E. Branch to First_E
-            RTS
-
-*============================================================
-*==================ID FOURTH OPCODE DIGIT====================
-*============================================================
-OPC4E_0     RTS
-OPC4E_1     RTS
-OPC4E_2     RTS
-OPC4E_3     RTS
-OPC4E_4     RTS
-OPC4E_5     RTS
-OPC4E_6     RTS
-*---------------------WHERE NOP LANDS--------------------
-OPC4E_7     CLR.L       D2
+* J_CLR3 prepares the data registers for data manipulation on the second input hex digit by isolating the next 3 bits:
+* %0000 XXX0 0000 0000 0000          
+J_CLR3      CLR.L       D2          
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
-            MOVE.B      #12,D1      *Move 12 into D1 for shifting
-            LSL.W       D1,D2       *Clear the three most significant hex digits
-            LSR.W       D1,D2       *Shift right 12 spaces to make working digit $0000000X
-                        
-OC4E7_0     CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-            BNE         OC4E7_1     *If the first hex value is not 0, branch and see if its 1
-            JSR         OPC4E7_0    *If the first hex value is 0, jump to First_0
-            RTS                     *Finished all jumping; whole instruction should be identified at this point
-*OC4E7_1 USED            
-OC4E7_1     CMP.B       #$1,D2      *NOP LANDS HERE
-            BNE         OC4E7_2     *If the first hex value is not 2, branch and see if its 3, and so on
-            JSR         OPC4E7_1 
-            RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
-           
-OC4E7_2     CMP.B       #$2,D2
-            BNE         OC4E7_3 
-            JSR         OPC4E7_2
-            RTS
-            
-OC4E7_3     CMP.B       #$3,D2
-            BNE         OC4E7_4
-            JSR         OPC4E7_3 
-            RTS
-           
-OC4E7_4     CMP.B       #$4,D2      
-            BNE         OC4E7_5
-            JSR         OPC4E7_4
-            RTS
-            
-OC4E7_5     CMP.B       #$5,D2
-            BNE         OC4E7_6
-            JSR         OPC4E7_5
-            RTS
-            
-OC4E7_6     CMP.B       #$6,D2
-            BNE         OC4E7_7
-            JSR         OPC4E7_6
-            RTS
-            
-OC4E7_7     CMP.B       #$7,D2
-            BNE         OC4E7_8
-            JSR         OPC4E7_7
-            RTS
-            
-OC4E7_8     CMP.B       #$8,D2
-            BNE         OC4E7_9
-            JSR         OPC4E7_8
-            RTS
-            
-OC4E7_9     CMP.B       #$9,D2
-            BNE         OC4E7_A
-            JSR         OPC4E7_9
-            RTS
-            
-OC4E7_A     CMP.B       #$A,D2
-            BNE         OC4E7_B
-            JSR         OPC4E7_A
-            RTS
-            
-OC4E7_B     CMP.B       #$B,D2
-            BNE         OC4E7_C
-            JSR         OPC4E7_B
-            RTS
-            
-OC4E7_C     CMP.B       #$C,D2
-            BNE         OC4E7_D
-            JSR         OPC4E7_C
-            RTS
-            
-OC4E7_D     CMP.B       #$D,D2
-            BNE         OC4E7_E
-            JSR         OPC4E7_D
-            RTS
-            
-*Maybe not? Illegal characters like $W mind fine there way into testing file, may need a ILLEGAL else case
-OC4E7_E     JSR         OPC4E7_E     *If first hex value is not 0-D, it must be E. Branch to First_E
+            LSL.W       #4,D2       *Clear the most sig hex digit
+            MOVE.B      #13,D1      *Moves 13 into D1
+            LSR.W       D1,D2       *Shifts 13 right to isolate the bits we're working with 
+            RTS                     *Return back to JMP_Xn  
+
+* J_CLR_DM prepares the data registers for data manipulation on the second input hex digit by isolating the DESTINATION MODE bits:
+* %0000 000X XX00 0000 0000          
+J_CLR_DM    CLR.L       D2          
+            MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+            CLR.L       D1
+            LSL.W       #7,D2       *Clear the most sig 7 bits
+            MOVE.B      #17,D1      *Moves 17 into D1
+            LSR.W       D1,D2       *Shifts 17 right to isolate the bits we're working with 
+            RTS                     *Return back to JMP_Xn     
+         
+* Possible instructions at JMP_0X are: SUBI, ADDI
+JMP_0X      JSR         J_CLR4      *Prepare data registers for data manipulation on the second input hex digit
+            CMP.B       #$4,D2      *Is the next hex digit 4?
+            BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
+            CMP.B       #$5,D2      *Is the next hex digit 5?
+            BEQ         J_OADDI     *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
+            JSR         INVALID     *If neither, OPCODE is invalid
             RTS
 
+J_SUBI      JSR         OPC_04XX    *Jump to OPC_04XX in OPCODE table
+            RTS
+            
+J_ADDI      JSR         OPC_05XX    *Jump to OPC_05XX in OPCODE table
+            RTS              
 
-OPC4E_8     RTS
-OPC4E_9     RTS
-OPC4E_A     RTS
-OPC4E_B     RTS
-OPC4E_C     RTS
-OPC4E_D     RTS
-OPC4E_E     RTS
+* Possible instructions at JMP_2X are: MOVE.L, MOVEA.L
+JMP_2X      JSR         J_CLR_DM    *Prepare data registers for data manipulation on the DEST MODE digits
+            CMP.B       #$1,D2      *is the DEST MODE 1?
+            BEQ         J_MOVEAL    *Instruction is determiend to be MOVEA.L                                     ================= < stopped at this point
+             
 
+J_MOVEL
+
+J_MOVEAL
+
+JMP_3X
+
+JMP_4X
+
+JMP_6X
+
+JMP_8X
+
+JMP_CX
+
+JMP_DX
+
+JMP_EX
+
+
+*-----------------------INVALID------------------------------
+* Invalid OPCODES jump here.
+* $FF is moved into Data Register 6, which indicates to the program that the input is invalid.
+*------------------------------------------------------------        
+INVALID     MOVE.B      $FF,D6      *Invalid input flag
+            RTS
 *============================================================
 *==================OPCODE KNOWN, PRINTING====================
 *============================================================
@@ -441,6 +204,7 @@ OPC4E7_B     RTS
 OPC4E7_C     RTS
 OPC4E7_D     RTS
 OPC4E7_E     RTS
+
 
 *~Font name~Courier New~
 *~Font size~10~
