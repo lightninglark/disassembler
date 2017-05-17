@@ -1,10 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-<<<<<<< HEAD
-Created On: 5/16/2017 5:52:31 PM
-=======
-Created On: 5/16/2017 3:54:40 PM
->>>>>>> c1f52eab497fa12443532c119b7a1519830a58f8
+Created On: 5/16/2017 6:05:13 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Never Lucky Disassembler
@@ -27,28 +23,28 @@ Created On: 5/16/2017 3:54:40 PM
 00001012                            19              *JMP         DONE        *End Program               
 00001012                            20                 
 00001012                            21  *-----------------------INTRO-------------------------------
-00001012  43F9 000016C4             22  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
+00001012  43F9 00001406             22  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
 00001018  103C 000E                 23              MOVE.B      #14,D0      *Trap task 14, display intro
 0000101C  4E4F                      24              TRAP        #15         
 0000101E  4E75                      25              RTS         
 00001020                            26  
 00001020                            27  *--------------------GET_INPUT------------------------------
-00001020  43F9 0000176B             28  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
+00001020  43F9 000014AD             28  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
 00001026  103C 000E                 29              MOVE.B      #14,D0      *Trap task 14, display start address msg
 0000102A  4E4F                      30              TRAP        #15         
 0000102C                            31              
-0000102C  43F9 000017D5             32              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
+0000102C  43F9 00001517             32              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
 00001032  103C 0002                 33              MOVE.B      #2,D0       *Trap task 2, collect start address from input, length in D1
 00001036  4E4F                      34              TRAP        #15         
 00001038                            35              
 00001038  4EB9 00001062             36              JSR         PROC_STA    *Process Start address, check for errrors and convert to HEX
 0000103E  4281                      37              CLR.L       D1          *Clear input length from D1
 00001040                            38              
-00001040  43F9 0000178E             39              LEA         END_MSG,A1  *Load END_MSG into A1
+00001040  43F9 000014D0             39              LEA         END_MSG,A1  *Load END_MSG into A1
 00001046  103C 000E                 40              MOVE.B      #14,D0      *Trap task 14, display end address msg
 0000104A  4E4F                      41              TRAP        #15
 0000104C                            42              
-0000104C  43F9 000017FD             43              LEA         END_ADDR,A1 *Store input in END_ADDR variable
+0000104C  43F9 0000153F             43              LEA         END_ADDR,A1 *Store input in END_ADDR variable
 00001052  103C 0002                 44              MOVE.B      #2,D0       *Trap task 2, collect end address from input, length in d1
 00001056  4E4F                      45              TRAP        #15         
 00001058                            46              
@@ -105,8 +101,8 @@ Created On: 5/16/2017 3:54:40 PM
 000010B6                            97              
 000010B6                            98  *-------------------DECODE_LOOP-----------------------------
 000010B6  3E1D                      99  DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7        
-000010B8  47F9 00001866            100              LEA         BAD_STR,A3  *Move Bad string constant into A3
-000010BE  49F9 00001826            101              LEA         GOOD_STR,A4 *Move Good string constant into A4
+000010B8  47F9 000015A8            100              LEA         BAD_STR,A3  *Move Bad string constant into A3
+000010BE  49F9 00001568            101              LEA         GOOD_STR,A4 *Move Good string constant into A4
 000010C4                           102              
 000010C4  4EB9 0000112A            103              JSR         INIT_STRS   *Initialize Bad and Good Str
 000010CA                           104              
@@ -135,7 +131,7 @@ Created On: 5/16/2017 3:54:40 PM
 00001102  60B2                     127              BRA         DECODE_LOOP * Continue loop
 00001104                           128  
 00001104                           129  *-------------------NEXT_PAGE-----------------------------
-00001104  43F9 000017AF            130  NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
+00001104  43F9 000014F1            130  NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
 0000110A  4280                     131              CLR.L       D0          *Make sure D0 is empty
 0000110C  103C 000E                132              MOVE.B      #14,D0      *Trap task 14, display start address msg
 00001110  4E4F                     133              TRAP        #15            
@@ -273,7 +269,7 @@ Created On: 5/16/2017 3:54:40 PM
 00001236                           265  *-------------------PRINT_G---------------------------------
 00001236  18FC 0020                266  PRINT_G     MOVE.B      #' ',(A4)+
 0000123A  16FC 0000                267              MOVE.B      #$00,(A3)+  *Move null to end of string for printing
-0000123E  43F9 00001826            268              LEA         GOOD_STR,A1 *Load good data for printing
+0000123E  43F9 00001568            268              LEA         GOOD_STR,A1 *Load good data for printing
 00001244  103C 000D                269              MOVE.B      #13,D0      *Trap task 13, display null terminated string
 00001248  4E4F                     270              TRAP        #15         *Display string
 0000124A                           271            
@@ -282,7 +278,7 @@ Created On: 5/16/2017 3:54:40 PM
 0000124C                           274  *-------------------PRINT_B---------------------------------
 0000124C  18FC 0020                275  PRINT_B     MOVE.B      #' ',(A4)+
 00001250  18FC 0000                276              MOVE.B      #$00,(A4)+  *Move null to end of string for printing
-00001254  43F9 00001866            277              LEA         BAD_STR,A1 *Load good data for printing
+00001254  43F9 000015A8            277              LEA         BAD_STR,A1 *Load good data for printing
 0000125A  103C 000D                278              MOVE.B      #13,D0      *Trap task 13, display null terminated string
 0000125E  4E4F                     279              TRAP        #15         *Display string
 00001260                           280              
@@ -298,455 +294,242 @@ Created On: 5/16/2017 3:54:40 PM
 0000126E                           290  *---------------Variables and Constants---------------------
 0000126E                           291              INCLUDE     'Never_Lucky_Jump_Tables.x68' *Include jump tables file
 0000126E                           292  
-0000126E                           293  
-0000126E  4282                     294  JMP_TBL    CLR.L       D2
-00001270  3407                     295              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00001272  4281                     296              CLR.L       D1
-00001274  123C 000C                297              MOVE.B      #12,D1      *Moves 12 into D1
-00001278  E26A                     298              LSR.W       D1,D2       *Shifts 12 bits so the remaining contents = the left 4 bits of D7
-0000127A                           299                          
-0000127A  B43C 0000                300  OC_0        CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-0000127E  6600 000A                301              BNE         OC_1        *If the first hex value is not 0, branch and see if its 1
-00001282  4EB9 00001362            302              JSR         OPC_0       *If the first hex value is 0, jump to First_0
-00001288  4E75                     303              RTS                     *Finished all jumping; whole instruction should be identified at this point
-0000128A                           304              
-0000128A  B43C 0001                305  OC_1        CMP.B       #$1,D2
-0000128E  6600 000A                306              BNE         OC_2        *If the first hex value is not 2, branch and see if its 3, and so on
-00001292  4EB9 00001364            307              JSR         OPC_1 
-00001298  4E75                     308              RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
-0000129A                           309             
-0000129A  B43C 0002                310  OC_2        CMP.B       #$2,D2
-0000129E  6600 000A                311              BNE         OC_3 
-000012A2  4EB9 00001366            312              JSR         OPC_2
-000012A8  4E75                     313              RTS
-000012AA                           314              
-000012AA  B43C 0003                315  OC_3        CMP.B       #$3,D2
-000012AE  6600 000A                316              BNE         OC_4
-000012B2  4EB9 00001368            317              JSR         OPC_3 
-000012B8  4E75                     318              RTS
-000012BA  B43C 0004                319  OC_4        CMP.B       #$4,D2      *Where NOP SHOULD LAND
-000012BE  6600 000A                320              BNE         OC_5
-000012C2  4EB9 0000136A            321              JSR         OPC_4
+0000126E  4282                     293  JMP_TBL     CLR.L       D2
+00001270  3407                     294              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00001272  4281                     295              CLR.L       D1
+00001274  123C 000C                296              MOVE.B      #12,D1      *Moves 12 into D1
+00001278  E26A                     297              LSR.W       D1,D2       *Shifts 12 bits so the remaining contents = the left 4 bits of D7
+0000127A                           298                          
+0000127A  B43C 0000                299  JMP_0       CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
+0000127E  6600 000A                300              BNE         JMP_1       *If the first hex value is not 0, branch and see if its 1
+00001282  4EB9 0000139A            301              JSR         JMP_0X      *If the first hex value is 0, jump to JMP_0X to determine the next set of digits
+00001288  4E75                     302              RTS                     *Finished all jumping; whole instruction should be identified at this point
+0000128A                           303              
+0000128A  B43C 0001                304  JMP_1       CMP.B       #$1,D2
+0000128E  6600 000A                305              BNE         JMP_2       *If the first hex value is not 2, branch and see if its 3, and so on
+Line 306 ERROR: Undefined symbol
+00001292  4EB9 004DBB8E            306              JSR         OPC_1XXX    *If the first hex value is 1, the instruction is determined to be MOVE.B. Jump to OPC_1XXX in OPCODE table.
+00001298  4E75                     307              RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
+0000129A                           308             
+0000129A  B43C 0002                309  JMP_2       CMP.B       #$2,D2
+0000129E  6600 000A                310              BNE         JMP_3 
+000012A2  4EB9 000013C6            311              JSR         JMP_2X      *If the first hex value is 2, jump to JMP_2X to determine the next set of digits
+000012A8  4E75                     312              RTS
+000012AA                           313              
+000012AA  B43C 0003                314  JMP_3       CMP.B       #$3,D2
+000012AE  6600 000A                315              BNE         JMP_4
+000012B2  4EB9 000013D2            316              JSR         JMP_3X      *If the first hex value is 3, jump to JMP_3X to determine the next set of digits
+000012B8  4E75                     317              RTS
+000012BA                           318           
+000012BA  B43C 0004                319  JMP_4       CMP.B       #$4,D2      *Where NOP SHOULD LAND
+000012BE  6600 000A                320              BNE         JMP_5
+000012C2  4EB9 000013D2            321              JSR         JMP_4X      *If the first hex value is 4, jump to JMP_4X to determine the next set of digits
 000012C8  4E75                     322              RTS
 000012CA                           323              
-000012CA  B43C 0005                324  OC_5        CMP.B       #$5,D2
-000012CE  6600 000A                325              BNE         OC_6
-000012D2  4EB9 00001460            326              JSR         OPC_5
+000012CA  B43C 0005                324  JMP_5       CMP.B       #$5,D2
+000012CE  6600 000A                325              BNE         JMP_6
+Line 326 ERROR: Undefined symbol
+000012D2  4EB9 004DBB8E            326              JSR         OPC_5XXX    *If the first hex digit is 5, the instruction is determined to be ADDQ. Jump to OPC_5XXX in OPCODE table.
 000012D8  4E75                     327              RTS
 000012DA                           328              
-000012DA  B43C 0006                329  OC_6        CMP.B       #$6,D2
-000012DE  6600 000A                330              BNE         OC_7
-000012E2  4EB9 00001462            331              JSR         OPC_6
+000012DA  B43C 0006                329  JMP_6       CMP.B       #$6,D2
+000012DE  6600 000A                330              BNE         JMP_7
+000012E2  4EB9 000013D2            331              JSR         JMP_6X      *If the first hex value is 6, jump to JMP_6X to determine the next set of digits
 000012E8  4E75                     332              RTS
 000012EA                           333              
-000012EA  B43C 0007                334  OC_7        CMP.B       #$7,D2
-000012EE  6600 000A                335              BNE         OC_8
-000012F2  4EB9 00001464            336              JSR         OPC_7
+000012EA  B43C 0007                334  JMP_7       CMP.B       #$7,D2
+000012EE  6600 000A                335              BNE         JMP_8
+Line 336 ERROR: Undefined symbol
+000012F2  4EB9 004DBB8E            336              JSR         OPC_7XXX    *If the first hex digit is 7, the instruction is determined to be MOVEQ. Jump to OPC_7XXX in OPCODE table.
 000012F8  4E75                     337              RTS
 000012FA                           338              
-000012FA  B43C 0008                339  OC_8        CMP.B       #$8,D2
-000012FE  6600 000A                340              BNE         OC_9
-00001302  4EB9 00001466            341              JSR         OPC_8
+000012FA  B43C 0008                339  JMP_8       CMP.B       #$8,D2
+000012FE  6600 000A                340              BNE         JMP_9
+00001302  4EB9 000013D2            341              JSR         JMP_8X      *If the first hex value is 8, jump to JMP_8X to determine the next set of digits
 00001308  4E75                     342              RTS
 0000130A                           343              
-0000130A  B43C 0009                344  OC_9        CMP.B       #$9,D2
-0000130E  6600 000A                345              BNE         OC_A
-00001312  4EB9 00001468            346              JSR         OPC_9
+0000130A  B43C 0009                344  JMP_9       CMP.B       #$9,D2
+0000130E  6600 000A                345              BNE         JMP_A
+Line 346 ERROR: Undefined symbol
+00001312  4EB9 004DBB8E            346              JSR         OPC_9XXX    *If the first hex digit is 9, the instruction is determined to be SUB. Jump to OPC_9XXX in OPCODE table.
 00001318  4E75                     347              RTS
 0000131A                           348              
-0000131A  B43C 000A                349  OC_A        CMP.B       #$A,D2
-0000131E  6600 000A                350              BNE         OC_B
-00001322  4EB9 0000146A            351              JSR         OPC_A
+0000131A  B43C 000A                349  JMP_A       CMP.B       #$A,D2
+0000131E  6600 000A                350              BNE         JMP_B
+00001322  4EB9 000013D2            351              JSR         INVALID     *0xA is an invalid first hex digit. Jump to INVALID
 00001328  4E75                     352              RTS
 0000132A                           353              
-0000132A  B43C 000B                354  OC_B        CMP.B       #$B,D2
-0000132E  6600 000A                355              BNE         OC_C
-00001332  4EB9 0000146C            356              JSR         OPC_B
+0000132A  B43C 000B                354  JMP_B       CMP.B       #$B,D2
+0000132E  6600 000A                355              BNE         JMP_C
+00001332  4EB9 000013D2            356              JSR         INVALID     *0xB is an invalid first hex digit. Jump to INVALID
 00001338  4E75                     357              RTS
 0000133A                           358              
-0000133A  B43C 000C                359  OC_C        CMP.B       #$C,D2
-0000133E  6600 000A                360              BNE         OC_D
-00001342  4EB9 0000146E            361              JSR         OPC_C
+0000133A  B43C 000C                359  JMP_C       CMP.B       #$C,D2
+0000133E  6600 000A                360              BNE         JMP_D
+00001342  4EB9 000013D2            361              JSR         JMP_CX      *If the first hex value is C, jump to JMP_CX to determine the next set of digits
 00001348  4E75                     362              RTS
 0000134A                           363              
-0000134A  B43C 000D                364  OC_D        CMP.B       #$D,D2
-0000134E  6600 000A                365              BNE         OC_E
-00001352  4EB9 00001470            366              JSR         OPC_D
+0000134A  B43C 000D                364  JMP_D       CMP.B       #$D,D2
+0000134E  6600 000A                365              BNE         JMP_E   
+00001352  4EB9 000013D2            366              JSR         JMP_DX      *If the first hex value is D, jump to JMP_DX to determine the next set of digits
 00001358  4E75                     367              RTS
 0000135A                           368              
-0000135A  4EB9 00001472            369  OC_E        JSR         OPC_E     *If first hex value is not 0-D, it must be E. Branch to First_E
-00001360  4E75                     370              RTS
-00001362                           371   
-00001362                           372  
-00001362                           373             
-00001362  4E75                     374  OPC_0     RTS          
-00001364  4E75                     375  OPC_1     RTS
-00001366  4E75                     376  OPC_2     RTS
-00001368  4E75                     377  OPC_3     RTS
-0000136A                           378  
-0000136A  4282                     379  OPC_4       CLR.L       D2
-0000136C  3407                     380              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-0000136E  4281                     381              CLR.L       D1
-00001370  E94A                     382              LSL.W       #4,D2       *Clear the most sig hex digit
-00001372  123C 000C                383              MOVE.B      #12,D1      *Moves 12 into D1
-00001376  E26A                     384              LSR.W       D1,D2       *Shifts 12 right to isolate Digit we're working with at $0000000X
-00001378                           385                          
-00001378  B43C 0000                386  OC4_0       CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-0000137C  6600 000A                387              BNE         OC4_1       *If the first hex value is not 0, branch and see if its 1
-00001380  4EB9 00001474            388              JSR         OPC4_0      *If the first hex value is 0, jump to First_0
-00001386  4E75                     389              RTS                     *Finished all jumping; whole instruction should be identified at this point
-00001388                           390              
-00001388  B43C 0001                391  OC4_1       CMP.B       #$1,D2
-0000138C  6600 000A                392              BNE         OC4_2       *If the first hex value is not 2, branch and see if its 3, and so on
-00001390  4EB9 00001476            393              JSR         OPC4_1 
-00001396  4E75                     394              RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
-00001398                           395             
-00001398  B43C 0002                396  OC4_2       CMP.B       #$2,D2
-0000139C  6600 000A                397              BNE         OC4_3 
-000013A0  4EB9 00001478            398              JSR         OPC4_2
-000013A6  4E75                     399              RTS
-000013A8                           400              
-000013A8  B43C 0003                401  OC4_3       CMP.B       #$3,D2
-000013AC  6600 000A                402              BNE         OC4_4
-000013B0  4EB9 0000147A            403              JSR         OPC4_3 
-000013B6  4E75                     404              RTS
-000013B8                           405             
-000013B8  B43C 0004                406  OC4_4       CMP.B       #$4,D2 
-000013BC  6600 000A                407              BNE         OC4_5
-000013C0  4EB9 0000147C            408              JSR         OPC4_4
-000013C6  4E75                     409              RTS
-000013C8                           410              
-000013C8  B43C 0005                411  OC4_5       CMP.B       #$5,D2
-000013CC  6600 000A                412              BNE         OC4_6
-000013D0  4EB9 0000147E            413              JSR         OPC4_5
-000013D6  4E75                     414              RTS
-000013D8                           415              
-000013D8  B43C 0006                416  OC4_6       CMP.B       #$6,D2
-000013DC  6600 000A                417              BNE         OC4_7
-000013E0  4EB9 00001480            418              JSR         OPC4_6
-000013E6  4E75                     419              RTS
-000013E8                           420              
-000013E8  B43C 0007                421  OC4_7       CMP.B       #$7,D2
-000013EC  6600 000A                422              BNE         OC4_8
-000013F0  4EB9 00001482            423              JSR         OPC4_7
-000013F6  4E75                     424              RTS
-000013F8                           425              
-000013F8  B43C 0008                426  OC4_8       CMP.B       #$8,D2
-000013FC  6600 000A                427              BNE         OC4_9
-00001400  4EB9 00001484            428              JSR         OPC4_8
-00001406  4E75                     429              RTS
-00001408                           430              
-00001408  B43C 0009                431  OC4_9       CMP.B       #$9,D2
-0000140C  6600 000A                432              BNE         OC4_A
-00001410  4EB9 00001486            433              JSR         OPC4_9
-00001416  4E75                     434              RTS
-00001418                           435              
-00001418  B43C 000A                436  OC4_A       CMP.B       #$A,D2
-0000141C  6600 000A                437              BNE         OC4_B
-00001420  4EB9 00001488            438              JSR         OPC4_A
-00001426  4E75                     439              RTS
-00001428                           440              
-00001428  B43C 000B                441  OC4_B       CMP.B       #$B,D2
-0000142C  6600 000A                442              BNE         OC4_C
-00001430  4EB9 0000148A            443              JSR         OPC4_B
-00001436  4E75                     444              RTS
-00001438                           445              
-00001438  B43C 000C                446  OC4_C       CMP.B       #$C,D2
-0000143C  6600 000A                447              BNE         OC4_D
-00001440  4EB9 0000148C            448              JSR         OPC4_C
-00001446  4E75                     449              RTS
-00001448                           450              
-00001448  B43C 000D                451  OC4_D       CMP.B       #$D,D2
-0000144C  6600 000A                452              BNE         OC4_E
-00001450  4EB9 0000148E            453              JSR         OPC4_D
-00001456  4E75                     454              RTS
-00001458                           455              
-00001458  4EB9 00001490            456  OC4_E       JSR         OPC4_E     *If first hex value is not 0-D, it must be E. Branch to First_E
-0000145E  4E75                     457              RTS
-00001460                           458                                                
-00001460  4E75                     459  OPC_5       RTS
-00001462  4E75                     460  OPC_6       RTS
-00001464  4E75                     461  OPC_7       RTS
-00001466  4E75                     462  OPC_8       RTS
-00001468  4E75                     463  OPC_9       RTS
-0000146A  4E75                     464  OPC_A       RTS
-0000146C  4E75                     465  OPC_B       RTS
-0000146E  4E75                     466  OPC_C       RTS
-00001470  4E75                     467  OPC_D       RTS
-00001472  4E75                     468  OPC_E       RTS
-00001474                           469  
-00001474                           470  
-00001474  4E75                     471  OPC4_0      RTS
-00001476  4E75                     472  OPC4_1      RTS
-00001478  4E75                     473  OPC4_2      RTS
-0000147A  4E75                     474  OPC4_3      RTS
-0000147C  4E75                     475  OPC4_4      RTS
-0000147E  4E75                     476  OPC4_5      RTS
-00001480  4E75                     477  OPC4_6      RTS
-00001482  4E75                     478  OPC4_7      RTS
-00001484  4E75                     479  OPC4_8      RTS
-00001486  4E75                     480  OPC4_9      RTS
-00001488  4E75                     481  OPC4_A      RTS
-0000148A  4E75                     482  OPC4_B      RTS
-0000148C  4E75                     483  OPC4_C      RTS
-0000148E  4E75                     484  OPC4_D      RTS
-00001490                           485  
-00001490  4282                     486  OPC4_E      CLR.L       D2
-00001492  3407                     487              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00001494  4281                     488              CLR.L       D1      
-00001496  E18A                     489              LSL.L       #8,D2       *Clear the two most significant hex digits
-00001498  123C 000C                490              MOVE.B      #12,D1      *Moves 12 into D1 for shifting
-0000149C  E26A                     491              LSR.W       D1,D2       *Shifts 12 to the right, THIRD hex digit lands $0000000X
-0000149E                           492                          
-0000149E  B43C 0000                493  OC4E_0      CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-000014A2  6600 000A                494              BNE         OC4E_1      *If the first hex value is not 0, branch and see if its 1
-000014A6  4EB9 00001584            495              JSR         OPC4E_0     *If the first hex value is 0, jump to First_0
-000014AC  4E75                     496              RTS                     *Finished all jumping; whole instruction should be identified at this point
-000014AE                           497              
-000014AE  B43C 0001                498  OC4E_1      CMP.B       #$1,D2
-000014B2  6600 000A                499              BNE         OC4E_2      *If the first hex value is not 2, branch and see if its 3, and so on
-000014B6  4EB9 00001586            500              JSR         OPC4E_1 
-000014BC  4E75                     501              RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
-000014BE                           502             
-000014BE  B43C 0002                503  OC4E_2      CMP.B       #$2,D2
-000014C2  6600 000A                504              BNE         OC4E_3 
-000014C6  4EB9 00001588            505              JSR         OPC4E_2
-000014CC  4E75                     506              RTS
-000014CE                           507              
-000014CE  B43C 0003                508  OC4E_3      CMP.B       #$3,D2
-000014D2  6600 000A                509              BNE         OC4E_4
-000014D6  4EB9 0000158A            510              JSR         OPC4E_3 
-000014DC  4E75                     511              RTS
-000014DE                           512             
-000014DE  B43C 0004                513  OC4E_4      CMP.B       #$4,D2      
-000014E2  6600 000A                514              BNE         OC4E_5
-000014E6  4EB9 0000158C            515              JSR         OPC4E_4
-000014EC  4E75                     516              RTS
-000014EE                           517              
-000014EE  B43C 0005                518  OC4E_5      CMP.B       #$5,D2
-000014F2  6600 000A                519              BNE         OC4E_6
-000014F6  4EB9 0000158E            520              JSR         OPC4E_5
-000014FC  4E75                     521              RTS
-000014FE                           522              
-000014FE  B43C 0006                523  OC4E_6      CMP.B       #$6,D2
-00001502  6600 000A                524              BNE         OC4E_7
-00001506  4EB9 00001590            525              JSR         OPC4E_6
-0000150C  4E75                     526              RTS
-0000150E  B43C 0007                527  OC4E_7      CMP.B       #$7,D2      *NOP LANDS HERE
-00001512  6600 000A                528              BNE         OC4E_8
-00001516  4EB9 00001592            529              JSR         OPC4E_7
-0000151C  4E75                     530              RTS
-0000151E                           531              
-0000151E  B43C 0008                532  OC4E_8      CMP.B       #$8,D2
-00001522  6600 000A                533              BNE         OC4E_9
-00001526  4EB9 00001688            534              JSR         OPC4E_8
-0000152C  4E75                     535              RTS
-0000152E                           536              
-0000152E  B43C 0009                537  OC4E_9      CMP.B       #$9,D2
-00001532  6600 000A                538              BNE         OC4E_A
-00001536  4EB9 0000168A            539              JSR         OPC4E_9
-0000153C  4E75                     540              RTS
-0000153E                           541              
-0000153E  B43C 000A                542  OC4E_A      CMP.B       #$A,D2
-00001542  6600 000A                543              BNE         OC4E_B
-00001546  4EB9 0000168C            544              JSR         OPC4E_A
-0000154C  4E75                     545              RTS
-0000154E                           546              
-0000154E  B43C 000B                547  OC4E_B      CMP.B       #$B,D2
-00001552  6600 000A                548              BNE         OC4E_C
-00001556  4EB9 0000168E            549              JSR         OPC4E_B
-0000155C  4E75                     550              RTS
-0000155E                           551              
-0000155E  B43C 000C                552  OC4E_C      CMP.B       #$C,D2
-00001562  6600 000A                553              BNE         OC4E_D
-00001566  4EB9 00001690            554              JSR         OPC4E_C
-0000156C  4E75                     555              RTS
-0000156E                           556              
-0000156E  B43C 000D                557  OC4E_D      CMP.B       #$D,D2
-00001572  6600 000A                558              BNE         OC4E_E
-00001576  4EB9 00001692            559              JSR         OPC4E_D
-0000157C  4E75                     560              RTS
-0000157E                           561              
-0000157E  4EB8 1490                562  OC4E_E      JSR         OPC4_E     *If first hex value is not 0-D, it must be E. Branch to First_E
-00001582  4E75                     563              RTS
-00001584                           564  
-00001584  4E75                     565  OPC4E_0     RTS
-00001586  4E75                     566  OPC4E_1     RTS
-00001588  4E75                     567  OPC4E_2     RTS
-0000158A  4E75                     568  OPC4E_3     RTS
-0000158C  4E75                     569  OPC4E_4     RTS
-0000158E  4E75                     570  OPC4E_5     RTS
-00001590  4E75                     571  OPC4E_6     RTS
-00001592  4282                     572  OPC4E_7     CLR.L       D2
-00001594  3407                     573              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00001596  4281                     574              CLR.L       D1
-00001598  123C 000C                575              MOVE.B      #12,D1      *Move 12 into D1 for shifting
-0000159C  E36A                     576              LSL.W       D1,D2       *Clear the three most significant hex digits
-0000159E  E26A                     577              LSR.W       D1,D2       *Shift right 12 spaces to make working digit $0000000X
-000015A0                           578                          
-000015A0  B43C 0000                579  OC4E7_0     CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
-000015A4  6600 000A                580              BNE         OC4E7_1     *If the first hex value is not 0, branch and see if its 1
-000015A8  4EB9 00001696            581              JSR         OPC4E7_0    *If the first hex value is 0, jump to First_0
-000015AE  4E75                     582              RTS                     *Finished all jumping; whole instruction should be identified at this point
-000015B0  B43C 0001                583  OC4E7_1     CMP.B       #$1,D2      *NOP LANDS HERE
-000015B4  6600 000A                584              BNE         OC4E7_2     *If the first hex value is not 2, branch and see if its 3, and so on
-000015B8  4EB9 00001698            585              JSR         OPC4E7_1 
-000015BE  4E75                     586              RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
-000015C0                           587             
-000015C0  B43C 0002                588  OC4E7_2     CMP.B       #$2,D2
-000015C4  6600 000A                589              BNE         OC4E7_3 
-000015C8  4EB9 000016AA            590              JSR         OPC4E7_2
-000015CE  4E75                     591              RTS
-000015D0                           592              
-000015D0  B43C 0003                593  OC4E7_3     CMP.B       #$3,D2
-000015D4  6600 000A                594              BNE         OC4E7_4
-000015D8  4EB9 000016AC            595              JSR         OPC4E7_3 
-000015DE  4E75                     596              RTS
-000015E0                           597             
-000015E0  B43C 0004                598  OC4E7_4     CMP.B       #$4,D2      
-000015E4  6600 000A                599              BNE         OC4E7_5
-000015E8  4EB9 000016AE            600              JSR         OPC4E7_4
-000015EE  4E75                     601              RTS
-000015F0                           602              
-000015F0  B43C 0005                603  OC4E7_5     CMP.B       #$5,D2
-000015F4  6600 000A                604              BNE         OC4E7_6
-000015F8  4EB9 000016B0            605              JSR         OPC4E7_5
-000015FE  4E75                     606              RTS
-00001600                           607              
-00001600  B43C 0006                608  OC4E7_6     CMP.B       #$6,D2
-00001604  6600 000A                609              BNE         OC4E7_7
-00001608  4EB9 000016B2            610              JSR         OPC4E7_6
-0000160E  4E75                     611              RTS
-00001610                           612              
-00001610  B43C 0007                613  OC4E7_7     CMP.B       #$7,D2
-00001614  6600 000A                614              BNE         OC4E7_8
-00001618  4EB9 000016B4            615              JSR         OPC4E7_7
-0000161E  4E75                     616              RTS
-00001620                           617              
-00001620  B43C 0008                618  OC4E7_8     CMP.B       #$8,D2
-00001624  6600 000A                619              BNE         OC4E7_9
-00001628  4EB9 000016B6            620              JSR         OPC4E7_8
-0000162E  4E75                     621              RTS
-00001630                           622              
-00001630  B43C 0009                623  OC4E7_9     CMP.B       #$9,D2
-00001634  6600 000A                624              BNE         OC4E7_A
-00001638  4EB9 000016B8            625              JSR         OPC4E7_9
-0000163E  4E75                     626              RTS
-00001640                           627              
-00001640  B43C 000A                628  OC4E7_A     CMP.B       #$A,D2
-00001644  6600 000A                629              BNE         OC4E7_B
-00001648  4EB9 000016BA            630              JSR         OPC4E7_A
-0000164E  4E75                     631              RTS
-00001650                           632              
-00001650  B43C 000B                633  OC4E7_B     CMP.B       #$B,D2
-00001654  6600 000A                634              BNE         OC4E7_C
-00001658  4EB9 000016BC            635              JSR         OPC4E7_B
-0000165E  4E75                     636              RTS
-00001660                           637              
-00001660  B43C 000C                638  OC4E7_C     CMP.B       #$C,D2
-00001664  6600 000A                639              BNE         OC4E7_D
-00001668  4EB9 000016BE            640              JSR         OPC4E7_C
-0000166E  4E75                     641              RTS
-00001670                           642              
-00001670  B43C 000D                643  OC4E7_D     CMP.B       #$D,D2
-00001674  6600 000A                644              BNE         OC4E7_E
-00001678  4EB9 000016C0            645              JSR         OPC4E7_D
-0000167E  4E75                     646              RTS
-00001680                           647              
-00001680  4EB9 000016C2            648  OC4E7_E     JSR         OPC4E7_E     *If first hex value is not 0-D, it must be E. Branch to First_E
-00001686  4E75                     649              RTS
-00001688                           650  
-00001688                           651  
-00001688  4E75                     652  OPC4E_8     RTS
-0000168A  4E75                     653  OPC4E_9     RTS
-0000168C  4E75                     654  OPC4E_A     RTS
-0000168E  4E75                     655  OPC4E_B     RTS
-00001690  4E75                     656  OPC4E_C     RTS
-00001692  4E75                     657  OPC4E_D     RTS
-00001694  4E75                     658  OPC4E_E     RTS
-00001696                           659  
-00001696                           660  
-00001696  4E75                     661  OPC4E7_0     RTS
-00001698                           662  
-00001698  1C3C 00AA                663  OPC4E7_1    MOVE.B      #$AA,D6     *Set good data flag. IF THIS WAS A PARAMERTARIZED INSTRUCTION, NEEDS TO HAPPEN AFTER <EA>/Dn/An...
-0000169C                           664  
-0000169C  18FC 004E                665              MOVE.B      #'N',(A4)+
-000016A0  18FC 004F                666              MOVE.B      #'O',(A4)+
-000016A4  18FC 0050                667              MOVE.B      #'P',(A4)+
-000016A8                           668              
-000016A8                           669              *IF this was a  paramertarize instruction, we'd jump to <EA> decode here
-000016A8  4E75                     670              RTS
-000016AA                           671  
-000016AA  4E75                     672  OPC4E7_2     RTS
-000016AC  4E75                     673  OPC4E7_3     RTS
-000016AE  4E75                     674  OPC4E7_4     RTS
-000016B0  4E75                     675  OPC4E7_5     RTS
-000016B2  4E75                     676  OPC4E7_6     RTS
-000016B4  4E75                     677  OPC4E7_7     RTS
-000016B6  4E75                     678  OPC4E7_8     RTS
-000016B8  4E75                     679  OPC4E7_9     RTS
-000016BA  4E75                     680  OPC4E7_A     RTS
-000016BC  4E75                     681  OPC4E7_B     RTS
-000016BE  4E75                     682  OPC4E7_C     RTS
-000016C0  4E75                     683  OPC4E7_D     RTS
-000016C2  4E75                     684  OPC4E7_E     RTS
-000016C4                           685  
-000016C4                           686  -------------------- end include --------------------
-000016C4                           687  
-000016C4  =0000000D                688  CR          EQU         $0D
-000016C4  =0000000A                689  LF          EQU         $0A
-000016C4                           690  
-000016C4= 2D 2D 2D 2D 2D 2D ...    691  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
-000016EE= 48 65 6E 72 79 20 ...    692              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
-00001717= 43 53 53 20 34 32 ...    693              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
-00001740= 2D 2D 2D 2D 2D 2D ...    694              DC.B        '----------------------------------------',CR,LF,0
-0000176B                           695              
-0000176B= 45 6E 74 65 72 20 ...    696  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
-0000178E= 45 6E 74 65 72 20 ...    697  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
-000017AF= 50 72 65 73 73 20 ...    698  NXT_PG      DC.B        'Press enter key to contiune reading',CR,LF,0
-000017D5                           699  
-000017D5                           700  STA_ADDR    DS.B        40
-000017FD                           701  END_ADDR    DS.B        40
-00001825                           702  
-00001826= 00000001                 703  GOOD_STR    DC.L        1
-0000182A                           704  
-0000182A= 00000050                 705  SPACER1     DC.L        80
-0000182E= 00000050                 706  SPACER2     DC.L        80
-00001832= 00000050                 707  SPACER3     DC.L        80
-00001836= 00000050                 708  SPACER4     DC.L        80
-0000183A= 00000050                 709  SPACER5     DC.L        80
-0000183E= 00000050                 710  SPACER6     DC.L        80
-00001842= 00000050                 711  SPACER7     DC.L        80
-00001846= 00000050                 712  SPACER8     DC.L        80
-0000184A= 00000050                 713  SPACER9     DC.L        80
-0000184E= 00000050                 714  SPACERA     DC.L        80
-00001852= 00000050                 715  SPACERB     DC.L        80
-00001856= 00000050                 716  SPACERC     DC.L        80
-0000185A= 00000050                 717  SPACERD     DC.L        80
-0000185E= 00000050                 718  SPACERE     DC.L        80
-00001862= 00000050                 719  SPACERF     DC.L        80
-00001866                           720  
-00001866= 00000001                 721  BAD_STR     DC.L        1
-0000186A                           722  
-0000186A= 00000050                 723  SPACER11    DC.L        80
-0000186E= 00000050                 724  SPACER22    DC.L        80
-00001872= 00000050                 725  SPACER33    DC.L        80
-00001876= 00000050                 726  SPACER44    DC.L        80
-0000187A= 00000050                 727  SPACER55    DC.L        80
-0000187E= 00000050                 728  SPACER66    DC.L        80
-00001882= 00000050                 729  SPACER77    DC.L        80
-00001886= 00000050                 730  SPACER88    DC.L        80
-0000188A= 00000050                 731  SPACER99    DC.L        80
-0000188E= 00000050                 732  SPACERAA    DC.L        80
-00001892= 00000050                 733  SPACERBB    DC.L        80
-00001896= 00000050                 734  SPACERCC    DC.L        80
-0000189A= 00000050                 735  SPACERDD    DC.L        80
-0000189E= 00000050                 736  SPACEREE    DC.L        80
-000018A2= 00000050                 737  SPACERFF    DC.L        80
-000018A6                           738  
-000018A6                           739              END         START       *LAST LINE
+0000135A  B43C 000F                369  JMP_E       CMP.B       #$F,D2      *If first hex value is not 0-D, it must be E(valid) or F(invalid)
+0000135E  6700 0072                370              BEQ         INVALID     *If first hex value is F, jump to INVALID
+00001362  4EB9 000013D2            371              JSR         JMP_EX      *If the first hex value is E, jump to JMP_EX to determine the next set of digits
+00001368  4E75                     372              RTS
+0000136A                           373   
+0000136A                           374  
+0000136A  4282                     375  J_CLR4      CLR.L       D2                                
+0000136C  3407                     376              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+0000136E  4281                     377              CLR.L       D1
+00001370  E94A                     378              LSL.W       #4,D2       *Clear the most sig hex digit
+00001372  123C 000C                379              MOVE.B      #12,D1      *Moves 12 into D1
+00001376  E26A                     380              LSR.W       D1,D2       *Shifts 12 right to isolate the bits we're working with
+00001378  4E75                     381              RTS                     *Return back to JMP_Xn    
+0000137A                           382              
+0000137A  4282                     383  J_CLR3      CLR.L       D2          
+0000137C  3407                     384              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+0000137E  4281                     385              CLR.L       D1
+00001380  E94A                     386              LSL.W       #4,D2       *Clear the most sig hex digit
+00001382  123C 000D                387              MOVE.B      #13,D1      *Moves 13 into D1
+00001386  E26A                     388              LSR.W       D1,D2       *Shifts 13 right to isolate the bits we're working with 
+00001388  4E75                     389              RTS                     *Return back to JMP_Xn  
+0000138A                           390  
+0000138A  4282                     391  J_CLR_DM    CLR.L       D2          
+0000138C  3407                     392              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+0000138E  4281                     393              CLR.L       D1
+00001390  EF4A                     394              LSL.W       #7,D2       *Clear the most sig 7 bits
+00001392  123C 0011                395              MOVE.B      #17,D1      *Moves 17 into D1
+00001396  E26A                     396              LSR.W       D1,D2       *Shifts 17 right to isolate the bits we're working with 
+00001398  4E75                     397              RTS                     *Return back to JMP_Xn     
+0000139A                           398           
+0000139A  4EB8 136A                399  JMP_0X      JSR         J_CLR4      *Prepare data registers for data manipulation on the second input hex digit
+0000139E  B43C 0004                400              CMP.B       #$4,D2      *Is the next hex digit 4?
+000013A2  6700 0012                401              BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
+000013A6  B43C 0005                402              CMP.B       #$5,D2      *Is the next hex digit 5?
+Line 403 ERROR: Undefined symbol
+000013AA  6700 A7E2                403              BEQ         J_OADDI     *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
+000013AE  4EB9 000013D2            404              JSR         INVALID     *If neither, OPCODE is invalid
+000013B4  4E75                     405              RTS
+000013B6                           406  
+Line 407 ERROR: Undefined symbol
+000013B6  4EB9 004DBB8E            407  J_SUBI      JSR         OPC_04XX    *Jump to OPC_04XX in OPCODE table
+000013BC  4E75                     408              RTS
+000013BE                           409              
+Line 410 ERROR: Undefined symbol
+000013BE  4EB9 004DBB8E            410  J_ADDI      JSR         OPC_05XX    *Jump to OPC_05XX in OPCODE table
+000013C4  4E75                     411              RTS              
+000013C6                           412  
+000013C6  4EB8 138A                413  JMP_2X      JSR         J_CLR_DM    *Prepare data registers for data manipulation on the DEST MODE digits
+000013CA  B43C 0001                414              CMP.B       #$1,D2      *is the DEST MODE 1?
+000013CE  6700 0002                415              BEQ         J_MOVEAL    *Instruction is determiend to be MOVEA.L                                     ================= < stopped at this point
+000013D2                           416               
+000013D2                           417  
+000013D2                           418  J_MOVEL
+000013D2                           419  
+000013D2                           420  J_MOVEAL
+000013D2                           421  
+000013D2                           422  JMP_3X
+000013D2                           423  
+000013D2                           424  JMP_4X
+000013D2                           425  
+000013D2                           426  JMP_6X
+000013D2                           427  
+000013D2                           428  JMP_8X
+000013D2                           429  
+000013D2                           430  JMP_CX
+000013D2                           431  
+000013D2                           432  JMP_DX
+000013D2                           433  
+000013D2                           434  JMP_EX
+000013D2                           435  
+000013D2                           436  
+000013D2  1C38 00FF                437  INVALID     MOVE.B      $FF,D6      *Invalid input flag
+000013D6  4E75                     438              RTS
+000013D8                           439  
+000013D8  4E75                     440  OPC4E7_0     RTS
+000013DA                           441  
+000013DA  1C3C 00AA                442  OPC4E7_1    MOVE.B      #$AA,D6     *Set good data flag. IF THIS WAS A PARAMERTARIZED INSTRUCTION, NEEDS TO HAPPEN AFTER <EA>/Dn/An...
+000013DE                           443  
+000013DE  18FC 004E                444              MOVE.B      #'N',(A4)+
+000013E2  18FC 004F                445              MOVE.B      #'O',(A4)+
+000013E6  18FC 0050                446              MOVE.B      #'P',(A4)+
+000013EA                           447              
+000013EA                           448              *IF this was a  paramertarize instruction, we'd jump to <EA> decode here
+000013EA  4E75                     449              RTS
+000013EC                           450  
+000013EC  4E75                     451  OPC4E7_2     RTS
+000013EE  4E75                     452  OPC4E7_3     RTS
+000013F0  4E75                     453  OPC4E7_4     RTS
+000013F2  4E75                     454  OPC4E7_5     RTS
+000013F4  4E75                     455  OPC4E7_6     RTS
+000013F6  4E75                     456  OPC4E7_7     RTS
+000013F8  4E75                     457  OPC4E7_8     RTS
+000013FA  4E75                     458  OPC4E7_9     RTS
+000013FC  4E75                     459  OPC4E7_A     RTS
+000013FE  4E75                     460  OPC4E7_B     RTS
+00001400  4E75                     461  OPC4E7_C     RTS
+00001402  4E75                     462  OPC4E7_D     RTS
+00001404  4E75                     463  OPC4E7_E     RTS
+00001406                           464  
+00001406                           465  
+00001406                           466  -------------------- end include --------------------
+00001406                           467  
+00001406  =0000000D                468  CR          EQU         $0D
+00001406  =0000000A                469  LF          EQU         $0A
+00001406                           470  
+00001406= 2D 2D 2D 2D 2D 2D ...    471  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
+00001430= 48 65 6E 72 79 20 ...    472              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
+00001459= 43 53 53 20 34 32 ...    473              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
+00001482= 2D 2D 2D 2D 2D 2D ...    474              DC.B        '----------------------------------------',CR,LF,0
+000014AD                           475              
+000014AD= 45 6E 74 65 72 20 ...    476  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
+000014D0= 45 6E 74 65 72 20 ...    477  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
+000014F1= 50 72 65 73 73 20 ...    478  NXT_PG      DC.B        'Press enter key to contiune reading',CR,LF,0
+00001517                           479  
+00001517                           480  STA_ADDR    DS.B        40
+0000153F                           481  END_ADDR    DS.B        40
+00001567                           482  
+00001568= 00000001                 483  GOOD_STR    DC.L        1
+0000156C                           484  
+0000156C= 00000050                 485  SPACER1     DC.L        80
+00001570= 00000050                 486  SPACER2     DC.L        80
+00001574= 00000050                 487  SPACER3     DC.L        80
+00001578= 00000050                 488  SPACER4     DC.L        80
+0000157C= 00000050                 489  SPACER5     DC.L        80
+00001580= 00000050                 490  SPACER6     DC.L        80
+00001584= 00000050                 491  SPACER7     DC.L        80
+00001588= 00000050                 492  SPACER8     DC.L        80
+0000158C= 00000050                 493  SPACER9     DC.L        80
+00001590= 00000050                 494  SPACERA     DC.L        80
+00001594= 00000050                 495  SPACERB     DC.L        80
+00001598= 00000050                 496  SPACERC     DC.L        80
+0000159C= 00000050                 497  SPACERD     DC.L        80
+000015A0= 00000050                 498  SPACERE     DC.L        80
+000015A4= 00000050                 499  SPACERF     DC.L        80
+000015A8                           500  
+000015A8= 00000001                 501  BAD_STR     DC.L        1
+000015AC                           502  
+000015AC= 00000050                 503  SPACER11    DC.L        80
+000015B0= 00000050                 504  SPACER22    DC.L        80
+000015B4= 00000050                 505  SPACER33    DC.L        80
+000015B8= 00000050                 506  SPACER44    DC.L        80
+000015BC= 00000050                 507  SPACER55    DC.L        80
+000015C0= 00000050                 508  SPACER66    DC.L        80
+000015C4= 00000050                 509  SPACER77    DC.L        80
+000015C8= 00000050                 510  SPACER88    DC.L        80
+000015CC= 00000050                 511  SPACER99    DC.L        80
+000015D0= 00000050                 512  SPACERAA    DC.L        80
+000015D4= 00000050                 513  SPACERBB    DC.L        80
+000015D8= 00000050                 514  SPACERCC    DC.L        80
+000015DC= 00000050                 515  SPACERDD    DC.L        80
+000015E0= 00000050                 516  SPACEREE    DC.L        80
+000015E4= 00000050                 517  SPACERFF    DC.L        80
+000015E8                           518  
+000015E8                           519              END         START       *LAST LINE
 
-No errors detected
+7 errors detected
 No warnings generated
 
 
@@ -757,192 +540,119 @@ ADD_CHAR_B          11E2
 ADD_CHAR_G          122A
 AH_DONE             1092
 ASCII_HEX           107A
-BAD_STR             1866
+BAD_STR             15A8
 CONTINUE            10F0
 CR                  D
 DECODE_LOOP         10B6
 DONE                1268
-END_ADDR            17FD
-END_MSG             178E
+END_ADDR            153F
+END_MSG             14D0
 END_OPT             1262
 FORMAT              10A8
 GET_INPUT           1020
-GOOD_STR            1826
+GOOD_STR            1568
 HEX_ASCII_B         11A8
 HEX_ASCII_G         11EE
 INIT_BAD            1170
 INIT_GOOD           1138
 INIT_STRS           112A
 INTRO               1012
+INVALID             13D2
 ISO_DIG_B           11BA
 ISO_DIG_G           1202
+JMP_0               127A
+JMP_0X              139A
+JMP_1               128A
+JMP_2               129A
+JMP_2X              13C6
+JMP_3               12AA
+JMP_3X              13D2
+JMP_4               12BA
+JMP_4X              13D2
+JMP_5               12CA
+JMP_6               12DA
+JMP_6X              13D2
+JMP_7               12EA
+JMP_8               12FA
+JMP_8X              13D2
+JMP_9               130A
+JMP_A               131A
+JMP_B               132A
+JMP_C               133A
+JMP_CX              13D2
+JMP_D               134A
+JMP_DX              13D2
+JMP_E               135A
+JMP_EX              13D2
 JMP_TBL             126E
+J_ADDI              13BE
+J_CLR3              137A
+J_CLR4              136A
+J_CLR_DM            138A
+J_MOVEAL            13D2
+J_MOVEL             13D2
+J_SUBI              13B6
 LET                 109E
 LET_B               11DA
 LET_G               1222
 LF                  A
 NEXT_PAGE           1104
-NL_INTRO            16C4
+NL_INTRO            1406
 NUM                 1094
 NUM_B               11D2
 NUM_G               121A
-NXT_PG              17AF
-OC4E7_0             15A0
-OC4E7_1             15B0
-OC4E7_2             15C0
-OC4E7_3             15D0
-OC4E7_4             15E0
-OC4E7_5             15F0
-OC4E7_6             1600
-OC4E7_7             1610
-OC4E7_8             1620
-OC4E7_9             1630
-OC4E7_A             1640
-OC4E7_B             1650
-OC4E7_C             1660
-OC4E7_D             1670
-OC4E7_E             1680
-OC4E_0              149E
-OC4E_1              14AE
-OC4E_2              14BE
-OC4E_3              14CE
-OC4E_4              14DE
-OC4E_5              14EE
-OC4E_6              14FE
-OC4E_7              150E
-OC4E_8              151E
-OC4E_9              152E
-OC4E_A              153E
-OC4E_B              154E
-OC4E_C              155E
-OC4E_D              156E
-OC4E_E              157E
-OC4_0               1378
-OC4_1               1388
-OC4_2               1398
-OC4_3               13A8
-OC4_4               13B8
-OC4_5               13C8
-OC4_6               13D8
-OC4_7               13E8
-OC4_8               13F8
-OC4_9               1408
-OC4_A               1418
-OC4_B               1428
-OC4_C               1438
-OC4_D               1448
-OC4_E               1458
-OC_0                127A
-OC_1                128A
-OC_2                129A
-OC_3                12AA
-OC_4                12BA
-OC_5                12CA
-OC_6                12DA
-OC_7                12EA
-OC_8                12FA
-OC_9                130A
-OC_A                131A
-OC_B                132A
-OC_C                133A
-OC_D                134A
-OC_E                135A
-OPC4E7_0            1696
-OPC4E7_1            1698
-OPC4E7_2            16AA
-OPC4E7_3            16AC
-OPC4E7_4            16AE
-OPC4E7_5            16B0
-OPC4E7_6            16B2
-OPC4E7_7            16B4
-OPC4E7_8            16B6
-OPC4E7_9            16B8
-OPC4E7_A            16BA
-OPC4E7_B            16BC
-OPC4E7_C            16BE
-OPC4E7_D            16C0
-OPC4E7_E            16C2
-OPC4E_0             1584
-OPC4E_1             1586
-OPC4E_2             1588
-OPC4E_3             158A
-OPC4E_4             158C
-OPC4E_5             158E
-OPC4E_6             1590
-OPC4E_7             1592
-OPC4E_8             1688
-OPC4E_9             168A
-OPC4E_A             168C
-OPC4E_B             168E
-OPC4E_C             1690
-OPC4E_D             1692
-OPC4E_E             1694
-OPC4_0              1474
-OPC4_1              1476
-OPC4_2              1478
-OPC4_3              147A
-OPC4_4              147C
-OPC4_5              147E
-OPC4_6              1480
-OPC4_7              1482
-OPC4_8              1484
-OPC4_9              1486
-OPC4_A              1488
-OPC4_B              148A
-OPC4_C              148C
-OPC4_D              148E
-OPC4_E              1490
-OPC_0               1362
-OPC_1               1364
-OPC_2               1366
-OPC_3               1368
-OPC_4               136A
-OPC_5               1460
-OPC_6               1462
-OPC_7               1464
-OPC_8               1466
-OPC_9               1468
-OPC_A               146A
-OPC_B               146C
-OPC_C               146E
-OPC_D               1470
-OPC_E               1472
+NXT_PG              14F1
+OPC4E7_0            13D8
+OPC4E7_1            13DA
+OPC4E7_2            13EC
+OPC4E7_3            13EE
+OPC4E7_4            13F0
+OPC4E7_5            13F2
+OPC4E7_6            13F4
+OPC4E7_7            13F6
+OPC4E7_8            13F8
+OPC4E7_9            13FA
+OPC4E7_A            13FC
+OPC4E7_B            13FE
+OPC4E7_C            1400
+OPC4E7_D            1402
+OPC4E7_E            1404
 PRINT_B             124C
 PRINT_BAD           10E6
 PRINT_G             1236
 PRINT_GOOD          10DC
 PROC_END            106E
 PROC_STA            1062
-SPACER1             182A
-SPACER11            186A
-SPACER2             182E
-SPACER22            186E
-SPACER3             1832
-SPACER33            1872
-SPACER4             1836
-SPACER44            1876
-SPACER5             183A
-SPACER55            187A
-SPACER6             183E
-SPACER66            187E
-SPACER7             1842
-SPACER77            1882
-SPACER8             1846
-SPACER88            1886
-SPACER9             184A
-SPACER99            188A
-SPACERA             184E
-SPACERAA            188E
-SPACERB             1852
-SPACERBB            1892
-SPACERC             1856
-SPACERCC            1896
-SPACERD             185A
-SPACERDD            189A
-SPACERE             185E
-SPACEREE            189E
-SPACERF             1862
-SPACERFF            18A2
+SPACER1             156C
+SPACER11            15AC
+SPACER2             1570
+SPACER22            15B0
+SPACER3             1574
+SPACER33            15B4
+SPACER4             1578
+SPACER44            15B8
+SPACER5             157C
+SPACER55            15BC
+SPACER6             1580
+SPACER66            15C0
+SPACER7             1584
+SPACER77            15C4
+SPACER8             1588
+SPACER88            15C8
+SPACER9             158C
+SPACER99            15CC
+SPACERA             1590
+SPACERAA            15D0
+SPACERB             1594
+SPACERBB            15D4
+SPACERC             1598
+SPACERCC            15D8
+SPACERD             159C
+SPACERDD            15DC
+SPACERE             15A0
+SPACEREE            15E0
+SPACERF             15A4
+SPACERFF            15E4
 START               1000
-STA_ADDR            17D5
-STA_MSG             176B
+STA_ADDR            1517
+STA_MSG             14AD
