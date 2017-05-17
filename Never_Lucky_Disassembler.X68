@@ -104,9 +104,9 @@ DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7
             
             JSR         JMP_TBL    *Start opcode identification waterfall
             
-            CMPI.B      #$AA,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
-            BEQ         PRINT_GOOD  *Print good string if good opcode
-            BRA         PRINT_BAD   *Print bad string if bad opcode
+            CMPI.B      #$FF,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
+            BEQ         PRINT_BAD   *Print good string if good opcode
+            BRA         PRINT_GOOD  *Print bad string if bad opcode
 PRINT_GOOD  JSR         PRINT_G     *Jump to Print good string
             BRA         CONTINUE    *Continue the loop
 PRINT_BAD   JSR         PRINT_B     *Jump to Pring bad string
@@ -117,10 +117,34 @@ CONTINUE    CMP.W       A5,A6       *Check if we're done
             
             CLR.L       D6          *Clear the bad/good flag register
             
+            ADDQ.B      #1,D5       *Increment line counter
+            CMP.B       #24,D5      *See if page is full
+            BEQ         NEXT_PAGE   *Jump to next page prompt
+            
             *Maybe a BGT check here also? would that ever be possible?
             *Need to implement line/page display (one page at a time via enter)
             
             BRA         DECODE_LOOP * Continue loop
+
+*-------------------NEXT_PAGE-----------------------------
+NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
+            CLR.L       D0          *Make sure D0 is empty
+            MOVE.B      #14,D0      *Trap task 14, display start address msg
+            TRAP        #15            
+            
+            MOVE.B      #12,D0      *Keyboard echo trap task
+            CLR.L       D1          *Start keyboard echo trap
+            TRAP        #15         
+            
+            MOVE.B      #5,D0       *Single char trap task
+            TRAP        #15         
+            
+            CMP.B       #$D,D1      *Check if ENTER key was pressed
+            BNE         NEXT_PAGE   *Force user to hit enter, or prompt again
+            
+            CLR.L       D5          *Reset page counter
+            
+            BRA         DECODE_LOOP *Continue the loop         
             
 *-------------------INIT_STRS-----------------------------
 INIT_STRS   JSR         INIT_GOOD   *Initialize the good string
@@ -276,6 +300,7 @@ NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
             
 STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
 END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
+NXT_PG      DC.B        'Press enter key to contiune reading',CR,LF,0
 
 STA_ADDR    DS.B        40
 END_ADDR    DS.B        40
