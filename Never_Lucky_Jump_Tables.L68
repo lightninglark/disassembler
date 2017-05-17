@@ -1,6 +1,6 @@
-00000000 Starting Address
+00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/16/2017 6:00:06 PM
+Created On: 5/16/2017 6:35:13 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -31,8 +31,7 @@ Created On: 5/16/2017 6:00:06 PM
 0000001C                            27              
 0000001C  B43C 0001                 28  JMP_1       CMP.B       #$1,D2
 00000020  6600 000A                 29              BNE         JMP_2       *If the first hex value is not 2, branch and see if its 3, and so on
-Line 30 ERROR: Undefined symbol
-00000024  4EB9 004DBB8E             30              JSR         OPC_1XXX    *If the first hex value is 1, the instruction is determined to be MOVE.B. Jump to OPC_1XXX in OPCODE table.
+00000024  4EB9 00000164             30              JSR         OPC_1XXX    *If the first hex value is 1, the instruction is determined to be MOVE.B. Jump to OPC_1XXX in OPCODE table.
 0000002A  4E75                      31              RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
 0000002C                            32             
 0000002C  B43C 0002                 33  JMP_2       CMP.B       #$2,D2
@@ -80,12 +79,12 @@ Line 70 ERROR: Undefined symbol
 000000AC                            72              
 000000AC  B43C 000A                 73  JMP_A       CMP.B       #$A,D2
 000000B0  6600 000A                 74              BNE         JMP_B
-000000B4  4EB9 00000164             75              JSR         INVALID     *0xA is an invalid first hex digit. Jump to INVALID
+000000B4  4EB9 00000186             75              JSR         INVALID     *0xA is an invalid first hex digit. Jump to INVALID
 000000BA  4E75                      76              RTS
 000000BC                            77              
 000000BC  B43C 000B                 78  JMP_B       CMP.B       #$B,D2
 000000C0  6600 000A                 79              BNE         JMP_C
-000000C4  4EB9 00000164             80              JSR         INVALID     *0xB is an invalid first hex digit. Jump to INVALID
+000000C4  4EB9 00000186             80              JSR         INVALID     *0xB is an invalid first hex digit. Jump to INVALID
 000000CA  4E75                      81              RTS
 000000CC                            82              
 000000CC  B43C 000C                 83  JMP_C       CMP.B       #$C,D2
@@ -99,7 +98,7 @@ Line 70 ERROR: Undefined symbol
 000000EA  4E75                      91              RTS
 000000EC                            92              
 000000EC  B43C 000F                 93  JMP_E       CMP.B       #$F,D2      *If first hex value is not 0-D, it must be E(valid) or F(invalid)
-000000F0  6700 0072                 94              BEQ         INVALID     *If first hex value is F, jump to INVALID
+000000F0  6700 0094                 94              BEQ         INVALID     *If first hex value is F, jump to INVALID
 000000F4  4EB9 00000164             95              JSR         JMP_EX      *If the first hex value is E, jump to JMP_EX to determine the next set of digits
 000000FA  4E75                      96              RTS
 000000FC                            97   
@@ -137,14 +136,14 @@ Line 70 ERROR: Undefined symbol
 00000128  E26A                     129              LSR.W       D1,D2       *Shifts 17 right to isolate the bits we're working with 
 0000012A  4E75                     130              RTS                     *Return back to JMP_Xn     
 0000012C                           131           
-0000012C                           132  * Possible instructions at JMP_0X are: SUBI, ADDI
+0000012C                           132  *---------------------SUBI, ADDI-----------------------------
 0000012C  4EB8 00FC                133  JMP_0X      JSR         J_CLR4      *Prepare data registers for data manipulation on the second input hex digit
 00000130  B43C 0004                134              CMP.B       #$4,D2      *Is the next hex digit 4?
 00000134  6700 0012                135              BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
 00000138  B43C 0005                136              CMP.B       #$5,D2      *Is the next hex digit 5?
 Line 137 ERROR: Undefined symbol
 0000013C  6700 BA50                137              BEQ         J_OADDI     *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
-00000140  4EB9 00000164            138              JSR         INVALID     *If neither, OPCODE is invalid
+00000140  4EB9 00000186            138              JSR         INVALID     *If neither, OPCODE is invalid
 00000146  4E75                     139              RTS
 00000148                           140  
 Line 141 ERROR: Undefined symbol
@@ -160,72 +159,62 @@ Line 144 ERROR: Undefined symbol
 0000015C  B43C 0001                149              CMP.B       #$1,D2      *is the DEST MODE 1?
 00000160  6700 0002                150              BEQ         J_MOVEAL    *Instruction is determiend to be MOVEA.L                                     ================= < stopped at this point
 00000164                           151               
-00000164                           152  
-00000164                           153  J_MOVEL
-00000164                           154  
-00000164                           155  J_MOVEAL
-00000164                           156  
-00000164                           157  JMP_3X
-00000164                           158  
-00000164                           159  JMP_4X
-00000164                           160  
-00000164                           161  JMP_6X
-00000164                           162  
-00000164                           163  JMP_8X
-00000164                           164  
-00000164                           165  JMP_CX
+00000164                           152  JMP_3X
+00000164                           153  
+00000164                           154  JMP_4X
+00000164                           155  
+00000164                           156  JMP_6X
+00000164                           157  
+00000164                           158  JMP_8X
+00000164                           159  
+00000164                           160  JMP_CX
+00000164                           161  
+00000164                           162  JMP_DX
+00000164                           163  
+00000164                           164  JMP_EX
+00000164                           165  
 00000164                           166  
-00000164                           167  JMP_DX
-00000164                           168  
-00000164                           169  JMP_EX
-00000164                           170  
+00000164                           167  
+00000164                           168  *============================================================
+00000164                           169  *==================OPCODE KNOWN, PRINTING====================
+00000164                           170  *============================================================
 00000164                           171  
-00000164                           172  *-----------------------INVALID------------------------------
-00000164                           173  * Invalid OPCODES jump here.
-00000164                           174  * $FF is moved into Data Register 6, which indicates to the program that the input is invalid.
-00000164                           175  *------------------------------------------------------------        
-00000164  1C38 00FF                176  INVALID     MOVE.B      $FF,D6      *Invalid input flag
-00000168  4E75                     177              RTS
-0000016A                           178  *============================================================
-0000016A                           179  *==================OPCODE KNOWN, PRINTING====================
-0000016A                           180  *============================================================
-0000016A                           181  
-0000016A  4E75                     182  OPC4E7_0     RTS
-0000016C                           183  
-0000016C                           184  *-------------------NOP LANDS HERE (4E71)--------------------
-0000016C  1C3C 00AA                185  OPC4E7_1    MOVE.B      #$AA,D6     *Set good data flag. IF THIS WAS A PARAMERTARIZED INSTRUCTION, NEEDS TO HAPPEN AFTER <EA>/Dn/An...
-00000170                           186  
-00000170  18FC 004E                187              MOVE.B      #'N',(A4)+
-00000174  18FC 004F                188              MOVE.B      #'O',(A4)+
-00000178  18FC 0050                189              MOVE.B      #'P',(A4)+
-0000017C                           190              
-0000017C                           191              *IF this was a  paramertarize instruction, we'd jump to <EA> decode here
-0000017C  4E75                     192              RTS
-0000017E                           193  
-0000017E  4E75                     194  OPC4E7_2     RTS
-00000180  4E75                     195  OPC4E7_3     RTS
-00000182  4E75                     196  OPC4E7_4     RTS
-00000184  4E75                     197  OPC4E7_5     RTS
-00000186  4E75                     198  OPC4E7_6     RTS
-00000188  4E75                     199  OPC4E7_7     RTS
-0000018A  4E75                     200  OPC4E7_8     RTS
-0000018C  4E75                     201  OPC4E7_9     RTS
-0000018E  4E75                     202  OPC4E7_A     RTS
-00000190  4E75                     203  OPC4E7_B     RTS
-00000192  4E75                     204  OPC4E7_C     RTS
-00000194  4E75                     205  OPC4E7_D     RTS
-00000196  4E75                     206  OPC4E7_E     RTS
-00000198                           207  
-Line 208 WARNING: END directive missing, starting address not set
+00000164                           172  J_MOVEL     
+00000164                           173  
+00000164                           174  J_MOVEAL
+00000164                           175  
+00000164                           176  
+00000164                           177  *--------------------MOVE.B OPCODE---------------------------
+00000164  18FC 004D                178  OPC_1XXX    MOVE.B      #'M',(A4)+
+00000168  18FC 004F                179              MOVE.B      #'O',(A4)+
+0000016C  18FC 0056                180              MOVE.B      #'V',(A4)+
+00000170  18FC 0045                181              MOVE.B      #'E',(A4)+
+00000174  18FC 002E                182              MOVE.B      #'.',(A4)+
+00000178  18FC 0042                183              MOVE.B      #'B',(A4)+
+0000017C  18FC 0020                184              MOVE.B      #' ',(A4)+
+00000180  18FC 0020                185              MOVE.B      #' ',(A4)+
+00000184                           186              *JUMP to EACODE table
+00000184  4E75                     187              RTS
+00000186                           188  
+00000186                           189  
+00000186                           190  
+00000186                           191  *-----------------------INVALID------------------------------
+00000186                           192  * Invalid OPCODES jump here.
+00000186                           193  * $FF is moved into Data Register 6, which indicates to the program that the input is invalid.
+00000186                           194  *------------------------------------------------------------        
+00000186  1C38 00FF                195  INVALID     MOVE.B      $FF,D6      *Invalid input flag
+0000018A  4E75                     196              RTS
+0000018C                           197  
+Line 198 WARNING: END directive missing, starting address not set
 
-7 errors detected
+6 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-INVALID             164
+INVALID             186
 JMP_0               C
 JMP_0X              12C
 JMP_1               1C
@@ -258,18 +247,4 @@ J_CLR_DM            11C
 J_MOVEAL            164
 J_MOVEL             164
 J_SUBI              148
-OPC4E7_0            16A
-OPC4E7_1            16C
-OPC4E7_2            17E
-OPC4E7_3            180
-OPC4E7_4            182
-OPC4E7_5            184
-OPC4E7_6            186
-OPC4E7_7            188
-OPC4E7_8            18A
-OPC4E7_9            18C
-OPC4E7_A            18E
-OPC4E7_B            190
-OPC4E7_C            192
-OPC4E7_D            194
-OPC4E7_E            196
+OPC_1XXX            164

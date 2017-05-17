@@ -129,12 +129,12 @@ J_CLR_DM    CLR.L       D2
             LSR.W       D1,D2       *Shifts 17 right to isolate the bits we're working with 
             RTS                     *Return back to JMP_Xn     
          
-* Possible instructions at JMP_0X are: SUBI, ADDI
+*---------------------SUBI, ADDI-----------------------------
 JMP_0X      JSR         J_CLR4      *Prepare data registers for data manipulation on the second input hex digit
             CMP.B       #$4,D2      *Is the next hex digit 4?
             BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
             CMP.B       #$5,D2      *Is the next hex digit 5?
-            BEQ         J_OADDI     *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
+            BEQ         J_ADDI     *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
             JSR         INVALID     *If neither, OPCODE is invalid
             RTS
 
@@ -144,30 +144,83 @@ J_SUBI      JSR         OPC_04XX    *Jump to OPC_04XX in OPCODE table
 J_ADDI      JSR         OPC_05XX    *Jump to OPC_05XX in OPCODE table
             RTS              
 
-* Possible instructions at JMP_2X are: MOVE.L, MOVEA.L
+*---------------------MOVE.L, MOVEA.L-----------------------------
 JMP_2X      JSR         J_CLR_DM    *Prepare data registers for data manipulation on the DEST MODE digits
             CMP.B       #$1,D2      *is the DEST MODE 1?
             BEQ         J_MOVEAL    *Instruction is determiend to be MOVEA.L                                     ================= < stopped at this point
              
+JMP_3X      JSR         INVALID     *Temp, remove once implemented
 
-J_MOVEL
+JMP_4X      JSR         INVALID     *Temp, remove once implemented      
 
-J_MOVEAL
+JMP_6X      JSR         INVALID     *Temp, remove once implemented
 
-JMP_3X
+JMP_8X      JSR         INVALID     *Temp, remove once implemented
 
-JMP_4X
+JMP_CX      JSR         INVALID     *Temp, remove once implemented
 
-JMP_6X
+JMP_DX      JSR         INVALID     *Temp, remove once implemented
 
-JMP_8X
+JMP_EX      JSR         INVALID     *Temp, remove once implemented
 
-JMP_CX
+*============================================================
+*==================ID THIRD OPCODE DIGIT=====================
+*============================================================
 
-JMP_DX
+OPC_04XX    JSR         INVALID     *Temp, remove once implemented
 
-JMP_EX
+OPC_05XX    JSR         INVALID     *Temp, remove once implemented
 
+*============================================================
+*==================OPCODE KNOWN, PRINTING====================
+*============================================================
+
+J_MOVEL     JSR         INVALID         *added just for compiling, remove once implemented
+
+J_MOVEAL    JSR         INVALID         *added just for compiling, remove once implemented
+
+
+*--------------------MOVE.B OPCODE---------------------------
+OPC_1XXX    MOVE.B      #'M',(A4)+
+            MOVE.B      #'O',(A4)+
+            MOVE.B      #'V',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #'.',(A4)+
+            MOVE.B      #'B',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            *JUMP to EACODE table
+            RTS
+
+*--------------------ADDQ OPCODE----------------------------
+OPC_5XXX    MOVE.B      #'A',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'Q',(A4)+
+            MOVE.B      #'.',(A4)+
+            *NEED to Determine sizes here
+            *JUMP to EACODE table
+            RTS
+
+*------------------MOVEQ OPCODE------------------------------
+OPC_7XXX    MOVE.B      #'M',(A4)+
+            MOVE.B      #'O',(A4)+
+            MOVE.B      #'V',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #'Q',(A4)+
+            MOVE.B      #'.',(A4)+
+            MOVE.B      #'L',(A4)+
+            *jump to EACODE table
+            RTS
+
+*------------------SUB OPCODE------------------------------
+OPC_9XXX    MOVE.B      #'S',(A4)+
+            MOVE.B      #'U',(A4)+
+            MOVE.B      #'B',(A4)+
+            MOVE.B      #'.',(A4)+
+            *NEED to Determine sizes here
+            *jump to EACODE table
+            RTS
 
 *-----------------------INVALID------------------------------
 * Invalid OPCODES jump here.
@@ -175,35 +228,6 @@ JMP_EX
 *------------------------------------------------------------        
 INVALID     MOVE.B      $FF,D6      *Invalid input flag
             RTS
-*============================================================
-*==================OPCODE KNOWN, PRINTING====================
-*============================================================
-
-OPC4E7_0     RTS
-
-*-------------------NOP LANDS HERE (4E71)--------------------
-OPC4E7_1    MOVE.B      #$AA,D6     *Set good data flag. IF THIS WAS A PARAMERTARIZED INSTRUCTION, NEEDS TO HAPPEN AFTER <EA>/Dn/An...
-
-            MOVE.B      #'N',(A4)+
-            MOVE.B      #'O',(A4)+
-            MOVE.B      #'P',(A4)+
-            
-            *IF this was a  paramertarize instruction, we'd jump to <EA> decode here
-            RTS
-
-OPC4E7_2     RTS
-OPC4E7_3     RTS
-OPC4E7_4     RTS
-OPC4E7_5     RTS
-OPC4E7_6     RTS
-OPC4E7_7     RTS
-OPC4E7_8     RTS
-OPC4E7_9     RTS
-OPC4E7_A     RTS
-OPC4E7_B     RTS
-OPC4E7_C     RTS
-OPC4E7_D     RTS
-OPC4E7_E     RTS
 
 
 *~Font name~Courier New~
