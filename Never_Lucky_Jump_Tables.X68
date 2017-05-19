@@ -202,7 +202,7 @@ OPC_5XXX    MOVE.B      #'A',(A4)+
             *JUMP to EACODE table
             RTS
 
-*------------------MOVEQ OPCODE------------------------------
+*------------------MOVEQ OPCODE-----------------------------
 OPC_7XXX    MOVE.B      #'M',(A4)+
             MOVE.B      #'O',(A4)+
             MOVE.B      #'V',(A4)+
@@ -213,7 +213,7 @@ OPC_7XXX    MOVE.B      #'M',(A4)+
             *jump to EACODE table
             RTS
 
-*------------------SUB OPCODE------------------------------
+*------------------SUB OPCODE-------------------------------
 OPC_9XXX    MOVE.B      #'S',(A4)+
             MOVE.B      #'U',(A4)+
             MOVE.B      #'B',(A4)+
@@ -224,16 +224,21 @@ OPC_9XXX    MOVE.B      #'S',(A4)+
             *jump to EACODE table
             RTS
 
-*============================================================
-*=====================HELPER SUBROUTINES=====================
-*============================================================
+*===========================================================
+*=====================HELPER SUBROUTINES====================
+*===========================================================
 
-*-----------------------INVALID------------------------------
-* Invalid OPCODES jump here.
-* $FF is moved into Data Register 6, which indicates to the program that the input is invalid.
-*------------------------------------------------------------        
-INVALID     MOVE.B      $FF,D6      *Invalid input flag
-            RTS
+**-----------------------INVALID (MARKED FOR REMOVAL)-------
+** THIS FUNCTION NEEDS SOME WORK. IT NEEDS:
+**       1. Flag as invalid
+**       2. JMP to ASCII translation of the address (that
+**          adds the ASCII characters to the BAD string).
+**       3. JMP to the Main loop for printing selection.
+**       THIS FUNCTION NEEDS TO BE A ELSE CASE FOR ALL JMP
+**       TABLES
+**-----------------------------------------------------------       
+*INVALID     MOVE.B      $FF,D6      *Invalid input flag
+*            JMP         PRINT_BAD   *Jump to print bad string immediatly.
 
 *--------------------GET SIZE CODE--------------------------
 * The following three subroutines isolate the size bits for
@@ -242,17 +247,31 @@ INVALID     MOVE.B      $FF,D6      *Invalid input flag
 *-----------------------------------------------------------
 GET_SIZE_3  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
             MOVE.W      D7,D4       *Copy untouched opcode into D4
-            LSL.L       #7,D4       *Clear more significant bits
+            LSL.W       #7,D4       *Clear more significant bits
             CLR.L       D3          *Make sure D3 is clear for shifting
             MOVE.B      #13,D3      *Shifting 13 times
-            LSR.L       D3,D4       *Move size bits to LSB position
+            LSR.W       D3,D4       *Move size bits to LSB position
             RTS
 
-GET_SIZE_2  
+GET_SIZE_2  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
+            MOVE.W      D7,D4       *Copy untouched opcode into D4
+            LSL.W       #8,D4       *Clear more significant bits
+            CLR.L       D3          *Make sure D3 is clear for shifting
+            MOVE.B      #14,D3      *Shifting 14 times
+            LSR.W       D3,D4       *Move size bits to LSB position
+            RTS
 
-GET_SIZE_1
+GET_SIZE_1  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
+            MOVE.W      D7,D4       *Copy untouched opcode into D4
+            CLR.L       D3          *Make sure D3 is clear for shifting
+            MOVE.B      #9,D3       *Shift 9 times to the left
+            LSL.W       D3,D4       *Clear more significant bits
+            CLR.L       D3          *Make sure D3 is clear for shifting
+            MOVE.B      #15,D3      *Shifting 15 times
+            LSR.W       D3,D4       *Move size bits to LSB position
+            RTS
 
-*------------------------ADD SIZE---------------------------
+*--------------------ADD SIZE (Pseudo JMP TABLE)------------
 * This subroutine is for ADD, AND, OR, SUB.
 * It adds the appropriate "B", "W", "L" and space characters
 * to the output strings. It then starts the parameter decode
@@ -260,10 +279,63 @@ GET_SIZE_1
 * Values 0, 1, 2 => B, W, L => <ea>,Dn => JSR EA_SRC
 * Values 4, 5, 6 => B, W, L => Dn,<ea> => JSR DN_SRC
 *-----------------------------------------------------------
-ADD_SIZE    CMP.B       #$8,D2
-            BNE         JMP_9
-            JSR         JMP_8X      *If the first hex value is 8, jump to JMP_8X to determine the next set of digits
-            RTS 
+ADD_SIZE    CMP.B       #0,D4       *Is it a B, <ea>,dn
+            BEQ         B_EA
+            CMP.B       #1,D4       *Is it a W, <ea>,dn
+            BEQ         W_EA
+            CMP.B       #2,D4       *Is it a L, <ea>,dn
+            BEQ         L_EA
+
+            CMP.B       #4,D4       *Is it a B, dn,<ea>
+            BEQ         B_DN
+            CMP.B       #5,D4       *Is it a W, dn,<ea>
+            BEQ         W_DN
+            CMP.B       #6,D4       *Is it a L, dn,<ea>
+            BEQ         L_DN        
+            BRA         INVALID     *Got here, must be invalid data.
+            
+B_EA        MOVE.B      #'B',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         EA_SRC      *Move to EA_SRC to start parameter decode sequence
+            RTS
+
+W_EA        MOVE.B      #'W',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         EA_SRC      *Move to EA_SRC to start parameter decode sequence
+            RTS
+
+L_EA        MOVE.B      #'L',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         EA_SRC      *Move to EA_SRC to start parameter decode sequence
+            RTS
+
+B_DN        MOVE.B      #'B',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
+            RTS
+
+W_DN        MOVE.B      #'W',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
+            RTS
+
+L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
+            RTS            
+            
+            
+            
+            
+            
+            
+            
 
 *~Font name~Courier New~
 *~Font size~10~

@@ -104,12 +104,13 @@ DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7
             
             JSR         JMP_TBL    *Start opcode identification waterfall
             
-            CMPI.B      #$FF,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
-            BEQ         PRINT_BAD   *Print good string if good opcode
-            BRA         PRINT_GOOD  *Print bad string if bad opcode
+            *BELOW COMMENTED CODE TO BE REMOVED
+            *CMPI.B      #$FF,D6     *Look for good sentry value in D6 ($AA = good, $FF = bad)
+            *BEQ         PRINT_BAD   *Print good string if good opcode
+            *BRA         PRINT_GOOD  *Print bad string if bad opcode
 PRINT_GOOD  JSR         PRINT_G     *Jump to Print good string
             BRA         CONTINUE    *Continue the loop
-PRINT_BAD   JSR         PRINT_B     *Jump to Pring bad string
+INVALID     JSR         PRINT_B     *Jump to Pring bad string
             BRA         CONTINUE    *Continue the loop            
             
 CONTINUE    CMP.W       A5,A6       *Check if we're done
@@ -322,7 +323,8 @@ SPACERB     DC.L        80
 SPACERC     DC.L        80
 SPACERD     DC.L        80
 SPACERE     DC.L        80
-SPACERF     DC.L        80
+SPACERF     DC.L        100
+
 
 BAD_STR     DC.L        1
 
@@ -340,7 +342,7 @@ SPACERBB    DC.L        80
 SPACERCC    DC.L        80
 SPACERDD    DC.L        80
 SPACEREE    DC.L        80
-SPACERFF    DC.L        80
+SPACERFF    DC.L        100
 
             END         START       *LAST LINE
 
