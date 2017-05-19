@@ -173,10 +173,11 @@ OPC_05XX    JSR         INVALID     *Temp, remove once implemented
 *============================================================
 *==================OPCODE KNOWN, PRINTING====================
 *============================================================
+* 
 
-J_MOVEL     JSR         INVALID         *added just for compiling, remove once implemented
+J_MOVEL     JSR         INVALID     *added just for compiling, remove once implemented
 
-J_MOVEAL    JSR         INVALID         *added just for compiling, remove once implemented
+J_MOVEAL    JSR         INVALID     *added just for compiling, remove once implemented
 
 
 *--------------------MOVE.B OPCODE---------------------------
@@ -218,6 +219,8 @@ OPC_9XXX    MOVE.B      #'S',(A4)+
             MOVE.B      #'B',(A4)+
             MOVE.B      #'.',(A4)+
             *NEED to Determine sizes here (opmode 3 bits)
+            JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+            JSR         ADD_SIZE    * This will add size characters and start operand decode sequence
             *jump to EACODE table
             RTS
 
@@ -232,10 +235,35 @@ OPC_9XXX    MOVE.B      #'S',(A4)+
 INVALID     MOVE.B      $FF,D6      *Invalid input flag
             RTS
 
-*--------------------GEN SIZE CODE--------------------------
-* DECODES SIZE OPCODES FOR MOST OPCODES: SUB
+*--------------------GET SIZE CODE--------------------------
+* The following three subroutines isolate the size bits for
+* all opcodes. They are by number of bits (e.g. 3 bits for
+* size implies GET_SIZE_3)
 *-----------------------------------------------------------
-SIZE_CODE
+GET_SIZE_3  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
+            MOVE.W      D7,D4       *Copy untouched opcode into D4
+            LSL.L       #7,D4       *Clear more significant bits
+            CLR.L       D3          *Make sure D3 is clear for shifting
+            MOVE.B      #13,D3      *Shifting 13 times
+            LSR.L       D3,D4       *Move size bits to LSB position
+            RTS
+
+GET_SIZE_2  
+
+GET_SIZE_1
+
+*------------------------ADD SIZE---------------------------
+* This subroutine is for ADD, AND, OR, SUB.
+* It adds the appropriate "B", "W", "L" and space characters
+* to the output strings. It then starts the parameter decode
+* sequence for the above 4 subroutines.
+* Values 0, 1, 2 => B, W, L => <ea>,Dn => JSR EA_SRC
+* Values 4, 5, 6 => B, W, L => Dn,<ea> => JSR DN_SRC
+*-----------------------------------------------------------
+ADD_SIZE    CMP.B       #$8,D2
+            BNE         JMP_9
+            JSR         JMP_8X      *If the first hex value is 8, jump to JMP_8X to determine the next set of digits
+            RTS 
 
 *~Font name~Courier New~
 *~Font size~10~

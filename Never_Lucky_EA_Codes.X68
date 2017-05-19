@@ -5,17 +5,8 @@
 ************************************************************
 
 *============================================================
-*=====================OP_ORDER SUBROUTINES===================
+*==============OPERATION ORDER SUBROUTINES===================
 *============================================================
-
-
-*------------------------OPERATION ORDER--------------------
-* Identifies whether the order of the parameters is:
-* <EA>,DN or DN,<EA>. It then branches to the appropriate
-* order based subroutines. This subroutine is for opcodes:
-* ADD, AND, OR, SUB 
-*-----------------------------------------------------------
-OP_ORD
 
 *---------------------MM OPERATION ORDER--------------------
 * Identifies whether the order of the parameters is:
@@ -31,18 +22,18 @@ MM_OP_ORD
 *-----------------------------------------------------------
 EA_SRC
 
-*---------------------DN OPERATION ORDER--------------------
+*---------------------DN SOURCE-----------------------------
 * Logic for a DN source operand for opcodes:
 * ADD, AND, OR, SUB
 *-----------------------------------------------------------
 DN_SRC
 
-*---------------------MM OPERATION ORDER--------------------
+*---------------------MM EA SOURCE--------------------------
 * Logic for an EA source operand for MOVEM
 *-----------------------------------------------------------
 MM_EA_SRC
 
-*---------------------MM OPERATION ORDER--------------------
+*---------------------MM LIST SOURCE------------------------
 * Logic for a LIST source operand for MOVEM
 *-----------------------------------------------------------
 MM_LS_SRC

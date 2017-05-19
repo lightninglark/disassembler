@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/19/2017 11:41:52 AM
+Created On: 5/19/2017 12:38:56 PM
 
 00000000                             1  ************************************************************
 00000000                             2  * Title      : Never Lucky Disassembler
@@ -23,28 +23,28 @@ Created On: 5/19/2017 11:41:52 AM
 00001012                            19              *JMP         DONE        *End Program               
 00001012                            20                 
 00001012                            21  *-----------------------INTRO-------------------------------
-00001012  43F9 00001496             22  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
+00001012  43F9 000014B2             22  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
 00001018  103C 000E                 23              MOVE.B      #14,D0      *Trap task 14, display intro
 0000101C  4E4F                      24              TRAP        #15         
 0000101E  4E75                      25              RTS         
 00001020                            26  
 00001020                            27  *--------------------GET_INPUT------------------------------
-00001020  43F9 0000153D             28  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
+00001020  43F9 00001559             28  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
 00001026  103C 000E                 29              MOVE.B      #14,D0      *Trap task 14, display start address msg
 0000102A  4E4F                      30              TRAP        #15         
 0000102C                            31              
-0000102C  43F9 000015A7             32              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
+0000102C  43F9 000015C3             32              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
 00001032  103C 0002                 33              MOVE.B      #2,D0       *Trap task 2, collect start address from input, length in D1
 00001036  4E4F                      34              TRAP        #15         
 00001038                            35              
 00001038  4EB9 00001062             36              JSR         PROC_STA    *Process Start address, check for errrors and convert to HEX
 0000103E  4281                      37              CLR.L       D1          *Clear input length from D1
 00001040                            38              
-00001040  43F9 00001560             39              LEA         END_MSG,A1  *Load END_MSG into A1
+00001040  43F9 0000157C             39              LEA         END_MSG,A1  *Load END_MSG into A1
 00001046  103C 000E                 40              MOVE.B      #14,D0      *Trap task 14, display end address msg
 0000104A  4E4F                      41              TRAP        #15
 0000104C                            42              
-0000104C  43F9 000015CF             43              LEA         END_ADDR,A1 *Store input in END_ADDR variable
+0000104C  43F9 000015EB             43              LEA         END_ADDR,A1 *Store input in END_ADDR variable
 00001052  103C 0002                 44              MOVE.B      #2,D0       *Trap task 2, collect end address from input, length in d1
 00001056  4E4F                      45              TRAP        #15         
 00001058                            46              
@@ -101,8 +101,8 @@ Created On: 5/19/2017 11:41:52 AM
 000010B6                            97              
 000010B6                            98  *-------------------DECODE_LOOP-----------------------------
 000010B6  3E1D                      99  DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7        
-000010B8  47F9 00001638            100              LEA         BAD_STR,A3  *Move Bad string constant into A3
-000010BE  49F9 000015F8            101              LEA         GOOD_STR,A4 *Move Good string constant into A4
+000010B8  47F9 00001654            100              LEA         BAD_STR,A3  *Move Bad string constant into A3
+000010BE  49F9 00001614            101              LEA         GOOD_STR,A4 *Move Good string constant into A4
 000010C4                           102              
 000010C4  4EB9 0000112A            103              JSR         INIT_STRS   *Initialize Bad and Good Str
 000010CA                           104              
@@ -131,7 +131,7 @@ Created On: 5/19/2017 11:41:52 AM
 00001102  60B2                     127              BRA         DECODE_LOOP * Continue loop
 00001104                           128  
 00001104                           129  *-------------------NEXT_PAGE-----------------------------
-00001104  43F9 00001581            130  NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
+00001104  43F9 0000159D            130  NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
 0000110A  4280                     131              CLR.L       D0          *Make sure D0 is empty
 0000110C  103C 000E                132              MOVE.B      #14,D0      *Trap task 14, display start address msg
 00001110  4E4F                     133              TRAP        #15            
@@ -269,7 +269,7 @@ Created On: 5/19/2017 11:41:52 AM
 00001236                           265  *-------------------PRINT_G---------------------------------
 00001236  18FC 0020                266  PRINT_G     MOVE.B      #' ',(A4)+
 0000123A  16FC 0000                267              MOVE.B      #$00,(A3)+  *Move null to end of string for printing
-0000123E  43F9 000015F8            268              LEA         GOOD_STR,A1 *Load good data for printing
+0000123E  43F9 00001614            268              LEA         GOOD_STR,A1 *Load good data for printing
 00001244  103C 000D                269              MOVE.B      #13,D0      *Trap task 13, display null terminated string
 00001248  4E4F                     270              TRAP        #15         *Display string
 0000124A                           271            
@@ -278,7 +278,7 @@ Created On: 5/19/2017 11:41:52 AM
 0000124C                           274  *-------------------PRINT_B---------------------------------
 0000124C  18FC 0020                275  PRINT_B     MOVE.B      #' ',(A4)+
 00001250  18FC 0000                276              MOVE.B      #$00,(A4)+  *Move null to end of string for printing
-00001254  43F9 00001638            277              LEA         BAD_STR,A1 *Load good data for printing
+00001254  43F9 00001654            277              LEA         BAD_STR,A1 *Load good data for printing
 0000125A  103C 000D                278              MOVE.B      #13,D0      *Trap task 13, display null terminated string
 0000125E  4E4F                     279              TRAP        #15         *Display string
 00001260                           280              
@@ -353,12 +353,12 @@ Created On: 5/19/2017 11:41:52 AM
 0000131A                           349              
 0000131A  B43C 000A                350  JMP_A       CMP.B       #$A,D2
 0000131E  6600 000A                351              BNE         JMP_B
-00001322  4EB9 0000147C            352              JSR         INVALID     *0xA is an invalid first hex digit. Jump to INVALID
+00001322  4EB9 00001488            352              JSR         INVALID     *0xA is an invalid first hex digit. Jump to INVALID
 00001328  4E75                     353              RTS
 0000132A                           354              
 0000132A  B43C 000B                355  JMP_B       CMP.B       #$B,D2
 0000132E  6600 000A                356              BNE         JMP_C
-00001332  4EB9 0000147C            357              JSR         INVALID     *0xB is an invalid first hex digit. Jump to INVALID
+00001332  4EB9 00001488            357              JSR         INVALID     *0xB is an invalid first hex digit. Jump to INVALID
 00001338  4E75                     358              RTS
 0000133A                           359              
 0000133A  B43C 000C                360  JMP_C       CMP.B       #$C,D2
@@ -372,7 +372,7 @@ Created On: 5/19/2017 11:41:52 AM
 00001358  4E75                     368              RTS
 0000135A                           369              
 0000135A  B43C 000F                370  JMP_E       CMP.B       #$F,D2      *If first hex value is not 0-D, it must be E(valid) or F(invalid)
-0000135E  6700 011C                371              BEQ         INVALID     *If first hex value is F, jump to INVALID
+0000135E  6700 0128                371              BEQ         INVALID     *If first hex value is F, jump to INVALID
 00001362  4EB9 000013F6            372              JSR         JMP_EX      *If the first hex value is E, jump to JMP_EX to determine the next set of digits
 00001368  4E75                     373              RTS
 0000136A                           374   
@@ -406,7 +406,7 @@ Created On: 5/19/2017 11:41:52 AM
 000013A2  6700 0012                402              BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
 000013A6  B43C 0005                403              CMP.B       #$5,D2      *Is the next hex digit 5?
 000013AA  6700 0012                404              BEQ         J_ADDI     *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
-000013AE  4EB9 0000147C            405              JSR         INVALID     *If neither, OPCODE is invalid
+000013AE  4EB9 00001488            405              JSR         INVALID     *If neither, OPCODE is invalid
 000013B4  4E75                     406              RTS
 000013B6                           407  
 000013B6  4EB9 000013FC            408  J_SUBI      JSR         OPC_04XX    *Jump to OPC_04XX in OPCODE table
@@ -419,29 +419,29 @@ Created On: 5/19/2017 11:41:52 AM
 000013CA  B43C 0001                415              CMP.B       #$1,D2      *is the DEST MODE 1?
 000013CE  6700 003E                416              BEQ         J_MOVEAL    *Instruction is determiend to be MOVEA.L                                     ================= < stopped at this point
 000013D2                           417               
-000013D2  4EB9 0000147C            418  JMP_3X      JSR         INVALID     *Temp, remove once implemented
+000013D2  4EB9 00001488            418  JMP_3X      JSR         INVALID     *Temp, remove once implemented
 000013D8                           419  
-000013D8  4EB9 0000147C            420  JMP_4X      JSR         INVALID     *Temp, remove once implemented      
+000013D8  4EB9 00001488            420  JMP_4X      JSR         INVALID     *Temp, remove once implemented      
 000013DE                           421  
-000013DE  4EB9 0000147C            422  JMP_6X      JSR         INVALID     *Temp, remove once implemented
+000013DE  4EB9 00001488            422  JMP_6X      JSR         INVALID     *Temp, remove once implemented
 000013E4                           423  
-000013E4  4EB9 0000147C            424  JMP_8X      JSR         INVALID     *Temp, remove once implemented
+000013E4  4EB9 00001488            424  JMP_8X      JSR         INVALID     *Temp, remove once implemented
 000013EA                           425  
-000013EA  4EB9 0000147C            426  JMP_CX      JSR         INVALID     *Temp, remove once implemented
+000013EA  4EB9 00001488            426  JMP_CX      JSR         INVALID     *Temp, remove once implemented
 000013F0                           427  
-000013F0  4EB9 0000147C            428  JMP_DX      JSR         INVALID     *Temp, remove once implemented
+000013F0  4EB9 00001488            428  JMP_DX      JSR         INVALID     *Temp, remove once implemented
 000013F6                           429  
-000013F6  4EB9 0000147C            430  JMP_EX      JSR         INVALID     *Temp, remove once implemented
+000013F6  4EB9 00001488            430  JMP_EX      JSR         INVALID     *Temp, remove once implemented
 000013FC                           431  
 000013FC                           432  
-000013FC  4EB9 0000147C            433  OPC_04XX    JSR         INVALID     *Temp, remove once implemented
+000013FC  4EB9 00001488            433  OPC_04XX    JSR         INVALID     *Temp, remove once implemented
 00001402                           434  
-00001402  4EB9 0000147C            435  OPC_05XX    JSR         INVALID     *Temp, remove once implemented
+00001402  4EB9 00001488            435  OPC_05XX    JSR         INVALID     *Temp, remove once implemented
 00001408                           436  
 00001408                           437  
-00001408  4EB9 0000147C            438  J_MOVEL     JSR         INVALID         *added just for compiling, remove once implemented
+00001408  4EB9 00001488            438  J_MOVEL     JSR         INVALID         *added just for compiling, remove once implemented
 0000140E                           439  
-0000140E  4EB9 0000147C            440  J_MOVEAL    JSR         INVALID         *added just for compiling, remove once implemented
+0000140E  4EB9 00001488            440  J_MOVEAL    JSR         INVALID         *added just for compiling, remove once implemented
 00001414                           441  
 00001414                           442  
 00001414  18FC 004D                443  OPC_1XXX    MOVE.B      #'M',(A4)+
@@ -479,104 +479,119 @@ Created On: 5/19/2017 11:41:52 AM
 00001472  18FC 0042                475              MOVE.B      #'B',(A4)+
 00001476  18FC 002E                476              MOVE.B      #'.',(A4)+
 0000147A                           477              *NEED to Determine sizes here (opmode 3 bits)
-0000147A                           478              *jump to EACODE table
-0000147A  4E75                     479              RTS
-0000147C                           480  
-0000147C                           481  
-0000147C  1C38 00FF                482  INVALID     MOVE.B      $FF,D6      *Invalid input flag
-00001480  4E75                     483              RTS
-00001482                           484  
-00001482                           485  SIZE_CODE
-00001482                           486  
-00001482                           487  -------------------- end include --------------------
-00001482                           488              INCLUDE     'Never_Lucky_EA_Codes.x68'      *Include ea code (tables)
-00001482                           489  
-00001482                           490  
-00001482                           491  
-00001482                           492  OP_ORD
-00001482                           493  
-00001482                           494  MM_OP_ORD
-00001482                           495  
-00001482                           496  EA_SRC
-00001482                           497  
-00001482                           498  DN_SRC
-00001482                           499  
-00001482                           500  MM_EA_SRC
-00001482                           501  
-00001482                           502  MM_LS_SRC
-00001482                           503  
-00001482                           504  
-00001482                           505  
-00001482  4283                     506  GEN_EA_CODE CLR.L       D3          *Make sure D3 is clear
-00001484  4284                     507              CLR.L       D4          *Make sure D4 is clear
-00001486                           508              
-00001486  3607                     509              MOVE.W      D7,D3       *Move untouched opcode into D3
-00001488  3807                     510              MOVE.W      D7,D4       *Move untouched opcode into D4
-0000148A                           511              
-0000148A  123C 000A                512              MOVE.B      #10,D1      *Shifting to isolate register
-0000148E  E36B                     513              LSL.W       D1,D3
-00001490  123C 000D                514              MOVE.B      #13,D1
-00001494  E26B                     515              LSR.W       D1,D3
-00001496                           516              
-00001496                           517              
-00001496                           518  MOV_EA_CODE
-00001496                           519              
-00001496                           520  -------------------- end include --------------------
-00001496                           521  
-00001496  =0000000D                522  CR          EQU         $0D
-00001496  =0000000A                523  LF          EQU         $0A
-00001496                           524  
-00001496= 2D 2D 2D 2D 2D 2D ...    525  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
-000014C0= 48 65 6E 72 79 20 ...    526              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
-000014E9= 43 53 53 20 34 32 ...    527              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
-00001512= 2D 2D 2D 2D 2D 2D ...    528              DC.B        '----------------------------------------',CR,LF,0
-0000153D                           529              
-0000153D= 45 6E 74 65 72 20 ...    530  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
-00001560= 45 6E 74 65 72 20 ...    531  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
-00001581= 50 72 65 73 73 20 ...    532  NXT_PG      DC.B        'Press enter key to contiune reading',CR,LF,0
-000015A7                           533  
-000015A7                           534  STA_ADDR    DS.B        40
-000015CF                           535  END_ADDR    DS.B        40
-000015F7                           536  
-000015F8= 00000001                 537  GOOD_STR    DC.L        1
-000015FC                           538  
-000015FC= 00000050                 539  SPACER1     DC.L        80
-00001600= 00000050                 540  SPACER2     DC.L        80
-00001604= 00000050                 541  SPACER3     DC.L        80
-00001608= 00000050                 542  SPACER4     DC.L        80
-0000160C= 00000050                 543  SPACER5     DC.L        80
-00001610= 00000050                 544  SPACER6     DC.L        80
-00001614= 00000050                 545  SPACER7     DC.L        80
-00001618= 00000050                 546  SPACER8     DC.L        80
-0000161C= 00000050                 547  SPACER9     DC.L        80
-00001620= 00000050                 548  SPACERA     DC.L        80
-00001624= 00000050                 549  SPACERB     DC.L        80
-00001628= 00000050                 550  SPACERC     DC.L        80
-0000162C= 00000050                 551  SPACERD     DC.L        80
-00001630= 00000050                 552  SPACERE     DC.L        80
-00001634= 00000050                 553  SPACERF     DC.L        80
-00001638                           554  
-00001638= 00000001                 555  BAD_STR     DC.L        1
-0000163C                           556  
-0000163C= 00000050                 557  SPACER11    DC.L        80
-00001640= 00000050                 558  SPACER22    DC.L        80
-00001644= 00000050                 559  SPACER33    DC.L        80
-00001648= 00000050                 560  SPACER44    DC.L        80
-0000164C= 00000050                 561  SPACER55    DC.L        80
-00001650= 00000050                 562  SPACER66    DC.L        80
-00001654= 00000050                 563  SPACER77    DC.L        80
-00001658= 00000050                 564  SPACER88    DC.L        80
-0000165C= 00000050                 565  SPACER99    DC.L        80
-00001660= 00000050                 566  SPACERAA    DC.L        80
-00001664= 00000050                 567  SPACERBB    DC.L        80
-00001668= 00000050                 568  SPACERCC    DC.L        80
-0000166C= 00000050                 569  SPACERDD    DC.L        80
-00001670= 00000050                 570  SPACEREE    DC.L        80
-00001674= 00000050                 571  SPACERFF    DC.L        80
-00001678                           572  
-00001678                           573              END         START       *LAST LINE
+0000147A  4EB9 0000148E            478              JSR         GET_SIZE_3
+Line 479 ERROR: Undefined symbol
+00001480  4EB9 004DBB8E            479              JSR         ADD_SIZE
+00001486                           480              *jump to EACODE table
+00001486  4E75                     481              RTS
+00001488                           482  
+00001488                           483  
+00001488  1C38 00FF                484  INVALID     MOVE.B      $FF,D6      *Invalid input flag
+0000148C  4E75                     485              RTS
+0000148E                           486  
+0000148E  4284                     487  GET_SIZE_3  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
+00001490  3807                     488              MOVE.W      D7,D4       *Copy untouched opcode into D4
+00001492  EF8C                     489              LSL.L       #7,D4       *Clear more significant bits
+00001494  4283                     490              CLR.L       D3          *Make sure D3 is clear for shifting
+00001496  163C 000D                491              MOVE.B      #13,D3      *Shifting 13 times
+0000149A  E6AC                     492              LSR.L       D3,D4      *Move size bits to LSB position
+0000149C  4E75                     493              RTS
+0000149E                           494  
+0000149E                           495  GET_SIZE_2
+0000149E                           496  
+0000149E                           497  GET_SIZE_1
+0000149E                           498  
+0000149E                           499  
+0000149E                           500  
+0000149E                           501  
+0000149E                           502  -------------------- end include --------------------
+0000149E                           503              INCLUDE     'Never_Lucky_EA_Codes.x68'      *Include ea code (tables)
+0000149E                           504  
+0000149E                           505  
+0000149E                           506  MM_OP_ORD
+0000149E                           507  
+0000149E                           508  EA_SRC
+0000149E                           509  
+0000149E                           510  DN_SRC
+0000149E                           511  
+0000149E                           512  MM_EA_SRC
+0000149E                           513  
+0000149E                           514  MM_LS_SRC
+0000149E                           515  
+0000149E                           516  
+0000149E                           517  
+0000149E  4283                     518  GEN_EA_CODE CLR.L       D3          *Make sure D3 is clear
+000014A0  4284                     519              CLR.L       D4          *Make sure D4 is clear
+000014A2                           520              
+000014A2  3607                     521              MOVE.W      D7,D3       *Move untouched opcode into D3
+000014A4  3807                     522              MOVE.W      D7,D4       *Move untouched opcode into D4
+000014A6                           523              
+000014A6  123C 000A                524              MOVE.B      #10,D1      *Shifting to isolate register
+000014AA  E36B                     525              LSL.W       D1,D3
+000014AC  123C 000D                526              MOVE.B      #13,D1
+000014B0  E26B                     527              LSR.W       D1,D3
+000014B2                           528              
+000014B2                           529              
+000014B2                           530  MOV_EA_CODE
+000014B2                           531  
+000014B2                           532  
+000014B2                           533  
+000014B2                           534  -------------------- end include --------------------
+000014B2                           535  
+000014B2  =0000000D                536  CR          EQU         $0D
+000014B2  =0000000A                537  LF          EQU         $0A
+000014B2                           538  
+000014B2= 2D 2D 2D 2D 2D 2D ...    539  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
+000014DC= 48 65 6E 72 79 20 ...    540              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
+00001505= 43 53 53 20 34 32 ...    541              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
+0000152E= 2D 2D 2D 2D 2D 2D ...    542              DC.B        '----------------------------------------',CR,LF,0
+00001559                           543              
+00001559= 45 6E 74 65 72 20 ...    544  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
+0000157C= 45 6E 74 65 72 20 ...    545  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
+0000159D= 50 72 65 73 73 20 ...    546  NXT_PG      DC.B        'Press enter key to contiune reading',CR,LF,0
+000015C3                           547  
+000015C3                           548  STA_ADDR    DS.B        40
+000015EB                           549  END_ADDR    DS.B        40
+00001613                           550  
+00001614= 00000001                 551  GOOD_STR    DC.L        1
+00001618                           552  
+00001618= 00000050                 553  SPACER1     DC.L        80
+0000161C= 00000050                 554  SPACER2     DC.L        80
+00001620= 00000050                 555  SPACER3     DC.L        80
+00001624= 00000050                 556  SPACER4     DC.L        80
+00001628= 00000050                 557  SPACER5     DC.L        80
+0000162C= 00000050                 558  SPACER6     DC.L        80
+00001630= 00000050                 559  SPACER7     DC.L        80
+00001634= 00000050                 560  SPACER8     DC.L        80
+00001638= 00000050                 561  SPACER9     DC.L        80
+0000163C= 00000050                 562  SPACERA     DC.L        80
+00001640= 00000050                 563  SPACERB     DC.L        80
+00001644= 00000050                 564  SPACERC     DC.L        80
+00001648= 00000050                 565  SPACERD     DC.L        80
+0000164C= 00000050                 566  SPACERE     DC.L        80
+00001650= 00000050                 567  SPACERF     DC.L        80
+00001654                           568  
+00001654= 00000001                 569  BAD_STR     DC.L        1
+00001658                           570  
+00001658= 00000050                 571  SPACER11    DC.L        80
+0000165C= 00000050                 572  SPACER22    DC.L        80
+00001660= 00000050                 573  SPACER33    DC.L        80
+00001664= 00000050                 574  SPACER44    DC.L        80
+00001668= 00000050                 575  SPACER55    DC.L        80
+0000166C= 00000050                 576  SPACER66    DC.L        80
+00001670= 00000050                 577  SPACER77    DC.L        80
+00001674= 00000050                 578  SPACER88    DC.L        80
+00001678= 00000050                 579  SPACER99    DC.L        80
+0000167C= 00000050                 580  SPACERAA    DC.L        80
+00001680= 00000050                 581  SPACERBB    DC.L        80
+00001684= 00000050                 582  SPACERCC    DC.L        80
+00001688= 00000050                 583  SPACERDD    DC.L        80
+0000168C= 00000050                 584  SPACEREE    DC.L        80
+00001690= 00000050                 585  SPACERFF    DC.L        80
+00001694                           586  
+00001694                           587              END         START       *LAST LINE
 
-No errors detected
+1 error detected
 No warnings generated
 
 
@@ -587,27 +602,30 @@ ADD_CHAR_B          11E2
 ADD_CHAR_G          122A
 AH_DONE             1092
 ASCII_HEX           107A
-BAD_STR             1638
+BAD_STR             1654
 CONTINUE            10F0
 CR                  D
 DECODE_LOOP         10B6
-DN_SRC              1482
+DN_SRC              149E
 DONE                1268
-EA_SRC              1482
-END_ADDR            15CF
-END_MSG             1560
+EA_SRC              149E
+END_ADDR            15EB
+END_MSG             157C
 END_OPT             1262
 FORMAT              10A8
-GEN_EA_CODE         1482
+GEN_EA_CODE         149E
 GET_INPUT           1020
-GOOD_STR            15F8
+GET_SIZE_1          149E
+GET_SIZE_2          149E
+GET_SIZE_3          148E
+GOOD_STR            1614
 HEX_ASCII_B         11A8
 HEX_ASCII_G         11EE
 INIT_BAD            1170
 INIT_GOOD           1138
 INIT_STRS           112A
 INTRO               1012
-INVALID             147C
+INVALID             1488
 ISO_DIG_B           11BA
 ISO_DIG_G           1202
 JMP_0               127A
@@ -646,60 +664,58 @@ LET                 109E
 LET_B               11DA
 LET_G               1222
 LF                  A
-MM_EA_SRC           1482
-MM_LS_SRC           1482
-MM_OP_ORD           1482
-MOV_EA_CODE         1496
+MM_EA_SRC           149E
+MM_LS_SRC           149E
+MM_OP_ORD           149E
+MOV_EA_CODE         14B2
 NEXT_PAGE           1104
-NL_INTRO            1496
+NL_INTRO            14B2
 NUM                 1094
 NUM_B               11D2
 NUM_G               121A
-NXT_PG              1581
+NXT_PG              159D
 OPC_04XX            13FC
 OPC_05XX            1402
 OPC_1XXX            1414
 OPC_5XXX            1436
 OPC_7XXX            144C
 OPC_9XXX            146A
-OP_ORD              1482
 PRINT_B             124C
 PRINT_BAD           10E6
 PRINT_G             1236
 PRINT_GOOD          10DC
 PROC_END            106E
 PROC_STA            1062
-SIZE_CODE           1482
-SPACER1             15FC
-SPACER11            163C
-SPACER2             1600
-SPACER22            1640
-SPACER3             1604
-SPACER33            1644
-SPACER4             1608
-SPACER44            1648
-SPACER5             160C
-SPACER55            164C
-SPACER6             1610
-SPACER66            1650
-SPACER7             1614
-SPACER77            1654
-SPACER8             1618
-SPACER88            1658
-SPACER9             161C
-SPACER99            165C
-SPACERA             1620
-SPACERAA            1660
-SPACERB             1624
-SPACERBB            1664
-SPACERC             1628
-SPACERCC            1668
-SPACERD             162C
-SPACERDD            166C
-SPACERE             1630
-SPACEREE            1670
-SPACERF             1634
-SPACERFF            1674
+SPACER1             1618
+SPACER11            1658
+SPACER2             161C
+SPACER22            165C
+SPACER3             1620
+SPACER33            1660
+SPACER4             1624
+SPACER44            1664
+SPACER5             1628
+SPACER55            1668
+SPACER6             162C
+SPACER66            166C
+SPACER7             1630
+SPACER77            1670
+SPACER8             1634
+SPACER88            1674
+SPACER9             1638
+SPACER99            1678
+SPACERA             163C
+SPACERAA            167C
+SPACERB             1640
+SPACERBB            1680
+SPACERC             1644
+SPACERCC            1684
+SPACERD             1648
+SPACERDD            1688
+SPACERE             164C
+SPACEREE            168C
+SPACERF             1650
+SPACERFF            1690
 START               1000
-STA_ADDR            15A7
-STA_MSG             153D
+STA_ADDR            15C3
+STA_MSG             1559
