@@ -1,11 +1,11 @@
-*-----------------------------------------------------------
+************************************************************
 * Title      : Never Lucky Disassembler
 * Written by : Henry Hong, Ryan Palm, Joshua Plantilla
 * Date       : April 23, 2017
 * Description: Final Project for CSS 422. This program
 *              translates machine code into assembly (68k)
 *              language.
-*-----------------------------------------------------------
+************************************************************
 
 START       ORG         $1000       *Start program
             JSR         INTRO       *Display Intro Message
@@ -288,7 +288,8 @@ DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
             TRAP        #15         *Halt program, Trap#15 task 9
             
 *---------------Variables and Constants---------------------
-            INCLUDE     'Never_Lucky_Jump_Tables.x68' *Include jump tables file
+            INCLUDE     'Never_Lucky_Jump_Tables.x68'   *Include jump tables file
+            INCLUDE     'Never_Lucky_EA_Codes.x68'      *Include ea code (tables)
 
 CR          EQU         $0D
 LF          EQU         $0A
@@ -342,6 +343,7 @@ SPACEREE    DC.L        80
 SPACERFF    DC.L        80
 
             END         START       *LAST LINE
+
 
 
 

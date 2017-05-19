@@ -1,9 +1,11 @@
-*-----------------------------------------------------------
-* Title      :
-* Written by :
-* Date       :
-* Description:
-*-----------------------------------------------------------
+************************************************************
+* TEAM NEVERY LUCKY DISSASSEMBLER
+* This file includes OPCODE logic (OPCODE and size decoding)
+************************************************************
+
+*============================================================
+*===================ID FIRST OPCODE DIGIT====================
+*============================================================
 
 *-----------------------JMP_TBL------------------------------
 * Purpose: JMP_TBL takes a data register input (D7) and navigates to the correct OPCODE table
@@ -11,9 +13,6 @@
 *          $FF is saved to D6 if OPCode is determined to be incorrect
 * Assumption: Whenever JMP_TBL is called, D7 contains the next new machine code instruction
 *------------------------------------------------------------
-*============================================================
-*===================ID FIRST OPCODE DIGIT====================
-*============================================================
 JMP_TBL     CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
@@ -218,9 +217,13 @@ OPC_9XXX    MOVE.B      #'S',(A4)+
             MOVE.B      #'U',(A4)+
             MOVE.B      #'B',(A4)+
             MOVE.B      #'.',(A4)+
-            *NEED to Determine sizes here
+            *NEED to Determine sizes here (opmode 3 bits)
             *jump to EACODE table
             RTS
+
+*============================================================
+*=====================HELPER SUBROUTINES=====================
+*============================================================
 
 *-----------------------INVALID------------------------------
 * Invalid OPCODES jump here.
@@ -229,6 +232,10 @@ OPC_9XXX    MOVE.B      #'S',(A4)+
 INVALID     MOVE.B      $FF,D6      *Invalid input flag
             RTS
 
+*--------------------GEN SIZE CODE--------------------------
+* DECODES SIZE OPCODES FOR MOST OPCODES: SUB
+*-----------------------------------------------------------
+SIZE_CODE
 
 *~Font name~Courier New~
 *~Font size~10~
