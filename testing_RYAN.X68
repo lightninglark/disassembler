@@ -12,7 +12,6 @@ START       SUB.B       D0,D7
             SUB.B       D0,(A5)+
             SUB.B       D0,$1111
             SUB.B       D0,$12345678
-            SUB.B       D0,$WXYZ
             
             SUB.W       D0,D7
             SUB.W       (A0),D1

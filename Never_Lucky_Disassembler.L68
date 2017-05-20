@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/19/2017 4:04:50 PM
+Created On: 5/19/2017 5:10:51 PM
 
 00000000                             1  ************************************************************
 00000000                             2  * Title      : Never Lucky Disassembler
@@ -23,28 +23,28 @@ Created On: 5/19/2017 4:04:50 PM
 00001012                            19              *JMP         DONE        *End Program               
 00001012                            20                 
 00001012                            21  *-----------------------INTRO-------------------------------
-00001012  43F9 000016F2             22  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
+00001012  43F9 000016F4             22  INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
 00001018  103C 000E                 23              MOVE.B      #14,D0      *Trap task 14, display intro
 0000101C  4E4F                      24              TRAP        #15         
 0000101E  4E75                      25              RTS         
 00001020                            26  
 00001020                            27  *--------------------GET_INPUT------------------------------
-00001020  43F9 00001799             28  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
+00001020  43F9 0000179B             28  GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
 00001026  103C 000E                 29              MOVE.B      #14,D0      *Trap task 14, display start address msg
 0000102A  4E4F                      30              TRAP        #15         
 0000102C                            31              
-0000102C  43F9 00001803             32              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
+0000102C  43F9 00001805             32              LEA         STA_ADDR,A1 *Store input in STA_ADDR variable
 00001032  103C 0002                 33              MOVE.B      #2,D0       *Trap task 2, collect start address from input, length in D1
 00001036  4E4F                      34              TRAP        #15         
 00001038                            35              
 00001038  4EB9 00001062             36              JSR         PROC_STA    *Process Start address, check for errrors and convert to HEX
 0000103E  4281                      37              CLR.L       D1          *Clear input length from D1
 00001040                            38              
-00001040  43F9 000017BC             39              LEA         END_MSG,A1  *Load END_MSG into A1
+00001040  43F9 000017BE             39              LEA         END_MSG,A1  *Load END_MSG into A1
 00001046  103C 000E                 40              MOVE.B      #14,D0      *Trap task 14, display end address msg
 0000104A  4E4F                      41              TRAP        #15
 0000104C                            42              
-0000104C  43F9 0000182B             43              LEA         END_ADDR,A1 *Store input in END_ADDR variable
+0000104C  43F9 0000182D             43              LEA         END_ADDR,A1 *Store input in END_ADDR variable
 00001052  103C 0002                 44              MOVE.B      #2,D0       *Trap task 2, collect end address from input, length in d1
 00001056  4E4F                      45              TRAP        #15         
 00001058                            46              
@@ -101,8 +101,8 @@ Created On: 5/19/2017 4:04:50 PM
 000010B6                            97              
 000010B6                            98  *-------------------DECODE_LOOP-----------------------------
 000010B6  3E1D                      99  DECODE_LOOP MOVE.W      (A5)+,D7    *Move the instruction into D7        
-000010B8  47F9 00001894            100              LEA         BAD_STR,A3  *Move Bad string constant into A3
-000010BE  49F9 00001854            101              LEA         GOOD_STR,A4 *Move Good string constant into A4
+000010B8  47F9 00001896            100              LEA         BAD_STR,A3  *Move Bad string constant into A3
+000010BE  49F9 00001856            101              LEA         GOOD_STR,A4 *Move Good string constant into A4
 000010C4                           102              
 000010C4  4EB9 0000111E            103              JSR         INIT_STRS   *Initialize Bad and Good Str
 000010CA                           104              
@@ -132,7 +132,7 @@ Created On: 5/19/2017 4:04:50 PM
 000010F6  60BE                     128              BRA         DECODE_LOOP * Continue loop
 000010F8                           129  
 000010F8                           130  *-------------------NEXT_PAGE-----------------------------
-000010F8  43F9 000017DD            131  NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
+000010F8  43F9 000017DF            131  NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
 000010FE  4280                     132              CLR.L       D0          *Make sure D0 is empty
 00001100  103C 000E                133              MOVE.B      #14,D0      *Trap task 14, display start address msg
 00001104  4E4F                     134              TRAP        #15            
@@ -270,7 +270,7 @@ Created On: 5/19/2017 4:04:50 PM
 0000122A                           266  *-------------------PRINT_G---------------------------------
 0000122A  18FC 0020                267  PRINT_G     MOVE.B      #' ',(A4)+
 0000122E  16FC 0000                268              MOVE.B      #$00,(A3)+  *Move null to end of string for printing
-00001232  43F9 00001854            269              LEA         GOOD_STR,A1 *Load good data for printing
+00001232  43F9 00001856            269              LEA         GOOD_STR,A1 *Load good data for printing
 00001238  103C 000D                270              MOVE.B      #13,D0      *Trap task 13, display null terminated string
 0000123C  4E4F                     271              TRAP        #15         *Display string
 0000123E                           272            
@@ -279,7 +279,7 @@ Created On: 5/19/2017 4:04:50 PM
 00001240                           275  *-------------------PRINT_B---------------------------------
 00001240  18FC 0020                276  PRINT_B     MOVE.B      #' ',(A4)+
 00001244  18FC 0000                277              MOVE.B      #$00,(A4)+  *Move null to end of string for printing
-00001248  43F9 00001894            278              LEA         BAD_STR,A1 *Load good data for printing
+00001248  43F9 00001896            278              LEA         BAD_STR,A1 *Load good data for printing
 0000124E  103C 000D                279              MOVE.B      #13,D0      *Trap task 13, display null terminated string
 00001252  4E4F                     280              TRAP        #15         *Display string
 00001254                           281              
@@ -628,7 +628,7 @@ Created On: 5/19/2017 4:04:50 PM
 0000159E  4282                     624              CLR.L       D2
 000015A0  143C 000D                625              MOVE.B      #13,D2
 000015A4  E46B                     626              LSR.W       D2,D3
-000015A6  4EB9 00001644            627              JSR         REG_TBL     *Jump to register table.
+000015A6  4EB9 00001646            627              JSR         REG_TBL     *Jump to register table.
 000015AC  4E75                     628              RTS
 000015AE                           629  
 000015AE                           630  
@@ -643,26 +643,26 @@ Created On: 5/19/2017 4:04:50 PM
 000015CE  B83C 0004                639              CMP.B       #4,D4
 000015D2  6700 0052                640              BEQ         ARI_DEC
 000015D6  B83C 0007                641              CMP.B       #7,D4
-000015DA  6700 0060                642              BEQ         ABS_ADDR
+000015DA  6700 0062                642              BEQ         ABS_ADDR
 000015DE  4EF8 10DA                643              JMP         INVALID     *Got here? Must be bad data.
 000015E2                           644  
 000015E2  18FC 0044                645  DRD         MOVE.B      #'D',(A4)+
-000015E6  4EB9 00001644            646              JSR         REG_TBL     *Reg num should be in D3
+000015E6  4EB9 00001646            646              JSR         REG_TBL     *Reg num should be in D3
 000015EC  4E75                     647              RTS
 000015EE                           648  
 000015EE  18FC 0041                649  ARD         MOVE.B      #'A',(A4)+
-000015F2  4EB9 00001644            650              JSR         REG_TBL     *Reg num should be in D3
+000015F2  4EB9 00001646            650              JSR         REG_TBL     *Reg num should be in D3
 000015F8  4E75                     651              RTS
 000015FA                           652  
 000015FA  18FC 0028                653  ARI         MOVE.B      #'(',(A4)+
 000015FE  18FC 0041                654              MOVE.B      #'A',(A4)+
-00001602  4EB9 00001644            655              JSR         REG_TBL     *Reg num should be in D3
+00001602  4EB9 00001646            655              JSR         REG_TBL     *Reg num should be in D3
 00001608  18FC 0029                656              MOVE.B      #')',(A4)+
 0000160C  4E75                     657              RTS
 0000160E                           658  
 0000160E  18FC 0028                659  ARI_INC     MOVE.B      #'(',(A4)+
 00001612  18FC 0041                660              MOVE.B      #'A',(A4)+
-00001616  4EB9 00001644            661              JSR         REG_TBL     *Reg num should be in D3
+00001616  4EB9 00001646            661              JSR         REG_TBL     *Reg num should be in D3
 0000161C  18FC 0029                662              MOVE.B      #')',(A4)+
 00001620  18FC 002B                663              MOVE.B      #'+',(A4)+
 00001624  4E75                     664              RTS
@@ -670,136 +670,137 @@ Created On: 5/19/2017 4:04:50 PM
 00001626  18FC 002D                666  ARI_DEC     MOVE.B      #'-',(A4)+
 0000162A  18FC 0028                667              MOVE.B      #'(',(A4)+
 0000162E  18FC 0041                668              MOVE.B      #'A',(A4)+
-00001632  4EB9 00001644            669              JSR         REG_TBL     *Reg num should be in D3
+00001632  4EB9 00001646            669              JSR         REG_TBL     *Reg num should be in D3
 00001638  18FC 0029                670              MOVE.B      #')',(A4)+
-0000163C                           671  
-0000163C  4EB9 000016B8            672  ABS_ADDR    JSR         ABS_TBL
-00001642  4E75                     673              RTS
-00001644                           674              
-00001644  B63C 0000                675  REG_TBL     CMP.B       #0,D3       *Select correct number to add to output strings
-00001648  6700 003E                676              BEQ         NUM_0
-0000164C  B63C 0001                677              CMP.B       #1,D3
-00001650  6700 003C                678              BEQ         NUM_1
-00001654  B63C 0002                679              CMP.B       #2,D3
-00001658  6700 003A                680              BEQ         NUM_2
-0000165C  B63C 0003                681              CMP.B       #3,D3
-00001660  6700 0038                682              BEQ         NUM_3
-00001664  B63C 0004                683              CMP.B       #4,D3
-00001668  6700 0036                684              BEQ         NUM_4
-0000166C  B63C 0005                685              CMP.B       #5,D3
-00001670  6700 0034                686              BEQ         NUM_5
-00001674  B63C 0006                687              CMP.B       #6,D3
-00001678  6700 0032                688              BEQ         NUM_6
-0000167C  B63C 0007                689              CMP.B       #7,D3
-00001680  6700 0030                690              BEQ         NUM_7
-00001684  4EF8 10DA                691              JMP         INVALID     *Got here? Must be bad data.
-00001688                           692              
-00001688  18FC 0030                693  NUM_0       MOVE.B      #'0',(A4)+
-0000168C  4E75                     694              RTS              
-0000168E  18FC 0031                695  NUM_1       MOVE.B      #'1',(A4)+
-00001692  4E75                     696              RTS
-00001694  18FC 0032                697  NUM_2       MOVE.B      #'2',(A4)+
-00001698  4E75                     698              RTS
-0000169A  18FC 0033                699  NUM_3       MOVE.B      #'3',(A4)+
-0000169E  4E75                     700              RTS
-000016A0  18FC 0034                701  NUM_4       MOVE.B      #'4',(A4)+
-000016A4  4E75                     702              RTS
-000016A6  18FC 0035                703  NUM_5       MOVE.B      #'5',(A4)+
-000016AA  4E75                     704              RTS
-000016AC  18FC 0036                705  NUM_6       MOVE.B      #'6',(A4)+
-000016B0  4E75                     706              RTS
-000016B2  18FC 0037                707  NUM_7       MOVE.B      #'7',(A4)+
-000016B6  4E75                     708              RTS
-000016B8                           709  
-000016B8  B63C 0000                710  ABS_TBL     CMP.B       #0,D3       *Select correct number to add to output strings
-000016BC  6700 0016                711              BEQ         ABW
-000016C0  B63C 0001                712              CMP.B       #1,D3
-000016C4  6700 0018                713              BEQ         ABL
-000016C8  B63C 0004                714              CMP.B       #4,D3
-000016CC  6700 001A                715              BEQ         IDATA
-000016D0  4EF8 10DA                716              JMP         INVALID     *Got here? Must be bad data.
-000016D4                           717              
-000016D4  18FC 0024                718  ABW         MOVE.B      #'$',(A4)+
-000016D8  4284                     719              CLR.L       D4          *Make sure D4 is clear
-000016DA  381D                     720              MOVE.W      (A5)+, D4   *Increment counter by WORD (grab word data)
-000016DC                           721              *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G
-000016DC  4E75                     722              RTS
-000016DE                           723  
-000016DE  18FC 0024                724  ABL         MOVE.B      #'$',(A4)+
-000016E2  4284                     725              CLR.L       D4          *Make sure D4 is clear
-000016E4  281D                     726              MOVE.L      (A5)+, D4   *Increment counter by WORD (grab word data)
-000016E6                           727              *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G 
-000016E6  4E75                     728              RTS
-000016E8                           729              
-000016E8  18FC 0023                730  IDATA       MOVE.B      #'#',(A4)+
-000016EC  4284                     731              CLR.L       D4          *Make sure D4 is clear
-000016EE  381D                     732              MOVE.W      (A5)+, D4   *Increment counter by WORD (grab word data)
-000016F0                           733              *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G
-000016F0                           734              *Need to implement
-000016F0  4E75                     735              RTS
-000016F2                           736  
-000016F2                           737  
-000016F2                           738  
-000016F2                           739  
-000016F2                           740  
-000016F2                           741  
-000016F2                           742  
-000016F2                           743  
-000016F2                           744  -------------------- end include --------------------
-000016F2                           745  
-000016F2  =0000000D                746  CR          EQU         $0D
-000016F2  =0000000A                747  LF          EQU         $0A
-000016F2                           748  
-000016F2= 2D 2D 2D 2D 2D 2D ...    749  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
-0000171C= 48 65 6E 72 79 20 ...    750              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
-00001745= 43 53 53 20 34 32 ...    751              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
-0000176E= 2D 2D 2D 2D 2D 2D ...    752              DC.B        '----------------------------------------',CR,LF,0
-00001799                           753              
-00001799= 45 6E 74 65 72 20 ...    754  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
-000017BC= 45 6E 74 65 72 20 ...    755  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
-000017DD= 50 72 65 73 73 20 ...    756  NXT_PG      DC.B        'Press enter key to contiune reading',CR,LF,0
-00001803                           757  
-00001803                           758  STA_ADDR    DS.B        40
-0000182B                           759  END_ADDR    DS.B        40
-00001853                           760  
-00001854= 00000001                 761  GOOD_STR    DC.L        1
-00001858                           762  
-00001858= 00000050                 763  SPACER1     DC.L        80
-0000185C= 00000050                 764  SPACER2     DC.L        80
-00001860= 00000050                 765  SPACER3     DC.L        80
-00001864= 00000050                 766  SPACER4     DC.L        80
-00001868= 00000050                 767  SPACER5     DC.L        80
-0000186C= 00000050                 768  SPACER6     DC.L        80
-00001870= 00000050                 769  SPACER7     DC.L        80
-00001874= 00000050                 770  SPACER8     DC.L        80
-00001878= 00000050                 771  SPACER9     DC.L        80
-0000187C= 00000050                 772  SPACERA     DC.L        80
-00001880= 00000050                 773  SPACERB     DC.L        80
-00001884= 00000050                 774  SPACERC     DC.L        80
-00001888= 00000050                 775  SPACERD     DC.L        80
-0000188C= 00000050                 776  SPACERE     DC.L        80
-00001890= 00000064                 777  SPACERF     DC.L        100
-00001894                           778  
-00001894                           779  
-00001894= 00000001                 780  BAD_STR     DC.L        1
-00001898                           781  
-00001898= 00000050                 782  SPACER11    DC.L        80
-0000189C= 00000050                 783  SPACER22    DC.L        80
-000018A0= 00000050                 784  SPACER33    DC.L        80
-000018A4= 00000050                 785  SPACER44    DC.L        80
-000018A8= 00000050                 786  SPACER55    DC.L        80
-000018AC= 00000050                 787  SPACER66    DC.L        80
-000018B0= 00000050                 788  SPACER77    DC.L        80
-000018B4= 00000050                 789  SPACER88    DC.L        80
-000018B8= 00000050                 790  SPACER99    DC.L        80
-000018BC= 00000050                 791  SPACERAA    DC.L        80
-000018C0= 00000050                 792  SPACERBB    DC.L        80
-000018C4= 00000050                 793  SPACERCC    DC.L        80
-000018C8= 00000050                 794  SPACERDD    DC.L        80
-000018CC= 00000050                 795  SPACEREE    DC.L        80
-000018D0= 00000064                 796  SPACERFF    DC.L        100
-000018D4                           797  
-000018D4                           798              END         START       *LAST LINE
+0000163C  4E75                     671              RTS
+0000163E                           672  
+0000163E  4EB9 000016BA            673  ABS_ADDR    JSR         ABS_TBL
+00001644  4E75                     674              RTS
+00001646                           675              
+00001646  B63C 0000                676  REG_TBL     CMP.B       #0,D3       *Select correct number to add to output strings
+0000164A  6700 003E                677              BEQ         NUM_0
+0000164E  B63C 0001                678              CMP.B       #1,D3
+00001652  6700 003C                679              BEQ         NUM_1
+00001656  B63C 0002                680              CMP.B       #2,D3
+0000165A  6700 003A                681              BEQ         NUM_2
+0000165E  B63C 0003                682              CMP.B       #3,D3
+00001662  6700 0038                683              BEQ         NUM_3
+00001666  B63C 0004                684              CMP.B       #4,D3
+0000166A  6700 0036                685              BEQ         NUM_4
+0000166E  B63C 0005                686              CMP.B       #5,D3
+00001672  6700 0034                687              BEQ         NUM_5
+00001676  B63C 0006                688              CMP.B       #6,D3
+0000167A  6700 0032                689              BEQ         NUM_6
+0000167E  B63C 0007                690              CMP.B       #7,D3
+00001682  6700 0030                691              BEQ         NUM_7
+00001686  4EF8 10DA                692              JMP         INVALID     *Got here? Must be bad data.
+0000168A                           693              
+0000168A  18FC 0030                694  NUM_0       MOVE.B      #'0',(A4)+
+0000168E  4E75                     695              RTS              
+00001690  18FC 0031                696  NUM_1       MOVE.B      #'1',(A4)+
+00001694  4E75                     697              RTS
+00001696  18FC 0032                698  NUM_2       MOVE.B      #'2',(A4)+
+0000169A  4E75                     699              RTS
+0000169C  18FC 0033                700  NUM_3       MOVE.B      #'3',(A4)+
+000016A0  4E75                     701              RTS
+000016A2  18FC 0034                702  NUM_4       MOVE.B      #'4',(A4)+
+000016A6  4E75                     703              RTS
+000016A8  18FC 0035                704  NUM_5       MOVE.B      #'5',(A4)+
+000016AC  4E75                     705              RTS
+000016AE  18FC 0036                706  NUM_6       MOVE.B      #'6',(A4)+
+000016B2  4E75                     707              RTS
+000016B4  18FC 0037                708  NUM_7       MOVE.B      #'7',(A4)+
+000016B8  4E75                     709              RTS
+000016BA                           710  
+000016BA  B63C 0000                711  ABS_TBL     CMP.B       #0,D3       *Select correct number to add to output strings
+000016BE  6700 0016                712              BEQ         ABW
+000016C2  B63C 0001                713              CMP.B       #1,D3
+000016C6  6700 0018                714              BEQ         ABL
+000016CA  B63C 0004                715              CMP.B       #4,D3
+000016CE  6700 001A                716              BEQ         IDATA
+000016D2  4EF8 10DA                717              JMP         INVALID     *Got here? Must be bad data.
+000016D6                           718              
+000016D6  18FC 0024                719  ABW         MOVE.B      #'$',(A4)+
+000016DA  4284                     720              CLR.L       D4          *Make sure D4 is clear
+000016DC  381D                     721              MOVE.W      (A5)+, D4   *Increment counter by WORD (grab word data)
+000016DE                           722              *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G
+000016DE  4E75                     723              RTS
+000016E0                           724  
+000016E0  18FC 0024                725  ABL         MOVE.B      #'$',(A4)+
+000016E4  4284                     726              CLR.L       D4          *Make sure D4 is clear
+000016E6  281D                     727              MOVE.L      (A5)+, D4   *Increment counter by WORD (grab word data)
+000016E8                           728              *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G 
+000016E8  4E75                     729              RTS
+000016EA                           730              
+000016EA  18FC 0023                731  IDATA       MOVE.B      #'#',(A4)+
+000016EE  4284                     732              CLR.L       D4          *Make sure D4 is clear
+000016F0  381D                     733              MOVE.W      (A5)+, D4   *Increment counter by WORD (grab word data)
+000016F2                           734              *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G
+000016F2                           735              *Need to implement
+000016F2  4E75                     736              RTS
+000016F4                           737  
+000016F4                           738  
+000016F4                           739  
+000016F4                           740  
+000016F4                           741  
+000016F4                           742  
+000016F4                           743  
+000016F4                           744  
+000016F4                           745  -------------------- end include --------------------
+000016F4                           746  
+000016F4  =0000000D                747  CR          EQU         $0D
+000016F4  =0000000A                748  LF          EQU         $0A
+000016F4                           749  
+000016F4= 2D 2D 2D 2D 2D 2D ...    750  NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
+0000171E= 48 65 6E 72 79 20 ...    751              DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
+00001747= 43 53 53 20 34 32 ...    752              DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
+00001770= 2D 2D 2D 2D 2D 2D ...    753              DC.B        '----------------------------------------',CR,LF,0
+0000179B                           754              
+0000179B= 45 6E 74 65 72 20 ...    755  STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
+000017BE= 45 6E 74 65 72 20 ...    756  END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
+000017DF= 50 72 65 73 73 20 ...    757  NXT_PG      DC.B        'Press enter key to contiune reading',CR,LF,0
+00001805                           758  
+00001805                           759  STA_ADDR    DS.B        40
+0000182D                           760  END_ADDR    DS.B        40
+00001855                           761  
+00001856= 00000001                 762  GOOD_STR    DC.L        1
+0000185A                           763  
+0000185A= 00000050                 764  SPACER1     DC.L        80
+0000185E= 00000050                 765  SPACER2     DC.L        80
+00001862= 00000050                 766  SPACER3     DC.L        80
+00001866= 00000050                 767  SPACER4     DC.L        80
+0000186A= 00000050                 768  SPACER5     DC.L        80
+0000186E= 00000050                 769  SPACER6     DC.L        80
+00001872= 00000050                 770  SPACER7     DC.L        80
+00001876= 00000050                 771  SPACER8     DC.L        80
+0000187A= 00000050                 772  SPACER9     DC.L        80
+0000187E= 00000050                 773  SPACERA     DC.L        80
+00001882= 00000050                 774  SPACERB     DC.L        80
+00001886= 00000050                 775  SPACERC     DC.L        80
+0000188A= 00000050                 776  SPACERD     DC.L        80
+0000188E= 00000050                 777  SPACERE     DC.L        80
+00001892= 00000064                 778  SPACERF     DC.L        100
+00001896                           779  
+00001896                           780  
+00001896= 00000001                 781  BAD_STR     DC.L        1
+0000189A                           782  
+0000189A= 00000050                 783  SPACER11    DC.L        80
+0000189E= 00000050                 784  SPACER22    DC.L        80
+000018A2= 00000050                 785  SPACER33    DC.L        80
+000018A6= 00000050                 786  SPACER44    DC.L        80
+000018AA= 00000050                 787  SPACER55    DC.L        80
+000018AE= 00000050                 788  SPACER66    DC.L        80
+000018B2= 00000050                 789  SPACER77    DC.L        80
+000018B6= 00000050                 790  SPACER88    DC.L        80
+000018BA= 00000050                 791  SPACER99    DC.L        80
+000018BE= 00000050                 792  SPACERAA    DC.L        80
+000018C2= 00000050                 793  SPACERBB    DC.L        80
+000018C6= 00000050                 794  SPACERCC    DC.L        80
+000018CA= 00000050                 795  SPACERDD    DC.L        80
+000018CE= 00000050                 796  SPACEREE    DC.L        80
+000018D2= 00000064                 797  SPACERFF    DC.L        100
+000018D6                           798  
+000018D6                           799              END         START       *LAST LINE
 
 No errors detected
 No warnings generated
@@ -808,10 +809,10 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ABL                 16DE
-ABS_ADDR            163C
-ABS_TBL             16B8
-ABW                 16D4
+ABL                 16E0
+ABS_ADDR            163E
+ABS_TBL             16BA
+ABW                 16D6
 ADD_CHAR_B          11D6
 ADD_CHAR_G          121E
 ADD_SIZE            1496
@@ -821,7 +822,7 @@ ARI                 15FA
 ARI_DEC             1626
 ARI_INC             160E
 ASCII_HEX           107A
-BAD_STR             1894
+BAD_STR             1896
 B_DN                1506
 B_EA                14CA
 CONTINUE            10E4
@@ -833,8 +834,8 @@ DONE                125C
 DRD                 15E2
 EA_SRC              1542
 EA_TBL              15AE
-END_ADDR            182B
-END_MSG             17BC
+END_ADDR            182D
+END_MSG             17BE
 END_OPT             1256
 FORMAT              10A8
 GEN_EA_CODE         1574
@@ -842,10 +843,10 @@ GET_INPUT           1020
 GET_SIZE_1          1480
 GET_SIZE_2          1470
 GET_SIZE_3          1460
-GOOD_STR            1854
+GOOD_STR            1856
 HEX_ASCII_B         119C
 HEX_ASCII_G         11E2
-IDATA               16E8
+IDATA               16EA
 INIT_BAD            1164
 INIT_GOOD           112C
 INIT_STRS           111E
@@ -896,19 +897,19 @@ MM_LS_SRC           1572
 MM_OP_ORD           156E
 MOV_EA_CODE         1596
 NEXT_PAGE           10F8
-NL_INTRO            16F2
+NL_INTRO            16F4
 NUM                 1094
-NUM_0               1688
-NUM_1               168E
-NUM_2               1694
-NUM_3               169A
-NUM_4               16A0
-NUM_5               16A6
-NUM_6               16AC
-NUM_7               16B2
+NUM_0               168A
+NUM_1               1690
+NUM_2               1696
+NUM_3               169C
+NUM_4               16A2
+NUM_5               16A8
+NUM_6               16AE
+NUM_7               16B4
 NUM_B               11C6
 NUM_G               120E
-NXT_PG              17DD
+NXT_PG              17DF
 OPC_04XX            13DC
 OPC_05XX            13E0
 OPC_1XXX            13EC
@@ -920,39 +921,39 @@ PRINT_G             122A
 PRINT_GOOD          10D0
 PROC_END            106E
 PROC_STA            1062
-REG_TBL             1644
-SPACER1             1858
-SPACER11            1898
-SPACER2             185C
-SPACER22            189C
-SPACER3             1860
-SPACER33            18A0
-SPACER4             1864
-SPACER44            18A4
-SPACER5             1868
-SPACER55            18A8
-SPACER6             186C
-SPACER66            18AC
-SPACER7             1870
-SPACER77            18B0
-SPACER8             1874
-SPACER88            18B4
-SPACER9             1878
-SPACER99            18B8
-SPACERA             187C
-SPACERAA            18BC
-SPACERB             1880
-SPACERBB            18C0
-SPACERC             1884
-SPACERCC            18C4
-SPACERD             1888
-SPACERDD            18C8
-SPACERE             188C
-SPACEREE            18CC
-SPACERF             1890
-SPACERFF            18D0
+REG_TBL             1646
+SPACER1             185A
+SPACER11            189A
+SPACER2             185E
+SPACER22            189E
+SPACER3             1862
+SPACER33            18A2
+SPACER4             1866
+SPACER44            18A6
+SPACER5             186A
+SPACER55            18AA
+SPACER6             186E
+SPACER66            18AE
+SPACER7             1872
+SPACER77            18B2
+SPACER8             1876
+SPACER88            18B6
+SPACER9             187A
+SPACER99            18BA
+SPACERA             187E
+SPACERAA            18BE
+SPACERB             1882
+SPACERBB            18C2
+SPACERC             1886
+SPACERCC            18C6
+SPACERD             188A
+SPACERDD            18CA
+SPACERE             188E
+SPACEREE            18CE
+SPACERF             1892
+SPACERFF            18D2
 START               1000
-STA_ADDR            1803
-STA_MSG             1799
+STA_ADDR            1805
+STA_MSG             179B
 W_DN                151A
 W_EA                14DE

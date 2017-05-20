@@ -161,6 +161,7 @@ ARI_DEC     MOVE.B      #'-',(A4)+
             MOVE.B      #'A',(A4)+
             JSR         REG_TBL     *Reg num should be in D3
             MOVE.B      #')',(A4)+
+            RTS
 
 ABS_ADDR    JSR         ABS_TBL
             RTS
