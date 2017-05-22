@@ -220,27 +220,96 @@ ABS_TBL     CMP.B       #0,D3       *Select correct number to add to output stri
             JMP         INVALID     *Got here? Must be bad data.
             
 ABW         MOVE.B      #'$',(A4)+
-            CLR.L       D4          *Make sure D4 is clear
-            MOVE.W      (A5)+, D4   *Increment counter by WORD (grab word data)
+            CLR.L       D1          *Make sure D1 is clear
+            MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
             *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G
+            JSR         W_H2A       *convert absolute value to ascii and add to good string
             RTS
 
 ABL         MOVE.B      #'$',(A4)+
-            CLR.L       D4          *Make sure D4 is clear
-            MOVE.L      (A5)+, D4   *Increment counter by WORD (grab word data)
+            CLR.L       D1          *Make sure D4 is clear
+            MOVE.L      (A5)+, D1   *Increment counter by WORD (grab word data)
             *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G 
+            JSR         L_H2A
             RTS
             
 IDATA       MOVE.B      #'#',(A4)+
-            CLR.L       D4          *Make sure D4 is clear
-            MOVE.W      (A5)+, D4   *Increment counter by WORD (grab word data)
+            CLR.L       D1          *Make sure D4 is clear
+            MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
             *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G
-            *Need to implement
+            JSR         W_H2A
+            
             RTS
+*============================================================
+*=========================HELPER SUBROUTINES=================
+*============================================================
 
+*-------------------------ABS Hex to Ascii-----------------
+* 
+*-----------------------------------------------------------
+W_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
+            CLR.L       D2          *Make sure D2 is empty (each individual char)
+            CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+            MOVE.B      #$4,D0      *Counter
+            BRA         W_ISO_DIG   *Begin isolating chars
+            
+W_ISO_DIG   ROL.W       #4,D1       *Move first significant hex char to least sig position
+            
+            MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
+            
+            MOVE.B      #12,D3      *Shift left 28 times
+            LSL.W       D3,D2       *Isolated hex digit now is $X0000000
+            ROL.W       #4,D2       *Isolated hex digit is now $0000000X
+            
+            CMPI.B      #$9,D2      *Is it a number?
+            BLE         W_NUM       *If it is, process number
+            BRA         W_LET       *If not, process letter
+            
+W_NUM       ADDI.B      #$30,D2     *Make it an ascii number
+            BRA         W_ADD_CHAR  *add to strings and continue
+            
+W_LET       ADDI.B      #$37,D2     *Make it an ascii letter
+            BRA         W_ADD_CHAR  *add to strings and continue
 
+W_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
+            SUBI.B      #$1,D0      *decrement counter
+            CMPI.B      #$0,D0      *Check if we're done            
+            BGT         W_ISO_DIG   *If not, continue tranlation   
+            
+            RTS
+*-------------------------ABS Hex to Ascii-----------------
+* 
+*-----------------------------------------------------------
+L_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
+            CLR.L       D2          *Make sure D2 is empty (each individual char)
+            CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+            MOVE.B      #$8,D0      *Counter
+            BRA         L_ISO_DIG   *Begin isolating chars
+            
+L_ISO_DIG   ROL.L       #4,D1       *Move first significant hex char to least sig position
+            
+            MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
+            
+            MOVE.B      #28,D3      *Shift left 28 times
+            LSL.L       D3,D2       *Isolated hex digit now is $X0000000
+            ROL.L       #4,D2       *Isolated hex digit is now $0000000X
+            
+            CMPI.B      #$9,D2      *Is it a number?
+            BLE         L_NUM       *If it is, process number
+            BRA         L_LET       *If not, process letter
+            
+L_NUM       ADDI.B      #$30,D2     *Make it an ascii number
+            BRA         L_ADD_CHAR  *add to strings and continue
+            
+L_LET       ADDI.B      #$37,D2     *Make it an ascii letter
+            BRA         L_ADD_CHAR  *add to strings and continue
 
-
+L_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
+            SUBI.B      #$1,D0      *decrement counter
+            CMPI.B      #$0,D0      *Check if we're done            
+            BGT         L_ISO_DIG   *If not, continue tranlation   
+            
+            RTS
 
 
 

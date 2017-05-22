@@ -1,6 +1,7 @@
         ORG    $7000
 
-START       SUB.B       D0,D7
+START       
+            SUB.B       D0,D7
             SUB.B       (A0),D1
             SUB.B       #123,D2
             SUB.B       (A1)+,D3
@@ -43,6 +44,7 @@ START       SUB.B       D0,D7
 
 
         END    START
+
 
 *~Font name~Courier New~
 *~Font size~10~
