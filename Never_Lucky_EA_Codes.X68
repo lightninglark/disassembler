@@ -18,7 +18,7 @@
 EA_SRC      JSR         GEN_EA_CODE *Deal with EA code First
             MOVE.B      #',',(A4)+
             MOVE.B      #'D',(A4)+
-            JSR         DN_CODE     *Decode Dn and add number to string
+            JSR         REG_CODE    *Decode Dn and add number to string
             RTS
 
 *---------------------DN SOURCE-----------------------------
@@ -26,7 +26,7 @@ EA_SRC      JSR         GEN_EA_CODE *Deal with EA code First
 * ADD, AND, OR, SUB
 *-----------------------------------------------------------
 DN_SRC      MOVE.B      #'D',(A4)+
-            JSR         DN_CODE     *Decode Dn and add number to string
+            JSR         REG_CODE     *Decode Dn and add number to string
             MOVE.B      #',',(A4)+
             JSR         GEN_EA_CODE *Deal with EA code Second
             RTS
@@ -102,7 +102,7 @@ MOV_EA_CODE
 * This function decides a DN to get the data register number
 * It then adds the number to the output strings
 *------------------------------------------------------------
-DN_CODE     CLR.L       D3          *Make sure D4 is empty to isolate Dn register
+REG_CODE    CLR.L       D3          *Make sure D4 is empty to isolate Dn register
             MOVE.W      D7,D3       *Copy untoched opcode into D3 for manipulation
             LSL.W       #4,D3       *Isolate bits and move to LSB position
             CLR.L       D2

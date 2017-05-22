@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/22/2017 10:27:55 AM
+Created On: 5/22/2017 10:53:49 AM
 
 00000000                             1  ************************************************************
 00000000                             2  * Title      : Never Lucky Disassembler
@@ -590,11 +590,11 @@ Created On: 5/22/2017 10:27:55 AM
 0000153C  4EB9 0000156E            586  EA_SRC      JSR         GEN_EA_CODE *Deal with EA code First
 00001542  18FC 002C                587              MOVE.B      #',',(A4)+
 00001546  18FC 0044                588              MOVE.B      #'D',(A4)+
-0000154A  4EB9 00001592            589              JSR         DN_CODE     *Decode Dn and add number to string
+0000154A  4EB9 00001592            589              JSR         REG_CODE    *Decode Dn and add number to string
 00001550  4E75                     590              RTS
 00001552                           591  
 00001552  18FC 0044                592  DN_SRC      MOVE.B      #'D',(A4)+
-00001556  4EB9 00001592            593              JSR         DN_CODE     *Decode Dn and add number to string
+00001556  4EB9 00001592            593              JSR         REG_CODE     *Decode Dn and add number to string
 0000155C  18FC 002C                594              MOVE.B      #',',(A4)+
 00001560  4EB9 0000156E            595              JSR         GEN_EA_CODE *Deal with EA code Second
 00001566  4E75                     596              RTS
@@ -634,7 +634,7 @@ Created On: 5/22/2017 10:27:55 AM
 00001590  4E75                     630              RTS
 00001592                           631              
 00001592                           632              
-00001592  4283                     633  DN_CODE     CLR.L       D3          *Make sure D4 is empty to isolate Dn register
+00001592  4283                     633  REG_CODE    CLR.L       D3          *Make sure D4 is empty to isolate Dn register
 00001594  3607                     634              MOVE.W      D7,D3       *Copy untoched opcode into D3 for manipulation
 00001596  E94B                     635              LSL.W       #4,D3       *Isolate bits and move to LSB position
 00001598  4282                     636              CLR.L       D2
@@ -903,7 +903,6 @@ CLEAN_GS            117E
 CONTINUE            10EA
 CR                  D
 DECODE_LOOP         10B6
-DN_CODE             1592
 DN_SRC              1552
 DONE                1256
 DRD                 15DC
@@ -1003,6 +1002,7 @@ PRINT_G             1224
 PRINT_GOOD          10D6
 PROC_END            106E
 PROC_STA            1062
+REG_CODE            1592
 REG_TBL             1640
 SPACER1             192A
 SPACER11            18EA
