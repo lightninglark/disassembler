@@ -3,7 +3,7 @@
 START       
             SUB.B       D0,D7
             SUB.B       (A0),D1
-            SUB.B       #123,D2
+            SUB.B       #12,D2
             SUB.B       (A1)+,D3
             SUB.B       -(A2),D4
             SUB.B       $1234,D5
@@ -29,7 +29,7 @@ START
             
             SUB.L       D0,D7
             SUB.L       (A0),D1
-            SUB.L       #123,D2
+            SUB.L       #123569,D2
             SUB.L       (A1)+,D3
             SUB.L       -(A2),D4
             SUB.L       $1234,D5
@@ -44,6 +44,7 @@ START
 
 
         END    START
+
 
 
 *~Font name~Courier New~

@@ -64,21 +64,21 @@ MM_LS_SRC   *Deal with list first
 *     MULS, AND, ADD, ADDA
 * Probably for: LSL/LSR, ASL/ASR,ROL/ROR.
 *
-*     - Isolates EA mode into D4
+*     - Isolates EA mode into D6
 *     - Isolates EA register into D3
 *     - initiates EA decode chain
 *-----------------------------------------------------------
 GEN_EA_CODE CLR.L       D3          *Make sure D3 is clear
-            CLR.L       D4          *Make sure D4 is clear
+            CLR.L       D6          *Make sure D6 is clear
             CLR.L       D1          *Make sure D1 is clear for shifting
             
             MOVE.W      D7,D3       *Move untouched opcode into D3
-            MOVE.W      D7,D4       *Move untouched opcode into D4
+            MOVE.W      D7,D6       *Move untouched opcode into D6
             
             MOVE.B      #10,D1      *Shifting to isolate MODE
-            LSL.W       D1,D4       
+            LSL.W       D1,D6       
             MOVE.B      #13,D1
-            LSR.W       D1,D4       *Move MODE bits to LSB position
+            LSR.W       D1,D6       *Move MODE bits to LSB position
             
             LSL.W       D1,D3       *Shifting to isolate REGISTER (#13 already in D1)
             LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
@@ -89,9 +89,9 @@ GEN_EA_CODE CLR.L       D3          *Make sure D3 is clear
 *-------------------------MOVE EA CODE-----------------------
 * For: MOVE, MOVEA
 *
-*     - Isolates Source Mode and Reg into D3, D4 respec.
+*     - Isolates Source Mode and Reg into D3, D6 respec.
 *     - initiates SOURCE decode chain
-*     - Isolates Dest Mode and REg into D3, and D4 respec.
+*     - Isolates Dest Mode and REg into D3, and D6 respec.
 *     - initiates DEST decode chain
 *-----------------------------------------------------------
 MOV_EA_CODE
@@ -102,7 +102,7 @@ MOV_EA_CODE
 * This function decides a DN to get the data register number
 * It then adds the number to the output strings
 *------------------------------------------------------------
-REG_CODE    CLR.L       D3          *Make sure D4 is empty to isolate Dn register
+REG_CODE    CLR.L       D3          *Make sure D3 is empty to isolate Dn register
             MOVE.W      D7,D3       *Copy untoched opcode into D3 for manipulation
             LSL.W       #4,D3       *Isolate bits and move to LSB position
             CLR.L       D2
@@ -117,21 +117,21 @@ REG_CODE    CLR.L       D3          *Make sure D4 is empty to isolate Dn registe
 
 *-------------------------EA_TBL----------------------------
 * This is a jump table for selecting the correct addressing
-* MODE which is in D3.
+* MODE which is in D6.
 * Possible Modes: Dn = 0, An = 1, (An) = 2, (An)+ = 3,
 *                  -(An) = 4, Absolutes = 111
 *-----------------------------------------------------------
-EA_TBL      CMP.B       #0,D4       *Select correct <EA> mode
+EA_TBL      CMP.B       #0,D6       *Select correct <EA> mode
             BEQ         DRD
-            CMP.B       #1,D4
+            CMP.B       #1,D6
             BEQ         ARD
-            CMP.B       #2,D4
+            CMP.B       #2,D6
             BEQ         ARI
-            CMP.B       #3,D4
+            CMP.B       #3,D6
             BEQ         ARI_INC
-            CMP.B       #4,D4
+            CMP.B       #4,D6
             BEQ         ARI_DEC
-            CMP.B       #7,D4
+            CMP.B       #7,D6
             BEQ         ABS_ADDR
             JMP         INVALID     *Got here? Must be bad data.
 
@@ -222,29 +222,97 @@ ABS_TBL     CMP.B       #0,D3       *Select correct number to add to output stri
 ABW         MOVE.B      #'$',(A4)+
             CLR.L       D1          *Make sure D1 is clear
             MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
-            *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G
             JSR         W_H2A       *convert absolute value to ascii and add to good string
             RTS
 
 ABL         MOVE.B      #'$',(A4)+
-            CLR.L       D1          *Make sure D4 is clear
+            CLR.L       D1          *Make sure D1 is clear
             MOVE.L      (A5)+, D1   *Increment counter by WORD (grab word data)
-            *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G 
             JSR         L_H2A
             RTS
             
 IDATA       MOVE.B      #'#',(A4)+
-            CLR.L       D1          *Make sure D4 is clear
-            MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
-            *Need to implement D4 -> ASCII -> GOOD string (or modify HEX_ASCII_G
-            JSR         W_H2A
-            
+            JSR         IMD_TBL
             RTS
+            
+*-------------------------IMD_TBL---------------------------
+* This is a jump table for selecting the correct Immediate
+* Data output based on the size code. Size code should be in
+* D4
+*-----------------------------------------------------------
+IMD_TBL     CMP.B       #0,D4       *Is it byte size code?
+            BEQ         B_IMD       
+            CMP.B       #4,D4
+            BEQ         B_IMD
+
+            CMP.B       #1,D4       *Is it a word size code?
+            BEQ         W_IMD
+            CMP.B       #5,D4
+            BEQ         W_IMD
+            
+            CMP.B       #2,D4       *Is it a long word size code?
+            BEQ         L_IMD
+            CMP.B       #6,D4
+            BEQ         L_IMD
+            
+            BRA         INVALID     *Got here? Must be bad data.
+            
+B_IMD       CLR.L       D1
+            MOVE.W      (A5)+,D1    *Make sure D1 is clear
+            JSR         B_H2A       *Incremeint by WORD (but translate byte only)
+            RTS
+
+W_IMD       CLR.L       D1          *Make sure D1 is clear
+            MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
+            JSR         W_H2A
+            RTS
+
+L_IMD       CLR.L       D1          *Make sure D1 is clear
+            MOVE.L      (A5)+, D1   *Increment counter by LONGWORD (grab LONGWORD data)
+            JSR         L_H2A
+            RTS
+                               
+
+
 *============================================================
 *=========================HELPER SUBROUTINES=================
 *============================================================
 
-*-------------------------ABS Hex to Ascii-----------------
+*-------------------------Byte Hex to Ascii-----------------
+* 
+*-----------------------------------------------------------
+B_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
+            CLR.L       D2          *Make sure D2 is empty (each individual char)
+            CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+            MOVE.B      #$2,D0      *Counter
+            BRA         B_ISO_DIG   *Begin isolating chars
+            
+B_ISO_DIG   ROL.W       #4,D1       *Move first significant hex char to least sig position
+            
+            MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
+            
+            MOVE.B      #12,D3      *Shift left 28 times
+            LSL.W       D3,D2       *Isolated hex digit now is $X0000000
+            ROL.W       #4,D2       *Isolated hex digit is now $0000000X
+            
+            CMPI.B      #$9,D2      *Is it a number?
+            BLE         B_NUM       *If it is, process number
+            BRA         B_LET       *If not, process letter
+            
+B_NUM       ADDI.B      #$30,D2     *Make it an ascii number
+            BRA         B_ADD_CHAR  *add to strings and continue
+            
+B_LET       ADDI.B      #$37,D2     *Make it an ascii letter
+            BRA         B_ADD_CHAR  *add to strings and continue
+
+B_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
+            SUBI.B      #$1,D0      *decrement counter
+            CMPI.B      #$0,D0      *Check if we're done            
+            BGT         B_ISO_DIG   *If not, continue tranlation   
+            
+            RTS
+
+*-------------------------Word Hex to Ascii-----------------
 * 
 *-----------------------------------------------------------
 W_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
@@ -277,7 +345,7 @@ W_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
             BGT         W_ISO_DIG   *If not, continue tranlation   
             
             RTS
-*-------------------------ABS Hex to Ascii-----------------
+*-------------------------Long Hex to Ascii-----------------
 * 
 *-----------------------------------------------------------
 L_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
@@ -310,6 +378,7 @@ L_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
             BGT         L_ISO_DIG   *If not, continue tranlation   
             
             RTS
+
 
 
 

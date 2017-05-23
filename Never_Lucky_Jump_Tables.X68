@@ -217,19 +217,15 @@ JMP_EX      JSR         INVALID     *Temp, remove once implemented
 *==================ID THIRD OPCODE DIGIT=====================
 *============================================================
    
-*OPC_04XX    JSR         INVALID     *Temp, remove once implemented
+OPC_04XX    JSR         INVALID     *Temp, remove once implemented
 
-*OPC_05XX    JSR         INVALID     *Temp, remove once implemented
+OPC_05XX    JSR         INVALID     *Temp, remove once implemented
 
 JMP_47X      
 *============================================================
 *==================OPCODE KNOWN, PRINTING====================
 *============================================================
-* 
 
-J_MOVEL     JSR         INVALID     *added just for compiling, remove once implemented
-
-J_MOVEAL    JSR         INVALID     *added just for compiling, remove once implemented
 
 
 *--------------------MOVE.B OPCODE---------------------------
@@ -407,6 +403,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 
 *~Font name~Courier New~
