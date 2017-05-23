@@ -250,6 +250,8 @@ OPC_5XXX    MOVE.B      #'A',(A4)+
             MOVE.B      #'Q',(A4)+
             MOVE.B      #'.',(A4)+
             *NEED to Determine sizes here
+            JSR         GET_SIZE_2
+            
             *JUMP to EACODE table
             RTS
 
@@ -273,7 +275,7 @@ OPC_9XXX    MOVE.B      #'S',(A4)+
             MOVE.B      #'.',(A4)+
             *NEED to Determine sizes here (opmode 3 bits)
             JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
-            JSR         ADD_SIZE    * This will add size characters and start operand decode sequence
+            JSR         OR_ADD_SIZE    * This will add size characters and start operand decode sequence
             *jump to EACODE table
             RTS
 
@@ -300,17 +302,31 @@ OPC_MOVEW  RTS
 *=====================HELPER SUBROUTINES====================
 *===========================================================
 
-**-----------------------INVALID (MARKED FOR REMOVAL)-------
-** THIS FUNCTION NEEDS SOME WORK. IT NEEDS:
-**       1. Flag as invalid
-**       2. JMP to ASCII translation of the address (that
-**          adds the ASCII characters to the BAD string).
-**       3. JMP to the Main loop for printing selection.
-**       THIS FUNCTION NEEDS TO BE A ELSE CASE FOR ALL JMP
-**       TABLES
-**-----------------------------------------------------------       
-*INVALID     MOVE.B      $FF,D6      *Invalid input flag
-*            JMP         PRINT_BAD   *Jump to print bad string immediatly.
+*--------------------ADD SIZE-------------------------------
+* A simple helper that looks at the size code in D4 to add
+* the appropriate B,W,L to the string.
+*-----------------------------------------------------------
+ADD_SIZE    CMP.B       #0,D4       *Is it a B, <ea>,dn
+            BEQ         B_SIZE
+            CMP.B       #1,D4       *Is it a W, <ea>,dn
+            BEQ         W_SIZE
+            CMP.B       #2,D4       *Is it a L, <ea>,dn
+            BEQ         L_SIZE 
+            
+B_SIZE      MOVE.B      #'B',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            RTS
+
+W_SIZE      MOVE.B      #'W',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            RTS
+
+L_SIZE      MOVE.B      #'L',(A4)+  *Add size character to good string
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            RTS
 
 *--------------------GET SIZE CODE--------------------------
 * The following three subroutines isolate the size bits for
@@ -351,7 +367,7 @@ GET_SIZE_1  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
 * Values 0, 1, 2 => B, W, L => <ea>,Dn => JSR EA_SRC
 * Values 4, 5, 6 => B, W, L => Dn,<ea> => JSR DN_SRC
 *-----------------------------------------------------------
-ADD_SIZE    CMP.B       #0,D4       *Is it a B, <ea>,dn
+OR_ADD_SIZE CMP.B       #0,D4       *Is it a B, <ea>,dn
             BEQ         B_EA
             CMP.B       #1,D4       *Is it a W, <ea>,dn
             BEQ         W_EA
