@@ -71,7 +71,7 @@ JMP_9       CMP.B       #$9,D2
             
 JMP_A       CMP.B       #$A,D2
             BNE         JMP_B
-            JSR         INVALID     *0xA is an invalid first hex digit. Jump to INVALID
+            JSR         INVALID     *0x A is an invalid first hex digit. Jump to INVALID
             RTS
             
 JMP_B       CMP.B       #$B,D2
@@ -97,9 +97,9 @@ JMP_E       CMP.B       #$F,D2      *If first hex value is not 0-D, it must be E
 *============================================================
 *==================ID SECOND OPCODE DIGIT====================
 *============================================================
-
+*------------------ Helper functions ------------------------
 * J_CLR4 prepares the data registers for data manipulation on the second input hex digit by isolating the next 4 bits:
-* %0000 XXXX 0000 0000 0000
+* %0000 XXXX 0000 0000
 J_CLR4      CLR.L       D2                                
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
@@ -108,7 +108,7 @@ J_CLR4      CLR.L       D2
             LSR.W       D1,D2       *Shifts 12 right to isolate the bits we're working with
             RTS                     *Return back to JMP_Xn    
             
-* J_CLR3 prepares the data registers for data manipulation on the second input hex digit by isolating the next 3 bits:
+* J_CLR3 prepares the data registers for data manipulation by isolating the next 3 bits:
 * %0000 XXX0 0000 0000 0000          
 J_CLR3      CLR.L       D2          
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
@@ -118,7 +118,17 @@ J_CLR3      CLR.L       D2
             LSR.W       D1,D2       *Shifts 13 right to isolate the bits we're working with 
             RTS                     *Return back to JMP_Xn  
 
-* J_CLR_DM prepares the data registers for data manipulation on the second input hex digit by isolating the DESTINATION MODE bits:
+* J_CLR1 prepares the data registers for data manipulation by isolating the rightmost bit of the second hex dig:
+* %0000 000X 0000 0000 0000                   
+J_CLR1  CLR.L       D2          
+        MOVE.W      D7,D2           *Copies D7 contents to D2 for manipulation
+        CLR.L       D1
+        LSL.W       #7,D2           *Clear the most sig 7 bits
+        MOVE.B      #16,D1          *Moves 16 into D1
+        LSR.W       D1,D2           *Shifts 16 right to isolate the bit we're working with 
+        RTS                         *Return back to JMP_Xn  
+     
+* J_CLR_DM prepares the data registers for data manipulation by isolating the DESTINATION MODE bits:
 * %0000 000X XX00 0000 0000          
 J_CLR_DM    CLR.L       D2          
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
@@ -127,13 +137,16 @@ J_CLR_DM    CLR.L       D2
             MOVE.B      #17,D1      *Moves 17 into D1
             LSR.W       D1,D2       *Shifts 17 right to isolate the bits we're working with 
             RTS                     *Return back to JMP_Xn     
-         
+ 
+*---------------End Helper functions ------------------------
+
+        
 *---------------------SUBI, ADDI-----------------------------
-JMP_0X      JSR         J_CLR4      *Prepare data registers for data manipulation on the second input hex digit
+JMP_0X      JSR         J_CLR4      *Isolate next hex digit
             CMP.B       #$4,D2      *Is the next hex digit 4?
             BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
             CMP.B       #$5,D2      *Is the next hex digit 5?
-            BEQ         J_ADDI     *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
+            BEQ         J_ADDI      *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
             JSR         INVALID     *If neither, OPCODE is invalid
             RTS
 
@@ -143,14 +156,52 @@ J_SUBI      JSR         OPC_04XX    *Jump to OPC_04XX in OPCODE table
 J_ADDI      JSR         OPC_05XX    *Jump to OPC_05XX in OPCODE table
             RTS              
 
-*---------------------MOVE.L, MOVEA.L-----------------------------
-JMP_2X      JSR         J_CLR_DM    *Prepare data registers for data manipulation on the DEST MODE digits
+*---------------------MOVE.L, MOVEA.L----------------------------- NOTE - NO INVALID CASE. Probably correct tho-
+JMP_2X      JSR         J_CLR_DM    *Isolate the destination mode bits %0000 000X XX00 0000 0000  
             CMP.B       #$1,D2      *is the DEST MODE 1?
-            BEQ         J_MOVEAL    *Instruction is determiend to be MOVEA.L                                     ================= < stopped at this point
-             
-JMP_3X      JSR         INVALID     *Temp, remove once implemented
+            BEQ         J_MOVEAL    *Instruction is determined to be MOVEA.L Jump to intermediate OPCODE table jump
+            JSR         J_MOVEL     *Otherwise, Instruction is determined to be MOVE.L Jump to intermediate OPCODE table jump
+            RTS
 
-JMP_4X      JSR         INVALID     *Temp, remove once implemented      
+J_MOVEAL    JSR         OPC_MOVEAL  *Jump to OPC_MOVEAL in OPCODE table
+            RTS
+
+J_MOVEL     JSR         OPC_MOVEL   *Jump to OPC_MOVEL in OPCODE table   
+            RTS                           
+*---------------------MOVE.W, MOVEA.W----------------------------- NOTE - NO INVALID CASE. Probably correct tho-             
+JMP_3X      JSR         J_CLR_DM    *Isolate the destination mode bits %0000 000X XX00 0000 0000  
+            CMP.B       #$1,D2      *is the DEST MODE 1?
+            BEQ         J_MOVEAW    *Instruction is determined to be MOVEA.W Jump to intermediate OPCODE table jump
+            JSR         J_MOVEW     *Otherwise, Instruction is determined to be MOVE.W Jump to intermediate OPCODE table jump
+            RTS
+
+J_MOVEAW    JSR         OPC_MOVEAW  *Jump to OPC_MOVEAW in OPCODE table
+            RTS
+
+J_MOVEW     JSR         OPC_MOVEW   *Jump to OPC_MOVEW in OPCODE table 
+            RTS
+*-----------------NOP, MOVEM, LEA, JSR, RTS-----------------------
+JMP_4X      JSR         J_CLR4      *Isolate next hex digit   
+            CMP.B       #7,D2       *Is the next hex digit 7?
+            BEQ         J_47X       *Instruction is determined to be NOP, JSR, or RTS. Jump to JMP_47X to determine.
+            JSR         J_CLR1      *Otherwise, isolate the %0000 000X 0000 0000 digit
+            CMP.B       #1,D2       *Is the last bit 1?
+            BEQ         J_LEA       *Instruction is determined to be LEA. Jump to intermediate OPCODE table jump 
+            CMP.B       #0,D2       *Is the last bit 0?
+            BEQ         J_MOVEM     *Instruction is determined to be MOVEM. Jump to intermediate OPCODE table jump 
+            JSR         INVALID     *If none of the above, OPCODE is invalid
+            RTS
+                                         
+            
+J_47X       JSR         JMP_47X     *Instruction is NOP, JSR, or RTS. Jump to JMP_47X to determine.
+            RTS
+            
+J_LEA       JSR         OPC_LEA     *Jump to OPC_LEA in the OPCODE table    
+            RTS
+            
+J_MOVEM     JSR         OPC_MOVEM   *Jump to OPC_MOVEM in the OPCODE table
+            RTS
+            
 
 JMP_6X      JSR         INVALID     *Temp, remove once implemented
 
@@ -165,11 +216,12 @@ JMP_EX      JSR         INVALID     *Temp, remove once implemented
 *============================================================
 *==================ID THIRD OPCODE DIGIT=====================
 *============================================================
+   
+*OPC_04XX    JSR         INVALID     *Temp, remove once implemented
 
-OPC_04XX    JSR         INVALID     *Temp, remove once implemented
+*OPC_05XX    JSR         INVALID     *Temp, remove once implemented
 
-OPC_05XX    JSR         INVALID     *Temp, remove once implemented
-
+JMP_47X      
 *============================================================
 *==================OPCODE KNOWN, PRINTING====================
 *============================================================
@@ -223,6 +275,25 @@ OPC_9XXX    MOVE.B      #'S',(A4)+
             JSR         ADD_SIZE    * This will add size characters and start operand decode sequence
             *jump to EACODE table
             RTS
+
+*------------------LEA OPCODE-------------------------------            
+OPC_LEA     RTS
+
+
+*------------------MOVEM OPCODE----------------------------- 
+OPC_MOVEM   RTS
+
+*------------------MOVEA.L OPCODE----------------------------
+OPC_MOVEAL  RTS
+
+*------------------MOVEM.L OPCODE----------------------------
+OPC_MOVEL   RTS
+
+*------------------MOVEA.W OPCODE----------------------------
+OPC_MOVEAW RTS
+
+*------------------MOVE.W OPCODE----------------------------
+OPC_MOVEW  RTS
 
 *===========================================================
 *=====================HELPER SUBROUTINES====================
@@ -336,6 +407,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 *~Font name~Courier New~
 *~Font size~10~
