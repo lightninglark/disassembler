@@ -93,8 +93,47 @@ GEN_EA_CODE CLR.L       D3          *Make sure D3 is clear
 *     - initiates SOURCE decode chain
 *     - Isolates Dest Mode and REg into D3, and D6 respec.
 *     - initiates DEST decode chain
+*     - Code flows like this:
+*       SOURCE
+*       SEPERATOR
+*       DESTINATION
 *-----------------------------------------------------------
-MOV_EA_CODE
+MOV_EA_CODE CLR.L       D3          *Make sure D3 is clear
+            CLR.L       D6          *Make sure D6 is clear
+            CLR.L       D1          *Make sure D1 is clear for shifting
+            
+            MOVE.W      D7,D3       *Move untouched opcode into D3
+            MOVE.W      D7,D6       *Move untouched opcode into D6
+            
+            MOVE.B      #10,D1      *Shifting to isolate MODE
+            LSL.W       D1,D6       
+            MOVE.B      #13,D1
+            LSR.W       D1,D6       *Move MODE bits to LSB position
+            
+            LSL.W       D1,D3       *Shifting to isolate REGISTER (#13 already in D1)
+            LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+            
+            JSR         EA_TBL      *Decode MODE to select correct <EA>
+            
+            MOVE.B      #',',(A4)+  *SEPERATOR
+            
+            CLR.L       D3          *Make sure D3 is clear
+            CLR.L       D6          *Make sure D6 is clear
+            CLR.L       D1          *Make sure D1 is clear for shifting
+            
+            MOVE.W      D7,D3       *Move untouched opcode into D3
+            MOVE.W      D7,D6       *Move untouched opcode into D6
+            
+            MOVE.B      #7,D1      *Shifting to isolate MODE
+            LSL.W       D1,D6       
+            MOVE.B      #13,D1
+            LSR.W       D1,D6       *Move MODE bits to LSB position
+            
+            LSL.W       #4,D3       *Shifting to isolate Dest REGISTER
+            LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+            
+            JSR         EA_TBL      *Decode MODE to select correct <EA>
+            
             RTS
             
             
@@ -232,6 +271,7 @@ ABL         MOVE.B      #'$',(A4)+
             RTS
             
 IDATA       MOVE.B      #'#',(A4)+
+            MOVE.B      #'$',(A4)+  *Immediate value will be in Hex
             JSR         IMD_TBL
             RTS
             
@@ -287,13 +327,13 @@ B_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
             MOVE.B      #$2,D0      *Counter
             BRA         B_ISO_DIG   *Begin isolating chars
             
-B_ISO_DIG   ROL.W       #4,D1       *Move first significant hex char to least sig position
+B_ISO_DIG   ROL.B       #4,D1       *Move first significant hex char to least sig position
             
             MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
             
-            MOVE.B      #12,D3      *Shift left 28 times
-            LSL.W       D3,D2       *Isolated hex digit now is $X0000000
-            ROL.W       #4,D2       *Isolated hex digit is now $0000000X
+            MOVE.B      #4,D3      *Shift left 28 times
+            LSL.B       D3,D2       *Isolated hex digit now is $X0000000
+            ROL.B       #4,D2       *Isolated hex digit is now $0000000X
             
             CMPI.B      #$9,D2      *Is it a number?
             BLE         B_NUM       *If it is, process number

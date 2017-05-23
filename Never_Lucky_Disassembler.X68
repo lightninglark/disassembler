@@ -114,8 +114,7 @@ INVALID     JSR         PRINT_B     *Jump to Pring bad string
 CONTINUE    CMP.W       A5,A6       *Check if we're done
             BEQ         END_OPT     *if we're done, move to end options (ask user what to do)
             
-            CLR.L       D6          *Clear the bad/good flag register
-            
+                        
             ADDQ.B      #1,D5       *Increment line counter
             CMP.B       #24,D5      *See if page is full
             BEQ         NEXT_PAGE   *Jump to next page prompt

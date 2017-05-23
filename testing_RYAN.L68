@@ -1,6 +1,6 @@
 00007000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/23/2017 3:58:01 PM
+Created On: 5/23/2017 4:38:07 PM
 
 00007000                             1          ORG    $7000
 00007000                             2  
@@ -43,11 +43,27 @@ Created On: 5/23/2017 3:58:01 PM
 00007068  919D                      39              SUB.L       D0,(A5)+
 0000706A  91B8 1111                 40              SUB.L       D0,$1111
 0000706E  91B9 12345678             41              SUB.L       D0,$12345678
-00007074                            42  
-00007074                            43                  
-00007074                            44  
-00007074                            45  
-00007074                            46          END    START
+00007074                            42              
+00007074  1200                      43              MOVE.B      D0,D1
+00007076  1001                      44              MOVE.B      D1,D0            
+00007078  1602                      45              MOVE.B      D2,D3
+0000707A  1403                      46              MOVE.B      D3,D2            
+0000707C  1A04                      47              MOVE.B      D4,D5
+0000707E  1805                      48              MOVE.B      D5,D4            
+00007080  1E06                      49              MOVE.B      D6,D7
+00007082  1C07                      50              MOVE.B      D7,D6
+00007084  11F8 1234 5678            51              MOVE.B      $1234,$5678            
+0000708A  13F9 ABCD1234 EFFE5678    52              MOVE.B      $ABCD1234,$EFFE5678
+00007094  103C 0069                 53              MOVE.B      #$69,D0
+00007098  1021                      54              MOVE.B      -(A1),D0
+0000709A  101A                      55              MOVE.B      (A2)+,D0
+0000709C  1013                      56              MOVE.B      (A3),D0
+0000709E                            57  
+0000709E                            58  
+0000709E                            59                  
+0000709E                            60  
+0000709E                            61  
+0000709E                            62          END    START
 
 No errors detected
 No warnings generated

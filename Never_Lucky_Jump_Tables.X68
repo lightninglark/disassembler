@@ -237,7 +237,10 @@ OPC_1XXX    MOVE.B      #'M',(A4)+
             MOVE.B      #'B',(A4)+
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
-            *JUMP to EACODE table
+            *YOU DO NOT NEED TO MANUALLY SET SIZE CODE IF YOU USE A
+            *GET SIZE SUBROUTINE CALL.
+            CLR.L       D4          *Manually set size to byte (D4 = 0)
+            JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
             RTS
 
 *--------------------ADDQ OPCODE----------------------------
@@ -258,6 +261,8 @@ OPC_7XXX    MOVE.B      #'M',(A4)+
             MOVE.B      #'Q',(A4)+
             MOVE.B      #'.',(A4)+
             MOVE.B      #'L',(A4)+
+            
+            *Needs special EA decode logic
             *jump to EACODE table
             RTS
 

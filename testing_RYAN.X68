@@ -39,6 +39,22 @@ START
             SUB.L       D0,(A5)+
             SUB.L       D0,$1111
             SUB.L       D0,$12345678
+            
+            MOVE.B      D0,D1
+            MOVE.B      D1,D0            
+            MOVE.B      D2,D3
+            MOVE.B      D3,D2            
+            MOVE.B      D4,D5
+            MOVE.B      D5,D4            
+            MOVE.B      D6,D7
+            MOVE.B      D7,D6
+            MOVE.B      $1234,$5678            
+            MOVE.B      $ABCD1234,$EFFE5678
+            MOVE.B      #$69,D0
+            MOVE.B      -(A1),D0
+            MOVE.B      (A2)+,D0
+            MOVE.B      (A3),D0
+
 
                 
 
