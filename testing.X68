@@ -15,7 +15,18 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             LEA         (A4),A5
             LEA         (A6),A7
             LEA         (A7),A2
-            LEA         (A2),A0            
+            LEA         (A2),A0        
+
+            BCS         $FF
+            BEQ         $FF
+            BGE         $FF
+            BGT         $FF
+            BHI         $FF
+            BLE         $FF
+            BLS         $FF
+            BLT         $FF
+            BMI         $FF
+            BNE         $FF    
             
             ADD.B       D0,D7
             ADD.B       (A0),D1
@@ -28,7 +39,22 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             ADD.B       D0,-(A4)
             ADD.B       D0,(A5)+
             ADD.B       D0,$1111
-            ADD.B       D0,$12345678
+            ADD.B       D0,$12345678         
+                        
+            BCC         $00
+            BCS         $00
+            BEQ         $00
+            BGE         $00
+            BGT         $00
+            BHI         $00
+            BLE         $00
+            BLS         $00
+            BLT         $00
+            BMI         $00
+            BNE         $00
+            BPL         $00
+            BVC         $00
+            BVS         $00
             
             ADD.W       D0,D7
             ADD.W       (A0),D1
@@ -42,6 +68,10 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             ADD.W       D0,(A5)+
             ADD.W       D0,$1111
             ADD.W       D0,$12345678
+            
+            BPL         $FF
+            BVC         $FF
+            BVS         $FF
                      
             ADD.L       D0,D7
             ADD.L       (A0),D1
@@ -55,6 +85,21 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             ADD.L       D0,(A5)+
             ADD.L       D0,$1111
             ADD.L       D0,$12345678
+            
+            BCC         $12
+            BCS         $23
+            BEQ         $34
+            BGE         $45
+            BGT         $56
+            BHI         $67
+            BLE         $78
+            BLS         $89
+            BLT         $9A
+            BMI         $AB
+            BNE         $BC
+            BPL         $CD
+            BVC         $DE
+            BVS         $EF
             
             SUB.B       D0,D7
             SUB.B       (A0),D1
@@ -388,7 +433,7 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             MOVEA.L     $5678CDEF,A0
             MOVEA.L     #$ABCD,A0
             
-            MOVEQ.L     #$9,D0           
+            MOVEQ.L     #$69,D0           
             MOVEQ.L     #$69,D1           
             MOVEQ.L     #$69,D2       
             MOVEQ.L     #$69,D3           
@@ -1468,7 +1513,6 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             ROR.L       D5,D7
             ROR.L       D6,D7    
             ROR.L       D7,D7
-         
             
             JSR         $1234
             JSR         $ABCD5678
@@ -1480,7 +1524,6 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
 * Put variables and constants here
 
     END    START        ; last line of source
-
 
 
 
