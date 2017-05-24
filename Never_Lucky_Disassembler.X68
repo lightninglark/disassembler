@@ -199,7 +199,7 @@ CLEAN_GS    CLR.L       D0
 
 GS_LOOP     CMPI.B      #0,D0       *Add spaces to the end of string to push out old chars
             BEQ         D_CLEAN
-            MOVE.B      #' ',(A4)+
+            CLR.B       (A4)+
             SUBI.B      #$1,D0
             BRA         GS_LOOP
 D_CLEAN     RTS

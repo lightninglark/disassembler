@@ -266,6 +266,8 @@ OPC_7XXX    MOVE.B      #'M',(A4)+
             MOVE.B      #'.',(A4)+
             MOVE.B      #'L',(A4)+
             
+            JSR         MOVEQ_EA     *Start the EA/opderand decode logic for moveq
+            
             *Needs special EA decode logic
             *jump to EACODE table
             RTS

@@ -388,7 +388,7 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             MOVEA.L     $5678CDEF,A0
             MOVEA.L     #$ABCD,A0
             
-            MOVEQ.L     #$69,D0           
+            MOVEQ.L     #$9,D0           
             MOVEQ.L     #$69,D1           
             MOVEQ.L     #$69,D2       
             MOVEQ.L     #$69,D3           
@@ -1480,6 +1480,7 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

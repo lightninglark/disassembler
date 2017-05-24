@@ -318,6 +318,33 @@ L_IMD       CLR.L       D1          *Make sure D1 is clear
 *Include: ADDQ, MOVEQ
 *============================================================
 
+*---------------------MOVEQ_EA-------------------------------
+* Logic for the MOVEQ.L OPCODE to produce an operand.
+* D2/D3/D6 avaliable for shifting
+* Data must end up in D1 before longword to ascii trans
+*-----------------------------------------------------------
+MOVEQ_EA    CLR.L       D1          *Make sure D1 is clear
+            MOVE.W      D7,D1       *copy original opcode
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #'#',(A4)+
+            MOVE.B      #'$',(A4)+
+            JSR         B_H2A       *Add data in 8 least sig bits (byte)
+            MOVE.B      #',',(A4)+
+            MOVE.B      #'D',(A4)+
+            
+            CLR.L       D1
+            MOVE.B      #13,D1
+            LSL.W       #4,D3       *Shifting to isolate Dest REGISTER
+            LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+            
+            JSR         REG_CODE    *Decode Dn and add number to string            
+
+            RTS
+            
+            
+
+
 *---------------------ADDQ_EA-------------------------------
 * Logic for the ADDQ OPCODE to produce an operand.
 * D1/D2/D3/D6 avaliable for shifting
@@ -387,7 +414,7 @@ INV_DATA *need to implement currently invalid data is treated as an invalid opco
 
 
 *-------------------------Byte Hex to Ascii-----------------
-* 
+* Converts a Byte value hex address to ascii in D1
 *-----------------------------------------------------------
 B_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
             CLR.L       D2          *Make sure D2 is empty (each individual char)
@@ -421,7 +448,7 @@ B_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
             RTS
 
 *-------------------------Word Hex to Ascii-----------------
-* 
+* Converts a Word length hex value to ASCII in D1
 *-----------------------------------------------------------
 W_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
             CLR.L       D2          *Make sure D2 is empty (each individual char)
@@ -454,7 +481,7 @@ W_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
             
             RTS
 *-------------------------Long Hex to Ascii-----------------
-* 
+* Converts a Longword hex sequence to ascii in D1
 *-----------------------------------------------------------
 L_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
             CLR.L       D2          *Make sure D2 is empty (each individual char)
