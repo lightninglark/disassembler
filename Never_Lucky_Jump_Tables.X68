@@ -250,7 +250,9 @@ OPC_5XXX    MOVE.B      #'A',(A4)+
             MOVE.B      #'Q',(A4)+
             MOVE.B      #'.',(A4)+
             *NEED to Determine sizes here
-            JSR         GET_SIZE_2
+            JSR         GET_SIZE_2   *Get size code (placed in D4)
+            JSR         ADD_SIZE     *Add size character to string (B/W/L)
+            
             
             *JUMP to EACODE table
             RTS
@@ -385,19 +387,19 @@ OR_ADD_SIZE CMP.B       #0,D4       *Is it a B, <ea>,dn
 B_EA        MOVE.B      #'B',(A4)+  *Add size character to good string
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
-            JSR         EA_SRC      *Move to EA_SRC to start parameter decode sequence
+            JSR         EA_SRC_DDES *Move to EA_SRC to start parameter decode sequence
             RTS
 
 W_EA        MOVE.B      #'W',(A4)+  *Add size character to good string
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
-            JSR         EA_SRC      *Move to EA_SRC to start parameter decode sequence
+            JSR         EA_SRC_DDES *Move to EA_SRC to start parameter decode sequence
             RTS
 
 L_EA        MOVE.B      #'L',(A4)+  *Add size character to good string
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
-            JSR         EA_SRC      *Move to EA_SRC to start parameter decode sequence
+            JSR         EA_SRC_DDES *Move to EA_SRC to start parameter decode sequence
             RTS
 
 B_DN        MOVE.B      #'B',(A4)+  *Add size character to good string

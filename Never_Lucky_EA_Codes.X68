@@ -15,7 +15,7 @@
 * Logic for an EA source operand for opcodes: 
 * ADD, AND, OR, SUB
 *-----------------------------------------------------------
-EA_SRC      JSR         GEN_EA_CODE *Deal with EA code First
+EA_SRC_DDES JSR         GEN_EA_CODE *Deal with EA code First
             MOVE.B      #',',(A4)+
             MOVE.B      #'D',(A4)+
             JSR         REG_CODE    *Decode Dn and add number to string
