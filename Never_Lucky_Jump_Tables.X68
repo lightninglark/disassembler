@@ -3,16 +3,16 @@
 * This file includes OPCODE logic (OPCODE and size decoding)
 ************************************************************
 
-*============================================================
-*===================ID FIRST OPCODE DIGIT====================
-*============================================================
-
 *-----------------------JMP_TBL------------------------------
 * Purpose: JMP_TBL takes a data register input (D7) and navigates to the correct OPCODE table
 *          entry.
 *          $FF is saved to D6 if OPCode is determined to be incorrect
 * Assumption: Whenever JMP_TBL is called, D7 contains the next new machine code instruction
 *------------------------------------------------------------
+
+*============================================================
+*===================ID FIRST OPCODE DIGIT====================
+*============================================================
 JMP_TBL     CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
@@ -26,7 +26,7 @@ JMP_0       CMP.B       #$0,D2      *Following section determines what hex value
             
 JMP_1       CMP.B       #$1,D2
             BNE         JMP_2       *If the first hex value is not 2, branch and see if its 3, and so on
-            JSR         OPC_1XXX    *If the first hex value is 1, the instruction is determined to be MOVE.B. Jump to OPC_1XXX in OPCODE table.
+            JSR         OPC_MOVEB   *If the first hex value is 1, the instruction is determined to be MOVE.B. Jump to OPC_MOVEB in OPCODE table.
             RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
            
 JMP_2       CMP.B       #$2,D2
@@ -46,7 +46,7 @@ JMP_4       CMP.B       #$4,D2      *Where NOP SHOULD LAND
             
 JMP_5       CMP.B       #$5,D2
             BNE         JMP_6
-            JSR         OPC_5XXX    *If the first hex digit is 5, the instruction is determined to be ADDQ. Jump to OPC_5XXX in OPCODE table.
+            JSR         OPC_ADDQ    *If the first hex digit is 5, the instruction is determined to be ADDQ. Jump to OPC_ADDQ in OPCODE table.
             RTS
             
 JMP_6       CMP.B       #$6,D2
@@ -56,7 +56,7 @@ JMP_6       CMP.B       #$6,D2
             
 JMP_7       CMP.B       #$7,D2
             BNE         JMP_8
-            JSR         OPC_7XXX    *If the first hex digit is 7, the instruction is determined to be MOVEQ. Jump to OPC_7XXX in OPCODE table.
+            JSR         OPC_MOVEQ    *If the first hex digit is 7, the instruction is determined to be MOVEQ. Jump to OPC_MOVEQ in OPCODE table.
             RTS
             
 JMP_8       CMP.B       #$8,D2
@@ -129,6 +129,7 @@ J_CLR1  CLR.L       D2
         RTS                         *Return back to JMP_Xn  
      
 * J_CLR_DM prepares the data registers for data manipulation by isolating the DESTINATION MODE bits:
+* Also alternatively known as the OPMODE bits for some OPCODES: OR, DIVU, SUB, etc
 * %0000 000X XX00 0000 0000          
 J_CLR_DM    CLR.L       D2          
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
@@ -150,13 +151,15 @@ JMP_0X      JSR         J_CLR4      *Isolate next hex digit
             JSR         INVALID     *If neither, OPCODE is invalid
             RTS
 
-J_SUBI      JSR         OPC_04XX    *Jump to OPC_04XX in OPCODE table
+J_SUBI      JSR         OPC_SUBI    *Jump to OPC_SUBI in OPCODE table
             RTS
             
-J_ADDI      JSR         OPC_05XX    *Jump to OPC_05XX in OPCODE table
+J_ADDI      JSR         OPC_ADDI    *Jump to OPC_ADDI in OPCODE table
             RTS              
 
-*---------------------MOVE.L, MOVEA.L----------------------------- NOTE - NO INVALID CASE. Probably correct tho-
+*---------------------MOVE.L, MOVEA.L----------------------------- 
+* NOTE - NO INVALID CASE. Probably correct tho-
+
 JMP_2X      JSR         J_CLR_DM    *Isolate the destination mode bits %0000 000X XX00 0000 0000  
             CMP.B       #$1,D2      *is the DEST MODE 1?
             BEQ         J_MOVEAL    *Instruction is determined to be MOVEA.L Jump to intermediate OPCODE table jump
@@ -168,7 +171,9 @@ J_MOVEAL    JSR         OPC_MOVEAL  *Jump to OPC_MOVEAL in OPCODE table
 
 J_MOVEL     JSR         OPC_MOVEL   *Jump to OPC_MOVEL in OPCODE table   
             RTS                           
-*---------------------MOVE.W, MOVEA.W----------------------------- NOTE - NO INVALID CASE. Probably correct tho-             
+*---------------------MOVE.W, MOVEA.W----------------------------- 
+* NOTE - NO INVALID CASE. Probably correct tho- 
+            
 JMP_3X      JSR         J_CLR_DM    *Isolate the destination mode bits %0000 000X XX00 0000 0000  
             CMP.B       #$1,D2      *is the DEST MODE 1?
             BEQ         J_MOVEAW    *Instruction is determined to be MOVEA.W Jump to intermediate OPCODE table jump
@@ -182,7 +187,7 @@ J_MOVEW     JSR         OPC_MOVEW   *Jump to OPC_MOVEW in OPCODE table
             RTS
 *-----------------NOP, MOVEM, LEA, JSR, RTS-----------------------
 JMP_4X      JSR         J_CLR4      *Isolate next hex digit   
-            CMP.B       #7,D2       *Is the next hex digit 7?
+            CMP.B       #$E,D2      *Is the next hex digit E?
             BEQ         J_47X       *Instruction is determined to be NOP, JSR, or RTS. Jump to JMP_47X to determine.
             JSR         J_CLR1      *Otherwise, isolate the %0000 000X 0000 0000 digit
             CMP.B       #1,D2       *Is the last bit 1?
@@ -190,8 +195,7 @@ JMP_4X      JSR         J_CLR4      *Isolate next hex digit
             CMP.B       #0,D2       *Is the last bit 0?
             BEQ         J_MOVEM     *Instruction is determined to be MOVEM. Jump to intermediate OPCODE table jump 
             JSR         INVALID     *If none of the above, OPCODE is invalid
-            RTS
-                                         
+            RTS                                         
             
 J_47X       JSR         JMP_47X     *Instruction is NOP, JSR, or RTS. Jump to JMP_47X to determine.
             RTS
@@ -202,14 +206,52 @@ J_LEA       JSR         OPC_LEA     *Jump to OPC_LEA in the OPCODE table
 J_MOVEM     JSR         OPC_MOVEM   *Jump to OPC_MOVEM in the OPCODE table
             RTS
             
+*------------------Bcc(BCC, BLT, BGE), BRA------------------------
+JMP_6X      JSR         J_CLR4       *Isolate next hex digit 
+            CMP.B       #0,D2        *Is the next hex digit 0?
+            BEQ         J_BRA        *Instruction is determined to be BRA. Jump to intermediate OPCODE table jump
+            JSR         J_Bcc        *Otherwise, Instruction is determined to be some form of Bcc. Jump to intermediate OPCODE table jump
+            RTS
+            
+J_BRA       JSR         OPC_BRA      *Jump to OPC_BRA in the OPCODE table  
 
-JMP_6X      JSR         INVALID     *Temp, remove once implemented
+            RTS
 
-JMP_8X      JSR         INVALID     *Temp, remove once implemented
+J_Bcc       JSR         OPC_Bcc      *Jump to OPC_Bcc in the OPCODE table  
 
-JMP_CX      JSR         INVALID     *Temp, remove once implemented
+            RTS
+            
+*------------------------OR, DIVU---------------------------------     
+JMP_8X      JSR         J_CLR_DM    *Isolate the OPMODE bits %0000 000X XX00 0000 0000
+            CMP.B       #3,D2       *Are the bits equivalent to $3?
+            BEQ         J_DIVU      *Instruction is determined to be DIVU. Jump to intermediate OPCODE table jump
+            JSR         J_OR        *Otherwise, Instruction is determined to be OR. Jump to intermediate OPCODE table jump
+            RTS
 
+J_DIVU      JSR         OPC_DIVU    *Jump to OPC_DIVU in the OPCODE table  
+            RTS
+            
+J_OR        JSR         OPC_OR      *Jump to OPC_OR in the OPCODE table  
+            RTS
+
+*-----------------------MULS, AND---------------------------------  
+JMP_CX      JSR         J_CLR_DM    *Isolate the OPMODE bits %0000 000X XX00 0000 0000
+            CMP.B       #7,D2       *Are the bits equivalent to $7?
+            BEQ         J_MULS      *Instruction is determined to be MULS. Jump to intermediate OPCODE table jump
+            JSR         J_AND       *Otherwise, Instruction is determined to be AND. Jump to intermediate OPCODE table jump
+            RTS
+
+J_MULS      JSR         OPC_MULS    *Jump to OPC_MULS in the OPCODE table  
+            RTS
+            
+J_AND       JSR         OPC_AND     *Jump to OPC_AND in the OPCODE table  
+
+
+*-----------------------ADD, ADDA--------------------------------
 JMP_DX      JSR         INVALID     *Temp, remove once implemented
+
+
+*------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
 
 JMP_EX      JSR         INVALID     *Temp, remove once implemented
 
@@ -217,19 +259,23 @@ JMP_EX      JSR         INVALID     *Temp, remove once implemented
 *==================ID THIRD OPCODE DIGIT=====================
 *============================================================
    
-OPC_04XX    JSR         INVALID     *Temp, remove once implemented
 
-OPC_05XX    JSR         INVALID     *Temp, remove once implemented
 
 JMP_47X      
 *============================================================
-*==================OPCODE KNOWN, PRINTING====================
+*=====================OPCODE TABLE===========================
+*================OPCODE KNOWN, PRINTING======================
 *============================================================
 
+*---------------------SUBI OPCODE----------------------------
+OPC_SUBI    JSR         INVALID     *To be implemented
 
+
+*---------------------ADDI OPCODE----------------------------
+OPC_ADDI    JSR         INVALID     *To be implemented
 
 *--------------------MOVE.B OPCODE---------------------------
-OPC_1XXX    MOVE.B      #'M',(A4)+
+OPC_MOVEB    MOVE.B      #'M',(A4)+
             MOVE.B      #'O',(A4)+
             MOVE.B      #'V',(A4)+
             MOVE.B      #'E',(A4)+
@@ -244,7 +290,7 @@ OPC_1XXX    MOVE.B      #'M',(A4)+
             RTS
 
 *--------------------ADDQ OPCODE----------------------------
-OPC_5XXX    MOVE.B      #'A',(A4)+
+OPC_ADDQ    MOVE.B      #'A',(A4)+
             MOVE.B      #'D',(A4)+
             MOVE.B      #'D',(A4)+
             MOVE.B      #'Q',(A4)+
@@ -258,7 +304,7 @@ OPC_5XXX    MOVE.B      #'A',(A4)+
             RTS
 
 *------------------MOVEQ OPCODE-----------------------------
-OPC_7XXX    MOVE.B      #'M',(A4)+
+OPC_MOVEQ   MOVE.B      #'M',(A4)+
             MOVE.B      #'O',(A4)+
             MOVE.B      #'V',(A4)+
             MOVE.B      #'E',(A4)+
@@ -290,17 +336,39 @@ OPC_LEA     RTS
 *------------------MOVEM OPCODE----------------------------- 
 OPC_MOVEM   RTS
 
+
 *------------------MOVEA.L OPCODE----------------------------
 OPC_MOVEAL  RTS
+
 
 *------------------MOVEM.L OPCODE----------------------------
 OPC_MOVEL   RTS
 
+
 *------------------MOVEA.W OPCODE----------------------------
-OPC_MOVEAW RTS
+OPC_MOVEAW  RTS
+
 
 *------------------MOVE.W OPCODE----------------------------
-OPC_MOVEW  RTS
+OPC_MOVEW   RTS
+
+
+*---------------------BRA OPCODE----------------------------
+OPC_BRA     RTS
+
+
+*---------------------Bcc OPCODE----------------------------
+OPC_Bcc     RTS
+
+
+*--------------------DIVU OPCODE----------------------------
+OPC_DIVU    RTS
+
+
+*---------------------OR OPCODE-----------------------------
+OPC_OR      RTS
+
+
 
 *===========================================================
 *=====================HELPER SUBROUTINES====================
@@ -428,6 +496,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 
 
