@@ -11,7 +11,8 @@
 * AN_DEST, DATA_SRC (But maybe not since we'll know the 
 * specific order of operands for those functions.
 
-*---------------------EA SOURCE-----------------------------
+
+*---------------------EA SOURCE with Dn dest----------------
 * Logic for an EA source operand for opcodes: 
 * ADD, AND, OR, SUB
 *-----------------------------------------------------------
@@ -312,11 +313,78 @@ L_IMD       CLR.L       D1          *Make sure D1 is clear
             JSR         L_H2A
             RTS
                                
+*============================================================
+*=========================HELPER SUBROUTINES=================
+*Include: ADDQ, MOVEQ
+*============================================================
 
+*---------------------ADDQ_EA-------------------------------
+* Logic for the ADDQ OPCODE to produce an operand.
+* D1/D2/D3/D6 avaliable for shifting
+*-----------------------------------------------------------
+ADDQ_EA     CLR.L       D1          *Make sure D1 is clear
+            MOVE.W      D7,D1       *Move untoched opcode into D1 for Manipulation
+            
+            LSL.W       #4,D1       *Clear more sig bits
+            CLR.L       D2          * for shifting
+            MOVE.B      #13,D2      *To move data bits into lsb
+            LSR.W       D2,D1       *Data now in lsb
+            
+            MOVE.B      #'#',(A4)+
+            MOVE.B      #'$',(A4)+
+            JSR         ADDQ_ID     *Jump to ADDQ_ID (immeidate data selector)
+            MOVE.B      #',',(A4)+  *Add seperator
+            JSR         GEN_EA_CODE *Add the ea code
+            
+            RTS
+*---------------------ADDQ_ID-------------------------------
+* A simple immeidate data selector for ADDQ. Simply adds
+* the the correct character (1 thru 8) to good string based
+* on data bits in D1
+*-----------------------------------------------------------
+ADDQ_ID     CMP.B       #0,D1       *Select correct number to add to output strings
+            BEQ         AQ_0
+            CMP.B       #1,D1
+            BEQ         AQ_1
+            CMP.B       #2,D1
+            BEQ         AQ_2
+            CMP.B       #3,D1
+            BEQ         AQ_3
+            CMP.B       #4,D1
+            BEQ         AQ_4
+            CMP.B       #5,D1
+            BEQ         AQ_5
+            CMP.B       #6,D1
+            BEQ         AQ_6
+            CMP.B       #7,D1
+            BEQ         AQ_7
+            
+AQ_0        MOVE.B      #'8',(A4)+
+            RTS              
+AQ_1        MOVE.B      #'1',(A4)+
+            RTS
+AQ_2        MOVE.B      #'2',(A4)+
+            RTS
+AQ_3        MOVE.B      #'3',(A4)+
+            RTS
+AQ_4        MOVE.B      #'4',(A4)+
+            RTS
+AQ_5        MOVE.B      #'5',(A4)+
+            RTS
+AQ_6        MOVE.B      #'6',(A4)+
+            RTS
+AQ_7        MOVE.B      #'7',(A4)+
+            RTS
 
 *============================================================
 *=========================HELPER SUBROUTINES=================
 *============================================================
+
+*-------------------------INVALID DATA----------------------
+* This subroutine adds invalid data to invalid string.
+*-----------------------------------------------------------
+INV_DATA *need to implement currently invalid data is treated as an invalid opcode.
+
 
 *-------------------------Byte Hex to Ascii-----------------
 * 

@@ -252,7 +252,7 @@ OPC_5XXX    MOVE.B      #'A',(A4)+
             *NEED to Determine sizes here
             JSR         GET_SIZE_2   *Get size code (placed in D4)
             JSR         ADD_SIZE     *Add size character to string (B/W/L)
-            
+            JSR         ADDQ_EA      *Start the EA/operand decode logic
             
             *JUMP to EACODE table
             RTS
