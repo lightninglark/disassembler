@@ -81,7 +81,8 @@ JMP_B       CMP.B       #$B,D2
             
 JMP_C       CMP.B       #$C,D2
             BNE         JMP_D
-            JSR         JMP_CX      *If the first hex value is C, jump to JMP_CX to determine the next set of digits
+            JSR         JMP_CX
+      *If the first hex value is C, jump to JMP_CX to determine the next set of digits
             RTS
             
 JMP_D       CMP.B       #$D,D2
@@ -92,6 +93,8 @@ JMP_D       CMP.B       #$D,D2
 JMP_E       CMP.B       #$F,D2      *If first hex value is not 0-D, it must be E(valid) or F(invalid)
             BEQ         INVALID     *If first hex value is F, jump to INVALID
             JSR         JMP_EX      *If the first hex value is E, jump to JMP_EX to determine the next set of digits
+            
+            JMP         INVALID     *Got here? Must be invalid.
             RTS
  
 *============================================================
@@ -139,7 +142,7 @@ J_CLR1  CLR.L       D2
         RTS                         *Return back to JMP_Xn  
      
 * J_CLR_DM prepares the data registers for data manipulation by isolating the DESTINATION MODE bits:
-* Also alternatively known as the OPMODE bits for some OPCODES: OR, DIVU, SUB, etc
+* Also alternatively known as the OPMODE bits for some OPCODES: OR, DIVU, SUB, ADDA, ADD
 * %0000 000X XX00 0000 0000          
 J_CLR_DM    CLR.L       D2          
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
@@ -258,12 +261,41 @@ J_AND       JSR         OPC_AND     *Jump to OPC_AND in the OPCODE table
             RTS
 
 *-----------------------ADD, ADDA--------------------------------
-JMP_DX      JSR         INVALID     *Temp, remove once implemented
-
+JMP_DX      JSR         J_CLR_DM    *Isolate OPMODE bits to determine if ADD or ADDA
+            CLR.L       D4          *For adding size (easy to do it here).
+            MOVE.B      #1,D4       *Set size to WORD
+            CMP.B       #3,D2       *Is it Word ADDA?
+            BEQ         OP_ADDA
+            MOVE.B      #2,D4       *set size to LONG
+            CMP.B       #7,D2       *is it Long ADDA?
+            BEQ         OP_ADDA
+            
+            CLR.L       D4          *Not ADDA? Clear the manual size sets
+            
+            CMP.B       #0,D4       Is it ADD?
+            BEQ         OP_ADD
+            CMP.B       #1,D4       
+            BEQ         OP_ADD
+            CMP.B       #2,D4       
+            BEQ         OP_ADD
+            CMP.B       #4,D4 
+            BEQ         OP_ADD
+            CMP.B       #5,D4     
+            BEQ         OP_ADD
+            CMP.B       #6,D4     
+            BEQ         OP_ADD       
+         
+            BRA         INVALID     *Got here, must be invalid data.    
+            
+OP_ADDA     JSR         OPC_ADDA
+            RTS
+            
+OP_ADD      JSR         OPC_ADD
+            RTS
 
 *------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
 
-JMP_EX      JSR         INVALID     *Temp, remove once implemented
+JMP_EX      JMP         INVALID     
 
 *============================================================
 *==================ID THIRD OPCODE DIGIT=====================
@@ -491,6 +523,7 @@ OPC_DIVU    MOVE.B      #'D',(A4)+
 *---------------------OR OPCODE-----------------------------
 OPC_OR      MOVE.B      #'O',(A4)+
             MOVE.B      #'R',(A4)+
+            MOVE.B      #'.',(A4)+
 
             JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
             
@@ -505,11 +538,50 @@ OPC_MULS    MOVE.B      #'M',(A4)+
             MOVE.B      #'S',(A4)+
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
-            *Need to implement.
+            
+            CLR.L       D4          *Manually set size to byte (D4 = 0)
+            MOVE.B      #1,D4       *Set size code to word
+            
+            JSR         EASRC_DDES  *Jump to <ea>,Dn
+            
             RTS
 
 *---------------------AND  OPCODE---------------------------
-OPC_AND     RTS
+OPC_AND     MOVE.B      #'A',(A4)+
+            MOVE.B      #'N',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'.',(A4)+
+
+            JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+            
+            JSR         OR_ADD_SIZE *This will add size characters and start operand decode sequence
+
+            RTS
+            
+*-------------------ADDA OPCODE-----------------------------
+OPC_ADDA    MOVE.B      #'A',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'A',(A4)+
+            MOVE.B      #'.',(A4)+
+            
+            JSR         ADD_SIZE    *Size should already be in D4 (special case for ADDA)
+            
+            JSR         EASRC_ADES  *Start operand decode for <ea>,An format
+            
+            RTS
+
+*--------------------ADD OPCODE-----------------------------
+OPC_ADD     MOVE.B      #'A',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'.',(A4)+
+
+            JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+            
+            JSR         OR_ADD_SIZE *This will add size characters and start operand decode sequence
+
+            RTS
 
 *--------------------JSR OPCODE-----------------------------
 OPC_JSR     MOVE.B      #'J',(A4)+
@@ -689,11 +761,11 @@ BCC_LE      MOVE.B      #'L',(A4)+
 * A simple helper that looks at the size code in D4 to add
 * the appropriate B,W,L to the string.
 *-----------------------------------------------------------
-ADD_SIZE    CMP.B       #0,D4       *Is it a B, <ea>,dn
+ADD_SIZE    CMP.B       #0,D4       *Is it a B, <ea>,dn/an
             BEQ         B_SIZE
-            CMP.B       #1,D4       *Is it a W, <ea>,dn
+            CMP.B       #1,D4       *Is it a W, <ea>,dn/an
             BEQ         W_SIZE
-            CMP.B       #2,D4       *Is it a L, <ea>,dn
+            CMP.B       #2,D4       *Is it a L, <ea>,dn/an
             BEQ         L_SIZE 
             
 B_SIZE      MOVE.B      #'B',(A4)+  *Add size character to good string
@@ -807,6 +879,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 
 

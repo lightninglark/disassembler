@@ -1,6 +1,234 @@
-        ORG    $7000
+        ORG    $3000
 
-START       MULS.W      D0,D1            
+START       LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+            LSL.B       #$05,D4
+            LSL.B       #$06,D5
+            LSL.B       #$07,D6
+            LSL.B       D0,D7    
+            LSL.B       D1,D7  
+            LSL.B       D2,D7    
+            LSL.B       D3,D7 
+            LSL.B       D4,D7    
+            LSL.B       D5,D7
+            LSL.B       D6,D7    
+            LSL.B       D7,D7
+            LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+            LSL.B       #$05,D4
+            LSL.B       #$06,D5
+            LSL.B       #$07,D6
+            LSL.B       D0,D7    
+            LSL.B       D1,D7  
+            LSL.B       D2,D7    
+            LSL.B       D3,D7 
+            LSL.B       D4,D7    
+            LSL.B       D5,D7
+            LSL.B       D6,D7    
+            LSL.B       D7,D7
+            LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+            LSL.B       #$05,D4
+            LSL.B       #$06,D5
+            LSL.B       #$07,D6
+            LSL.B       D0,D7    
+            LSL.B       D1,D7  
+            LSL.B       D2,D7    
+            LSL.B       D3,D7 
+            LSL.B       D4,D7    
+            LSL.B       D5,D7
+            LSL.B       D6,D7    
+            LSL.B       D7,D7
+            LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+            LSL.B       #$05,D4
+            LSL.B       #$06,D5
+            LSL.B       #$07,D6
+            LSL.B       D0,D7    
+            LSL.B       D1,D7  
+            LSL.B       D2,D7    
+            LSL.B       D3,D7 
+            LSL.B       D4,D7    
+            LSL.B       D5,D7
+            LSL.B       D6,D7    
+            LSL.B       D7,D7
+            LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+            LSL.B       #$05,D4
+            LSL.B       #$06,D5
+            LSL.B       #$07,D6
+            LSL.B       D0,D7    
+            LSL.B       D1,D7  
+            LSL.B       D2,D7    
+            LSL.B       D3,D7 
+            LSL.B       D4,D7    
+            LSL.B       D5,D7
+            LSL.B       D6,D7    
+            LSL.B       D7,D7
+            LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+            LSL.B       #$05,D4
+            LSL.B       #$06,D5
+            LSL.B       #$07,D6
+            LSL.B       D0,D7    
+            LSL.B       D1,D7  
+            LSL.B       D2,D7    
+            LSL.B       D3,D7 
+            LSL.B       D4,D7    
+            LSL.B       D5,D7
+            LSL.B       D6,D7    
+            LSL.B       D7,D7
+            LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+            LSL.B       #$05,D4
+            LSL.B       #$06,D5
+            LSL.B       #$07,D6
+            LSL.B       D0,D7    
+            LSL.B       D1,D7  
+            LSL.B       D2,D7    
+            LSL.B       D3,D7 
+            LSL.B       D4,D7    
+            LSL.B       D5,D7
+            LSL.B       D6,D7    
+            LSL.B       D7,D7
+            LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+            LSL.B       #$05,D4
+            LSL.B       #$06,D5
+            LSL.B       #$07,D6
+            LSL.B       D0,D7    
+            LSL.B       D1,D7  
+            LSL.B       D2,D7    
+            LSL.B       D3,D7 
+            LSL.B       D4,D7    
+            LSL.B       D5,D7
+            LSL.B       D6,D7    
+            LSL.B       D7,D7
+            LSL.B       #$01,D0
+            LSL.B       #$02,D1
+            LSL.B       #$03,D2
+            LSL.B       #$04,D3
+
+            
+            ADDA.W      D0,A0
+            ADDA.W      A1,A2
+            ADDA.W      (A3)+,A4
+            ADDA.W      -(A5),A6
+            ADDA.W      #$AAAA,A0
+            ADDA.W      $FFFF,A0
+            ADDA.W      $11111111,A0
+            
+            ADDA.L      D0,A0
+            ADDA.L      A1,A2
+            ADDA.L      (A3)+,A4
+            ADDA.L      -(A5),A6
+            ADDA.L      #$AAAA,A0
+            ADDA.L      $FFFF,A0
+            ADDA.L      $11111111,A0
+            
+            ADD.B       D0,D7
+            ADD.B       (A0),D1
+            ADD.B       #123,D2
+            ADD.B       #123,(A1)
+            ADD.B       (A1)+,D3
+            ADD.B       -(A2),D4
+            ADD.B       $1234,D5
+            ADD.B       $12345678,D6
+            ADD.B       D7,(A3)
+            ADD.B       D0,-(A4)
+            ADD.B       D0,(A5)+
+            ADD.B       D0,$1111
+            ADD.B       D0,$12345678
+
+            ADD.W       D0,D7
+            ADD.W       (A0),D1
+            ADD.W       #123,D2
+            ADD.W       (A1)+,D3
+            ADD.W       -(A2),D4
+            ADD.W       $1234,D5
+            ADD.W       $12345678,D6
+            ADD.W       D7,(A3)
+            ADD.W       D0,-(A4)
+            ADD.W       D0,(A5)+
+            ADD.W       D0,$1111
+            ADD.W       D0,$12345678 
+            
+            ADD.L       D0,D7
+            ADD.L       (A0),D1
+            ADD.L       #123,D2
+            ADD.L       (A1)+,D3
+            ADD.L       -(A2),D4
+            ADD.L       $1234,D5
+            ADD.L       $12345678,D6
+            ADD.L       D7,(A3)
+            ADD.L       D0,-(A4)
+            ADD.L       D0,(A5)+
+            ADD.L       D0,$1111
+            ADD.L       D0,$12345678
+            
+            AND.B       D0,D1
+            AND.B       (A0),D2
+            AND.B       (A1)+,D3
+            AND.B       -(A3),D5
+            AND.B       $4000,D6
+            AND.B       $12345678,D7
+            AND.B       #$F,D7
+            AND.B       D0,(A0)
+            AND.B       #$F,(A1)+
+            AND.B       #$F,-(A2)
+            AND.B       (A1)+,D7
+            AND.B       -(A2),D0
+            AND.B       D0,$4000
+            AND.B       D1,$12345678 
+            
+            AND.W       D0,D1
+            AND.W       (A0),D2
+            AND.W       (A1)+,D3
+            AND.W       -(A3),D5
+            AND.W       $4000,D6
+            AND.W       $12345678,D7
+            AND.W       #$F,D7
+            AND.W       D0,(A0)
+            AND.W       #$F,(A1)+
+            AND.W       #$F,-(A2)
+            AND.W       (A1)+,D7
+            AND.W       -(A2),D0
+            AND.W       D0,$4000
+            AND.W       D1,$12345678
+            
+            AND.L       D0,D1
+            AND.L       (A0),D2
+            AND.L       (A1)+,D3
+            AND.L       -(A3),D5
+            AND.L       $4000,D6
+            AND.L       $12345678,D7
+            AND.L       #$F,D7
+            AND.L       D0,(A0)
+            AND.L       #$F,(A1)+
+            AND.L       #$F,-(A2)
+            AND.L       (A1)+,D7
+            AND.L       -(A2),D0
+            AND.L       D0,$4000
+            AND.L       D1,$12345678
+
+            
+            MULS.W      D0,D1            
             MULS.W      D1,D0
             MULS.W      D2,D3            
             MULS.W      D3,D2
@@ -407,6 +635,7 @@ TEST1       RTS
 
 
         END    START
+
 
 
 

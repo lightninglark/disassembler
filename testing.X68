@@ -4,7 +4,7 @@
 * Date       :
 * Description:
 *-----------------------------------------------------------
-START       ORG         $7000   *where data gets loaded into memory in disassembler
+START       ORG         $3000   *where data gets loaded into memory in disassembler
 
 *-----------------------------------------------------
             LEA         $8000,A0
@@ -1533,6 +1533,7 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

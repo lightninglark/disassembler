@@ -25,7 +25,11 @@ INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
             RTS         
 
 *--------------------GET_INPUT------------------------------
-GET_INPUT   LEA         STA_MSG,A1  *Load STA_MSG into A1
+GET_INPUT   LEA         IN_WARN,A1 *Load INTRO1 message into A1
+            MOVE.B      #14,D0      *Trap task 14, display intro
+            TRAP        #15 
+
+            LEA         STA_MSG,A1  *Load STA_MSG into A1
             MOVE.B      #14,D0      *Trap task 14, display start address msg
             TRAP        #15         
             
@@ -112,11 +116,11 @@ INVALID     JSR         PRINT_B     *Jump to Pring bad string
             BRA         CONTINUE    *Continue the loop            
             
 CONTINUE    CMP.W       A5,A6       *Check if we're done
-            BEQ         END_OPT     *if we're done, move to end options (ask user what to do)
+            BLE         END_OPT     *if we're done, move to end options (ask user what to do)
             
                         
             ADDQ.B      #1,D5       *Increment line counter
-            CMP.B       #24,D5      *See if page is full
+            CMP.B       #29,D5      *See if page is full
             BEQ         NEXT_PAGE   *Jump to next page prompt
             
             BRA         DECODE_LOOP * Continue loop
@@ -127,10 +131,6 @@ NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
             MOVE.B      #14,D0      *Trap task 14, display start address msg
             TRAP        #15            
             
-            MOVE.B      #12,D0      *Keyboard echo trap task
-            CLR.L       D1          *Start keyboard echo trap
-            TRAP        #15         
-            
             MOVE.B      #5,D0       *Single char trap task
             TRAP        #15         
             
@@ -139,56 +139,8 @@ NEXT_PAGE   LEA         NXT_PG,A1   *Load STA_MSG into A1
             
             CLR.L       D5          *Reset page counter
             
-            BRA         DECODE_LOOP *Continue the loop         
+            BRA         DECODE_LOOP *Continue the loop
             
-*-------------------INIT_STRS-----------------------------
-INIT_STRS   JSR         INIT_GOOD   *Initialize the good string
-            JSR         INIT_BAD    *Initialize the bad string
-            RTS
-*-------------------INIT_GOOD-----------------------------
-INIT_GOOD   
-*            MOVE.B      #'L',(A4)+  *Add to good string  
-*            MOVE.B      #'e',(A4)+ 
-*            MOVE.B      #'g',(A4)+ 
-*            MOVE.B      #'a',(A4)+ 
-*            MOVE.B      #'l',(A4)+
-*            MOVE.B      #' ',(A4)+
-*            MOVE.B      #' ',(A4)+ 
-*            MOVE.B      #':',(A4)+
-*            MOVE.B      #' ',(A4)+ 
-
-            MOVE.B      #'$',(A4)+ 
-            JSR         HEX_ASCII_G *Now convert opcode to ASCII
-            
-            MOVE.B      #' ',(A4)+  *Add spaces after memory location added
-            MOVE.B      #' ',(A4)+
-            
-            *Add 'Legal: ', then add opcode (must go from hex to ascii)
-            
-            
-            RTS
-
-*-------------------INIT_BAD------------------------------            
-INIT_BAD    MOVE.B      #'I',(A3)+  *Add to bad string
-            MOVE.B      #'l',(A3)+ 
-            MOVE.B      #'l',(A3)+    
-            MOVE.B      #'e',(A3)+ 
-            MOVE.B      #'g',(A3)+ 
-            MOVE.B      #'a',(A3)+ 
-            MOVE.B      #'l',(A3)+ 
-            MOVE.B      #':',(A3)+
-            MOVE.B      #' ',(A3)+ 
-            MOVE.B      #'$',(A3)+  
-            
-            JSR         HEX_ASCII_B *Now convert opcode to ASCII
-            
-            MOVE.B      #' ',(A3)+  *Add spaces after bad code added
-            MOVE.B      #' ',(A3)+
-            
-            *Add 'Illegal: ', then add opcode (must go from from hex to ascii)
-            
-            RTS
-
 *-------------------GS_CLEAN--------------------------------
 * This subroutine "cleans" the end of the good string.
 * Prevents the previous string from showing content in the
@@ -204,48 +156,44 @@ GS_LOOP     CMPI.B      #0,D0       *Add spaces to the end of string to push out
             BRA         GS_LOOP
 D_CLEAN     RTS
             
+*-------------------INIT_STRS-----------------------------
+INIT_STRS   JSR         INIT_GOOD   *Initialize the good string
+            JSR         INIT_BAD    *Initialize the bad string
+            RTS
             
-*-------------------HEX_ASCII_B-----------------------------
-HEX_ASCII_B CLR.L       D0          *Make sure D0 is empty (Counter)
-            CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
-            CLR.L       D2          *Make sure D2 is empty (each individual char)
-            CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
-            MOVE.W      D7,D1       *Copy opcode into D0 for working with
-            MOVE.B      #$4,D0      *Counter
-            BRA         ISO_DIG_B   *Begin isolating chars
+*-------------------INIT_GOOD-----------------------------
+INIT_GOOD   MOVE.B      #'$',(A4)+ 
+            JSR         H2A_G_ADDR *Now convert address to ASCII
             
-ISO_DIG_B   ROL.W       #4,D1       *Move first significant hex char to least sig position
+            MOVE.B      #' ',(A4)+  *Add spaces after addr
+            MOVE.B      #' ',(A4)+
             
-            MOVE.L      D1,D2       *Move to D2 to isolate least sig hex char
-            
-            MOVE.B      #28,D3      *Shift left 28 times
-            LSL.L       D3,D2       *Isolated hex digit now is $X0000000
-            ROL.L       #4,D2       *Isolated hex digit is now $0000000X
-            
-            CMPI.B      #$9,D2      *Is it a number?
-            BLE         NUM_B       *If it is, process number
-            BRA         LET_B       *If not, process letter
+            RTS
 
-NUM_B       ADDI.B      #$30,D2     *Make it an ascii number
-            BRA         ADD_CHAR_B  *add to strings and continue
+*-------------------INIT_BAD------------------------------            
+INIT_BAD    MOVE.B      #'$',(A3)+
+            JSR         H2A_B_ADDR  *Add the address to the bad string
+            MOVE.B      #' ',(A3)+    
+            MOVE.B      #' ',(A3)+
             
-LET_B       ADDI.B      #$37,D2     *Make it an ascii letter
-            BRA         ADD_CHAR_B  *add to strings and continue
+            MOVE.B      #'D',(A3)+  
+            MOVE.B      #'A',(A3)+ 
+            MOVE.B      #'T',(A3)+    
+            MOVE.B      #'A',(A3)+ 
             
-ADD_CHAR_B  MOVE.B      D2,(A3)+    *Add to bad data string
-            SUBI.B      #$1,D0      *decrement counter
-            CMPI.B      #$0,D0      *Check if we're done            
-            BGT         ISO_DIG_B   *If not, continue tranlation   
+            MOVE.B      #' ',(A3)+  *Add spaces after bad code added
+            MOVE.B      #' ',(A3)+
+            JSR         H2A_B_OP   *Add the opcode to the bad string
             
             RTS
             
-*-------------------HEX_ASCII_G-------------------------------            
-HEX_ASCII_G CLR.L       D0          *Make sure D0 is empty (Counter)
+*-------------------H2A_G_ADDR-------------------------------            
+H2A_G_ADDR  CLR.L       D0          *Make sure D0 is empty (Counter)
             CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
             CLR.L       D2          *Make sure D2 is empty (each individual char)
             CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
             MOVE.L      A5,D1       *Copy address into D1
-            SUBI.B      #2,D1       *Move addres back one byte (for post increment)
+            SUBI.L      #2,D1       *Move addres back one byte (for post increment)
             MOVE.B      #$8,D0      *Counter
             BRA         ISO_DIG_G   *Begin isolating chars
             
@@ -274,6 +222,75 @@ ADD_CHAR_G  MOVE.B      D2,(A4)+    *Add to the good data string
             
             RTS
             
+*-------------------H2A_B_ADDR-------------------------------            
+H2A_B_ADDR  CLR.L       D0          *Make sure D0 is empty (Counter)
+            CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
+            CLR.L       D2          *Make sure D2 is empty (each individual char)
+            CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+            MOVE.L      A5,D1       *Copy address into D1
+            SUBI.L      #2,D1       *Move addres back one byte (for post increment)
+            MOVE.B      #$8,D0      *Counter
+            BRA         ISO_DIG_B   *Begin isolating chars
+            
+ISO_DIG_B   ROL.L       #4,D1       *Move first significant hex char to least sig position
+            
+            MOVE.L      D1,D2       *Move to D2 to isolate least sig hex char
+            
+            MOVE.B      #28,D3      *Shift left 28 times
+            LSL.L       D3,D2       *Isolated hex digit now is $X0000000
+            ROL.L       #4,D2       *Isolated hex digit is now $0000000X
+            
+            CMPI.B      #$9,D2      *Is it a number?
+            BLE         NUM_B       *If it is, process number
+            BRA         LET_B       *If not, process letter
+            
+NUM_B       ADDI.B      #$30,D2     *Make it an ascii number
+            BRA         ADD_CHAR_B  *add to strings and continue
+            
+LET_B       ADDI.B      #$37,D2     *Make it an ascii letter
+            BRA         ADD_CHAR_B  *add to strings and continue
+
+ADD_CHAR_B  MOVE.B      D2,(A3)+    *Add to the good data string
+            SUBI.B      #$1,D0      *decrement counter
+            CMPI.B      #$0,D0      *Check if we're done            
+            BGT         ISO_DIG_B    *If not, continue tranlation   
+            
+            RTS
+            
+*-------------------H2A_B_OP--------------------------------
+H2A_B_OP    CLR.L       D0          *Make sure D0 is empty (Counter)
+            CLR.L       D1          *Make sure D1 is empty (For shifting/Rotations)
+            CLR.L       D2          *Make sure D2 is empty (each individual char)
+            CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+            MOVE.W      D7,D1       *Copy opcode into D0 for working with
+            MOVE.B      #$4,D0      *Counter
+            BRA         ISODIG_BO   *Begin isolating chars
+            
+ISODIG_BO   ROL.W       #4,D1       *Move first significant hex char to least sig position
+            
+            MOVE.L      D1,D2       *Move to D2 to isolate least sig hex char
+            
+            MOVE.B      #28,D3      *Shift left 28 times
+            LSL.L       D3,D2       *Isolated hex digit now is $X0000000
+            ROL.L       #4,D2       *Isolated hex digit is now $0000000X
+            
+            CMPI.B      #$9,D2      *Is it a number?
+            BLE         NUM_BO      *If it is, process number
+            BRA         LET_BO      *If not, process letter
+
+NUM_BO      ADDI.B      #$30,D2     *Make it an ascii number
+            BRA         ADD_CHAR_BO *add to strings and continue
+            
+LET_BO      ADDI.B      #$37,D2     *Make it an ascii letter
+            BRA         ADD_CHAR_BO *add to strings and continue
+            
+ADD_CHAR_BO MOVE.B      D2,(A3)+    *Add to bad data string
+            SUBI.B      #$1,D0      *decrement counter
+            CMPI.B      #$0,D0      *Check if we're done            
+            BGT         ISODIG_BO  *If not, continue tranlation   
+            
+            RTS
+            
 *-------------------PRINT_G---------------------------------
 PRINT_G     MOVE.B      #' ',(A4)+
             MOVE.B      #$00,(A3)+  *Move null to end of string for printing
@@ -286,14 +303,55 @@ PRINT_G     MOVE.B      #' ',(A4)+
 *-------------------PRINT_B---------------------------------
 PRINT_B     MOVE.B      #' ',(A4)+
             MOVE.B      #$00,(A4)+  *Move null to end of string for printing
-            LEA         BAD_STR,A1 *Load good data for printing
+            LEA         BAD_STR,A1  *Load good data for printing
             MOVE.B      #13,D0      *Trap task 13, display null terminated string
             TRAP        #15         *Display string
             
             RTS 
+*-------------------PRG_RESET-------------------------------
+PRG_RESET   MOVEA.L     #$01000000,A7   *Reset the stack pointer
+            
+            MOVEA.L     #$00000000,A0   *Clear Address Registers
+            MOVEA.L     #$00000000,A1
+            MOVEA.L     #$00000000,A2
+            MOVEA.L     #$00000000,A3
+            MOVEA.L     #$00000000,A4
+            MOVEA.L     #$00000000,A5
+            MOVEA.L     #$00000000,A6
+            
+            CLR.L       D0              *Reset Data registers
+            CLR.L       D1
+            CLR.L       D2
+            CLR.L       D3
+            CLR.L       D4
+            CLR.L       D5
+            CLR.L       D6
+            CLR.L       D7
+
+            MOVE.B      #11,D0          *Clear Screen
+            MOVE.W      #$FF00,D1
+            TRAP        #15
+            
+            CLR.L       D1
+            
+            JMP         START           *Restart the program
 
 *-------------------END_OPT---------------------------------
-END_OPT     JMP         DONE        *Jump to done for now untill end options logic is implemented
+END_OPT     LEA         END_PGR,A1  *Display Ending messages
+            CLR.L       D0          
+            MOVE.B      #14,D0      
+            TRAP        #15             
+            
+            MOVE.B      #5,D0       *Single char trap task
+            TRAP        #15         
+            
+            CMP.B       #$20,D1     *Check if SPACE key was pressed
+            BEQ         PRG_RESET   *Decode another memory image if enter is pressed
+            
+            CMP.B       #$1B,D1     *Check if ESC key was pressed
+            BEQ         DONE        *End program
+            
+            BRA         END_OPT     *Else, loop (force space or esc)
             
 *-----------------------DONE--------------------------------
 DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
@@ -310,10 +368,27 @@ NL_INTRO    DC.B        '------------TEAM NEVER LUCKY------------',CR,LF
             DC.B        'Henry Hong, Ryan Palm, Joshua Plantilla',CR,LF
             DC.B        'CSS 422 Final Project: 68k Disassembler',CR,LF
             DC.B        '----------------------------------------',CR,LF,0
+
+IN_WARN     DC.B        'You MUST follow the following input rules:',CR,LF
+            DC.B        '1. Your starting address must be greater than or equal to $3000',CR,LF
+            DC.B        '   (this means your data file must be orged at $3000 or greater)',CR,LF
+            DC.B        '2. Your ending address must be greater than your starting address',CR,LF
+            DC.B        '3. You must enter something for both starting and ending (no NULL inputs)',CR,LF
+            DC.B        '4. Both your starting and ending address must be in the range of:',CR,LF
+            DC.B        '   [$3000,$FFFFFFFF) (interval notation)',CR,LF
+            DC.B        '5. Your inputs for both addresses may NOT be ODD values.',CR,LF
+            DC.B        '6. Your inputs for both must ONLY contain standard hexidecimal characters:',CR,LF
+            DC.B        '   0 1 2 3 4 5 6 7 8 9 A B C D E F (Do NOT include spaces or $)',CR,LF
+            DC.B        'Failure to follow these instructions WILL result in crash or unexpected behavior.',CR,LF,CR,LF,0
+ 
             
 STA_MSG     DC.B        'Enter starting address (ALL CAPS):',0
 END_MSG     DC.B        'Enter ending address (ALL CAPS):',0
-NXT_PG      DC.B        'Press enter key to contiune reading',CR,LF,0
+
+NXT_PG      DC.B        CR,LF,'Press ENTER key to contiune reading',CR,CR,LF,0
+
+END_PGR     DC.B        CR,LF,'Prese SPACE to decode another memory image.',CR,LF
+            DC.B        'Press ESC key to QUIT.',CR,LF,0
 
 STA_ADDR    DS.B        40
 END_ADDR    DS.B        40
@@ -358,6 +433,7 @@ SPACERE     DC.L        80
 SPACERF     DC.L        80
 
             END         START       *LAST LINE
+
 
 
 
