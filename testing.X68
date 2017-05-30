@@ -261,7 +261,7 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             AND.L       D0,$4000
             AND.L       D1,$12345678
             
-            OR.B       D0,D1
+           OR.B       D0,D1
             OR.B       (A0),D2
             OR.B       (A1)+,D3
             OR.B       -(A3),D5
@@ -271,6 +271,9 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             OR.B       D0,(A0)
             OR.B       #$F,(A1)+
             OR.B       #$F,-(A2)
+            OR.B       (A1)+,D3
+            OR.B       -(A1),D3
+            OR.B       #$AF,-(A2)
             OR.B       D0,$4000
             OR.B       D1,$12345678 
             
@@ -282,6 +285,9 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             OR.W       $12345678,D7
             OR.W       #$F,D7
             OR.W       D0,(A0)
+            OR.W       (A1)+,D3
+            OR.W       -(A1),D3
+            OR.W       #$AAAF,-(A2)
             OR.W       #$F,(A1)+
             OR.W       #$F,-(A2)
             OR.W       D0,$4000
@@ -295,6 +301,9 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             OR.L       $12345678,D7
             OR.L       #$F,D7
             OR.L       D0,(A0)
+            OR.L       (A1)+,D3
+            OR.L       -(A1),D3
+            OR.L       #$AAAF,-(A2)
             OR.L       #$F,(A1)+
             OR.L       #$F,-(A2)
             OR.L       D0,$4000
@@ -457,8 +466,8 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
             MULS.W      (A0)+,D1            
             MULS.W      -(A1),D0
             
-            DIVU.W      D0,D1            
-            DIVU.W      D1,D0
+            DIVU      D0,D1            
+            DIVU      D1,D0
             DIVU.W      D2,D3            
             DIVU.W      D3,D2
             DIVU.W      D4,D5            
@@ -1524,6 +1533,7 @@ START       ORG         $7000   *where data gets loaded into memory in disassemb
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

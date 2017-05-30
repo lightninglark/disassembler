@@ -66,7 +66,7 @@ JMP_8       CMP.B       #$8,D2
             
 JMP_9       CMP.B       #$9,D2
             BNE         JMP_A
-            JSR         OPC_9XXX    *If the first hex digit is 9, the instruction is determined to be SUB. Jump to OPC_9XXX in OPCODE table.
+            JSR         OPC_SUB    *If the first hex digit is 9, the instruction is determined to be SUB. Jump to OPC_9XXX in OPCODE table.
             RTS
             
 JMP_A       CMP.B       #$A,D2
@@ -119,12 +119,22 @@ J_CLR3      CLR.L       D2
             RTS                     *Return back to JMP_Xn  
 
 * J_CLR1 prepares the data registers for data manipulation by isolating the rightmost bit of the second hex dig:
+* %0000 0000 0000 XX00 0000                   
+J_CLR2  CLR.L       D2          
+        MOVE.W      D7,D2           *Copies D7 contents to D2 for manipulation
+        CLR.L       D1
+        LSL.W       #8,D2           *Clear the most sig 7 bits
+        MOVE.B      #14,D1          *Moves 16 into D1
+        LSR.W       D1,D2           *Shifts 16 right to isolate the bit we're working with 
+        RTS     
+
+* J_CLR1 prepares the data registers for data manipulation by isolating the rightmost bit of the second hex dig:
 * %0000 000X 0000 0000 0000                   
 J_CLR1  CLR.L       D2          
         MOVE.W      D7,D2           *Copies D7 contents to D2 for manipulation
         CLR.L       D1
         LSL.W       #7,D2           *Clear the most sig 7 bits
-        MOVE.B      #16,D1          *Moves 16 into D1
+        MOVE.B      #15,D1          *Moves 16 into D1
         LSR.W       D1,D2           *Shifts 16 right to isolate the bit we're working with 
         RTS                         *Return back to JMP_Xn  
      
@@ -135,7 +145,7 @@ J_CLR_DM    CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
             LSL.W       #7,D2       *Clear the most sig 7 bits
-            MOVE.B      #17,D1      *Moves 17 into D1
+            MOVE.B      #13,D1      *Moves 17 into D1
             LSR.W       D1,D2       *Shifts 17 right to isolate the bits we're working with 
             RTS                     *Return back to JMP_Xn     
  
@@ -146,7 +156,7 @@ J_CLR_DM    CLR.L       D2
 JMP_0X      JSR         J_CLR4      *Isolate next hex digit
             CMP.B       #$4,D2      *Is the next hex digit 4?
             BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
-            CMP.B       #$5,D2      *Is the next hex digit 5?
+            CMP.B       #$6,D2      *Is the next hex digit 5?
             BEQ         J_ADDI      *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
             JSR         INVALID     *If neither, OPCODE is invalid
             RTS
@@ -245,7 +255,7 @@ J_MULS      JSR         OPC_MULS    *Jump to OPC_MULS in the OPCODE table
             RTS
             
 J_AND       JSR         OPC_AND     *Jump to OPC_AND in the OPCODE table  
-
+            RTS
 
 *-----------------------ADD, ADDA--------------------------------
 JMP_DX      JSR         INVALID     *Temp, remove once implemented
@@ -259,34 +269,73 @@ JMP_EX      JSR         INVALID     *Temp, remove once implemented
 *==================ID THIRD OPCODE DIGIT=====================
 *============================================================
    
+JMP_47X     CMP.W       #$4E71,D7    *Is it NOP?
+            BEQ         O_NOP
+            CMP.W       #$4E75,D7       *Is it RTS?
+            BEQ         O_RTS
+            JSR         J_CLR2       *Isolate the 6th and 7th bit
+            CMP.B       #2,D2        *Is it JSR?
+            BEQ         O_JSR
+            JMP         INVALID      *Got here? Must be invalid data.
 
+O_NOP       JSR         OPC_NOP
+            RTS
 
-JMP_47X      
+O_RTS       JSR         OPC_RTS
+            RTS
+
+O_JSR       JSR         OPC_JSR
+            RTS
+         
+
 *============================================================
 *=====================OPCODE TABLE===========================
 *================OPCODE KNOWN, PRINTING======================
 *============================================================
+* IF YOU DO NOT USE A GET_SIZE_X SUBROUTINE, YOU MUST
+* MANUALLY SET THE SIZE CODE IN D4. (0 = B, 1 = W, 2 = L)
 
 *---------------------SUBI OPCODE----------------------------
-OPC_SUBI    JSR         INVALID     *To be implemented
-
+OPC_SUBI    MOVE.B      #'S',(A4)+
+            MOVE.B      #'U',(A4)+
+            MOVE.B      #'B',(A4)+
+            MOVE.B      #'I',(A4)+
+            MOVE.B      #'.',(A4)+
+            
+            JSR         GET_SIZE_2  *Get 2 bit size code
+            JSR         ADD_SIZE    *Add the size character based on size code
+            
+            JSR         IDATASRC_EA *Jump to #<data>,<ea> operand flow.
+            
+            RTS
 
 *---------------------ADDI OPCODE----------------------------
-OPC_ADDI    JSR         INVALID     *To be implemented
+OPC_ADDI    MOVE.B      #'A',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'D',(A4)+
+            MOVE.B      #'I',(A4)+
+            MOVE.B      #'.',(A4)+
+            
+            JSR         GET_SIZE_2  *Get 2 bit size code
+            JSR         ADD_SIZE    *Add the size character based on size code
+            
+            JSR         IDATASRC_EA *Jump to #<data>,<ea> operand flow.
+            
+            RTS
 
 *--------------------MOVE.B OPCODE---------------------------
-OPC_MOVEB    MOVE.B      #'M',(A4)+
+OPC_MOVEB   MOVE.B      #'M',(A4)+
             MOVE.B      #'O',(A4)+
             MOVE.B      #'V',(A4)+
             MOVE.B      #'E',(A4)+
             MOVE.B      #'.',(A4)+
-            MOVE.B      #'B',(A4)+
-            MOVE.B      #' ',(A4)+
-            MOVE.B      #' ',(A4)+
-            *YOU DO NOT NEED TO MANUALLY SET SIZE CODE IF YOU USE A
-            *GET SIZE SUBROUTINE CALL.
+
+
             CLR.L       D4          *Manually set size to byte (D4 = 0)
+            JSR         ADD_SIZE    *Add size characters
+            
             JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+            
             RTS
 
 *--------------------ADDQ OPCODE----------------------------
@@ -295,12 +344,12 @@ OPC_ADDQ    MOVE.B      #'A',(A4)+
             MOVE.B      #'D',(A4)+
             MOVE.B      #'Q',(A4)+
             MOVE.B      #'.',(A4)+
-            *NEED to Determine sizes here
+
             JSR         GET_SIZE_2   *Get size code (placed in D4)
             JSR         ADD_SIZE     *Add size character to string (B/W/L)
-            JSR         ADDQ_EA      *Start the EA/operand decode logic
             
-            *JUMP to EACODE table
+            JSR         ADDQ_EA      *Start the EA/operand decode logic
+ 
             RTS
 
 *------------------MOVEQ OPCODE-----------------------------
@@ -309,70 +358,332 @@ OPC_MOVEQ   MOVE.B      #'M',(A4)+
             MOVE.B      #'V',(A4)+
             MOVE.B      #'E',(A4)+
             MOVE.B      #'Q',(A4)+
-            MOVE.B      #'.',(A4)+
-            MOVE.B      #'L',(A4)+
             
             JSR         MOVEQ_EA     *Start the EA/opderand decode logic for moveq
-            
-            *Needs special EA decode logic
-            *jump to EACODE table
+          
             RTS
 
 *------------------SUB OPCODE-------------------------------
-OPC_9XXX    MOVE.B      #'S',(A4)+
+OPC_SUB     MOVE.B      #'S',(A4)+
             MOVE.B      #'U',(A4)+
             MOVE.B      #'B',(A4)+
             MOVE.B      #'.',(A4)+
-            *NEED to Determine sizes here (opmode 3 bits)
+
             JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+            
             JSR         OR_ADD_SIZE    * This will add size characters and start operand decode sequence
-            *jump to EACODE table
+
             RTS
 
 *------------------LEA OPCODE-------------------------------            
-OPC_LEA     RTS
-
-
+OPC_LEA     MOVE.B      #'L',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #'A',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            
+            CLR.L       D4          *Manually set size to byte (D4 = 0)
+            MOVE.B      #2,D4       *Manually set size to long.
+            
+            JSR         EASRC_ADES
+            
+            RTS
+            
 *------------------MOVEM OPCODE----------------------------- 
 OPC_MOVEM   RTS
 
 
 *------------------MOVEA.L OPCODE----------------------------
-OPC_MOVEAL  RTS
+OPC_MOVEAL  MOVE.B      #'M',(A4)+
+            MOVE.B      #'O',(A4)+
+            MOVE.B      #'V',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #'A',(A4)+
+            MOVE.B      #'.',(A4)+
+
+            CLR.L       D4          *Manually set size to byte (D4 = 0)
+            MOVE.B      #2,D4       *Set size code to long
+            JSR         ADD_SIZE    *Add size characters
+            
+            JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+            RTS
 
 
 *------------------MOVEM.L OPCODE----------------------------
-OPC_MOVEL   RTS
+OPC_MOVEL   MOVE.B      #'M',(A4)+
+            MOVE.B      #'O',(A4)+
+            MOVE.B      #'V',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #'.',(A4)+
 
+            CLR.L       D4          *Manually set size to byte (D4 = 0)
+            MOVE.B      #2,D4       *Set size code to long
+            JSR         ADD_SIZE    *Add size characters
+            
+            JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+            RTS
 
 *------------------MOVEA.W OPCODE----------------------------
-OPC_MOVEAW  RTS
+OPC_MOVEAW  MOVE.B      #'M',(A4)+
+            MOVE.B      #'O',(A4)+
+            MOVE.B      #'V',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #'A',(A4)+
+            MOVE.B      #'.',(A4)+
+
+            CLR.L       D4          *Manually set size to byte (D4 = 0)
+            MOVE.B      #1,D4       *Set size code to word
+            JSR         ADD_SIZE    *Add size characters
+            
+            JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+            RTS
 
 
 *------------------MOVE.W OPCODE----------------------------
-OPC_MOVEW   RTS
+OPC_MOVEW   MOVE.B      #'M',(A4)+
+            MOVE.B      #'O',(A4)+
+            MOVE.B      #'V',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #'.',(A4)+
+
+            CLR.L       D4          *Manually set size to byte (D4 = 0)
+            MOVE.B      #1,D4       *Set size code to word
+            JSR         ADD_SIZE    *Add size characters
+            
+            JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+            RTS
 
 
 *---------------------BRA OPCODE----------------------------
-OPC_BRA     RTS
-
+OPC_BRA     MOVE.B      #'B',(A4)+
+            MOVE.B      #'R',(A4)+
+            MOVE.B      #'A',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            
+            JSR         ABW       *Grab the next word value (BRA bug)
+                        
+            RTS
 
 *---------------------Bcc OPCODE----------------------------
-OPC_Bcc     RTS
-
+OPC_Bcc     MOVE.B      #'B',(A4)+
+            *BCC bug, does not use 8bit displacment, but is next word value (ABSW)
+            JSR         BCC_CODE    *Get condition code and start decoding
+            
+            RTS
 
 *--------------------DIVU OPCODE----------------------------
-OPC_DIVU    RTS
-
+OPC_DIVU    MOVE.B      #'D',(A4)+
+            MOVE.B      #'I',(A4)+
+            MOVE.B      #'V',(A4)+
+            MOVE.B      #'U',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            
+            CLR.L       D4          *Manually set size to byte (D4 = 0)
+            MOVE.B      #1,D4       *Set size code to word
+            
+            JSR         EASRC_DDES  *Start operand <ea>,Dn
+            
+            
+            RTS
 
 *---------------------OR OPCODE-----------------------------
-OPC_OR      RTS
+OPC_OR      MOVE.B      #'O',(A4)+
+            MOVE.B      #'R',(A4)+
 
+            JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+            
+            JSR         OR_ADD_SIZE    * This will add size characters and start operand decode sequence
 
+            RTS
+
+*---------------------MULS  OPCODE--------------------------
+OPC_MULS    MOVE.B      #'M',(A4)+
+            MOVE.B      #'U',(A4)+
+            MOVE.B      #'L',(A4)+
+            MOVE.B      #'S',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            *Need to implement.
+            RTS
+
+*---------------------AND  OPCODE---------------------------
+OPC_AND     RTS
+
+*--------------------JSR OPCODE-----------------------------
+OPC_JSR     MOVE.B      #'J',(A4)+
+            MOVE.B      #'S',(A4)+
+            MOVE.B      #'R',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         GEN_EA_CODE *Get EA code
+            
+            RTS
+
+*--------------------NOP OPCODE-----------------------------
+OPC_NOP     MOVE.B      #'N',(A4)+
+            MOVE.B      #'O',(A4)+
+            MOVE.B      #'P',(A4)+
+            
+            RTS
+
+*--------------------RTS OPCODE-----------------------------
+OPC_RTS     MOVE.B      #'R',(A4)+
+            MOVE.B      #'T',(A4)+
+            MOVE.B      #'S',(A4)+
+            
+            RTS
 
 *===========================================================
 *=====================HELPER SUBROUTINES====================
 *===========================================================
+
+*-------------------------BCC_DECODE------------------------
+* Isolates the 4 bit condition code for BCC OPCODES
+*-----------------------------------------------------------
+BCC_CODE    CLR.L       D3          *Make sure D3 is empty to hold condition code
+            MOVE.W      D7,D3       *Move in original address to be shifted
+            LSL.W       #4,D3
+            CLR.L       D2
+            MOVE.B      #12,D2
+            LSR.W       D2,D3
+            JSR         BCC_TABLE   *Jump to BCC table now that condition code is in D3
+            RTS
+
+*-------------------------BCC_TABLE-------------------------
+* This jump table looks at the condition code in D3 to
+* select the correct B"CC" for the BCC OPCODE. After the
+* correct condition code is selected, it then jumps to the
+* 8 bit displacment.
+*-----------------------------------------------------------
+BCC_TABLE   CMP.B       #$2,D3      *Is it BHI?
+            BEQ         BCC_HI
+            CMP.B       #$3,D3      *Is it BLS?
+            BEQ         BCC_LS      
+            CMP.B       #$4,D3      *Is it BCC?
+            BEQ         BCC_CC
+            CMP.B       #$5,D3      *Is it BCS?
+            BEQ         BCC_CS
+            CMP.B       #$6,D3      *Is it BNE?
+            BEQ         BCC_NE
+            CMP.B       #$7,D3      *Is it BEQ?
+            BEQ         BCC_EQ
+            CMP.B       #$8,D3      *Is it BVC?
+            BEQ         BCC_VC      
+            CMP.B       #$9,D3      *Is it BVS?
+            BEQ         BCC_VS
+            CMP.B       #$A,D3      *Is it BPL?
+            BEQ         BCC_PL
+            CMP.B       #$B,D3      *Is it BMI?
+            BEQ         BCC_MI
+            CMP.B       #$C,D3      *Is it BGE?
+            BEQ         BCC_GE
+            CMP.B       #$D,D3      *Is it BLT?
+            BEQ         BCC_LT
+            CMP.B       #$E,D3      *Is it BGT?
+            BEQ         BCC_GT      
+            CMP.B       #$F,D3      *Is it BLE?
+            BEQ         BCC_LE
+            JMP         INVALID     *Got here? Something is wrong.
+
+BCC_HI      MOVE.B      #'H',(A4)+
+            MOVE.B      #'I',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+
+BCC_LS      MOVE.B      #'L',(A4)+
+            MOVE.B      #'S',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+
+BCC_CC      MOVE.B      #'C',(A4)+
+            MOVE.B      #'C',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_CS      MOVE.B      #'C',(A4)+
+            MOVE.B      #'S',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_NE      MOVE.B      #'N',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_EQ      MOVE.B      #'E',(A4)+
+            MOVE.B      #'Q',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_VC      MOVE.B      #'V',(A4)+
+            MOVE.B      #'C',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+
+BCC_VS      MOVE.B      #'V',(A4)+
+            MOVE.B      #'S',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_PL      MOVE.B      #'P',(A4)+
+            MOVE.B      #'L',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_MI      MOVE.B      #'M',(A4)+
+            MOVE.B      #'I',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_GE      MOVE.B      #'G',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_LT      MOVE.B      #'L',(A4)+
+            MOVE.B      #'T',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_GT      MOVE.B      #'G',(A4)+
+            MOVE.B      #'T',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
+            
+BCC_LE      MOVE.B      #'L',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            JSR         ABW         *Add absolute word in next word address.
+            RTS
 
 *--------------------ADD SIZE-------------------------------
 * A simple helper that looks at the size code in D4 to add
@@ -457,19 +768,19 @@ OR_ADD_SIZE CMP.B       #0,D4       *Is it a B, <ea>,dn
 B_EA        MOVE.B      #'B',(A4)+  *Add size character to good string
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
-            JSR         EA_SRC_DDES *Move to EA_SRC to start parameter decode sequence
+            JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
             RTS
 
 W_EA        MOVE.B      #'W',(A4)+  *Add size character to good string
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
-            JSR         EA_SRC_DDES *Move to EA_SRC to start parameter decode sequence
+            JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
             RTS
 
 L_EA        MOVE.B      #'L',(A4)+  *Add size character to good string
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
-            JSR         EA_SRC_DDES *Move to EA_SRC to start parameter decode sequence
+            JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
             RTS
 
 B_DN        MOVE.B      #'B',(A4)+  *Add size character to good string
@@ -496,6 +807,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 
 

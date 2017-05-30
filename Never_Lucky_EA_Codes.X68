@@ -16,21 +16,41 @@
 * Logic for an EA source operand for opcodes: 
 * ADD, AND, OR, SUB
 *-----------------------------------------------------------
-EA_SRC_DDES JSR         GEN_EA_CODE *Deal with EA code First
+EASRC_DDES  JSR         GEN_EA_CODE *Deal with EA code First
             MOVE.B      #',',(A4)+
             MOVE.B      #'D',(A4)+
             JSR         REG_CODE    *Decode Dn and add number to string
             RTS
+
+*---------------------EA SOURCE with An dest----------------
+* Logic for an EA source operand for opcodes: 
+* LEA, ADDA, (Maybe MOVEA)
+*-----------------------------------------------------------
+EASRC_ADES  JSR         GEN_EA_CODE *Deal with EA code first
+            MOVE.B      #',',(A4)+
+            MOVE.B      #'A',(A4)+
+            JSR         REG_CODE    *Decode Dn and add number to string
+            RTS        
 
 *---------------------DN SOURCE-----------------------------
 * Logic for a DN source operand for opcodes:
 * ADD, AND, OR, SUB
 *-----------------------------------------------------------
 DN_SRC      MOVE.B      #'D',(A4)+
-            JSR         REG_CODE     *Decode Dn and add number to string
+            JSR         REG_CODE    *Decode Dn and add number to string
             MOVE.B      #',',(A4)+
             JSR         GEN_EA_CODE *Deal with EA code Second
             RTS
+
+*---------------------Data source, EA dest------------------
+* Logic for opcodes with a #<data> source, <EA> destination
+* opcodes: SUBI, ADDI
+*-----------------------------------------------------------
+IDATASRC_EA JSR     IDATA       *Add immediate data
+            MOVE.B  #',',(A4)+  
+            JSR     GEN_EA_CODE *Add ea code
+            RTS
+
 
 *---------------------MM OPERATION ORDER--------------------
 * Identifies whether the order of the parameters is:
@@ -55,6 +75,54 @@ MM_LS_SRC   *Deal with list first
             *Deal with EA code second
             RTS
 
+*---------------------MOVEQ_EA-------------------------------
+* Logic for the MOVEQ.L OPCODE to produce an operand.
+* D2/D3/D6 avaliable for shifting
+* Data must end up in D1 before longword to ascii trans
+*-----------------------------------------------------------
+MOVEQ_EA    CLR.L       D1          *Make sure D1 is clear
+            MOVE.W      D7,D1       *copy original opcode
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #'#',(A4)+
+            MOVE.B      #'$',(A4)+
+            JSR         B_H2A       *Add data in 8 least sig bits (byte)
+            MOVE.B      #',',(A4)+
+            MOVE.B      #'D',(A4)+
+            
+            CLR.L       D1
+            MOVE.B      #13,D1
+            LSL.W       #4,D3       *Shifting to isolate Dest REGISTER
+            LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+            
+            JSR         REG_CODE    *Decode Dn and add number to string            
+
+            RTS
+            
+*---------------------ADDQ_EA-------------------------------
+* Logic for the ADDQ OPCODE to produce an operand.
+* D1/D2/D3/D6 avaliable for shifting
+*-----------------------------------------------------------
+ADDQ_EA     CLR.L       D1          *Make sure D1 is clear
+            MOVE.W      D7,D1       *Move untoched opcode into D1 for Manipulation
+            
+            LSL.W       #4,D1       *Clear more sig bits
+            CLR.L       D2          * for shifting
+            MOVE.B      #13,D2      *To move data bits into lsb
+            LSR.W       D2,D1       *Data now in lsb
+            
+            MOVE.B      #'#',(A4)+
+            MOVE.B      #'$',(A4)+
+            JSR         ADDQ_ID     *Jump to ADDQ_ID (immeidate data selector)
+            MOVE.B      #',',(A4)+  *Add seperator
+            JSR         GEN_EA_CODE *Add the ea code
+            
+            RTS
+
+*---------------------LEA_EA-------------------------------
+* Logic for the ADDQ OPCODE to produce an operand.
+* D1/D2/D3/D6 avaliable for shifting
+*-----------------------------------------------------------
 
 *============================================================
 *======================BIT ISOLATORS=========================
@@ -138,10 +206,10 @@ MOV_EA_CODE CLR.L       D3          *Make sure D3 is clear
             RTS
             
             
-*-------------------------DECODE DN--------------------------
+*-------------------------DECODE REG NUM--------------------
 * This function decides a DN to get the data register number
 * It then adds the number to the output strings
-*------------------------------------------------------------
+*-----------------------------------------------------------
 REG_CODE    CLR.L       D3          *Make sure D3 is empty to isolate Dn register
             MOVE.W      D7,D3       *Copy untoched opcode into D3 for manipulation
             LSL.W       #4,D3       *Isolate bits and move to LSB position
@@ -150,10 +218,12 @@ REG_CODE    CLR.L       D3          *Make sure D3 is empty to isolate Dn registe
             LSR.W       D2,D3
             JSR         REG_TBL     *Jump to register table.
             RTS
+            
 
-*============================================================
-*=========================JUMP TABLES========================
-*============================================================
+
+*===========================================================
+*=========================JUMP TABLES=======================
+*===========================================================
 
 *-------------------------EA_TBL----------------------------
 * This is a jump table for selecting the correct addressing
@@ -312,58 +382,7 @@ L_IMD       CLR.L       D1          *Make sure D1 is clear
             MOVE.L      (A5)+, D1   *Increment counter by LONGWORD (grab LONGWORD data)
             JSR         L_H2A
             RTS
-                               
-*============================================================
-*=========================HELPER SUBROUTINES=================
-*Include: ADDQ, MOVEQ
-*============================================================
 
-*---------------------MOVEQ_EA-------------------------------
-* Logic for the MOVEQ.L OPCODE to produce an operand.
-* D2/D3/D6 avaliable for shifting
-* Data must end up in D1 before longword to ascii trans
-*-----------------------------------------------------------
-MOVEQ_EA    CLR.L       D1          *Make sure D1 is clear
-            MOVE.W      D7,D1       *copy original opcode
-            MOVE.B      #' ',(A4)+
-            MOVE.B      #' ',(A4)+
-            MOVE.B      #'#',(A4)+
-            MOVE.B      #'$',(A4)+
-            JSR         B_H2A       *Add data in 8 least sig bits (byte)
-            MOVE.B      #',',(A4)+
-            MOVE.B      #'D',(A4)+
-            
-            CLR.L       D1
-            MOVE.B      #13,D1
-            LSL.W       #4,D3       *Shifting to isolate Dest REGISTER
-            LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
-            
-            JSR         REG_CODE    *Decode Dn and add number to string            
-
-            RTS
-            
-            
-
-
-*---------------------ADDQ_EA-------------------------------
-* Logic for the ADDQ OPCODE to produce an operand.
-* D1/D2/D3/D6 avaliable for shifting
-*-----------------------------------------------------------
-ADDQ_EA     CLR.L       D1          *Make sure D1 is clear
-            MOVE.W      D7,D1       *Move untoched opcode into D1 for Manipulation
-            
-            LSL.W       #4,D1       *Clear more sig bits
-            CLR.L       D2          * for shifting
-            MOVE.B      #13,D2      *To move data bits into lsb
-            LSR.W       D2,D1       *Data now in lsb
-            
-            MOVE.B      #'#',(A4)+
-            MOVE.B      #'$',(A4)+
-            JSR         ADDQ_ID     *Jump to ADDQ_ID (immeidate data selector)
-            MOVE.B      #',',(A4)+  *Add seperator
-            JSR         GEN_EA_CODE *Add the ea code
-            
-            RTS
 *---------------------ADDQ_ID-------------------------------
 * A simple immeidate data selector for ADDQ. Simply adds
 * the the correct character (1 thru 8) to good string based
@@ -385,6 +404,7 @@ ADDQ_ID     CMP.B       #0,D1       *Select correct number to add to output stri
             BEQ         AQ_6
             CMP.B       #7,D1
             BEQ         AQ_7
+            JMP         INVALID     *Got here? Something is wrong.
             
 AQ_0        MOVE.B      #'8',(A4)+
             RTS              
@@ -401,7 +421,9 @@ AQ_5        MOVE.B      #'5',(A4)+
 AQ_6        MOVE.B      #'6',(A4)+
             RTS
 AQ_7        MOVE.B      #'7',(A4)+
-            RTS
+            RTS          
+
+            
 
 *============================================================
 *=========================HELPER SUBROUTINES=================
@@ -513,6 +535,7 @@ L_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
             BGT         L_ISO_DIG   *If not, continue tranlation   
             
             RTS
+
 
 
 
