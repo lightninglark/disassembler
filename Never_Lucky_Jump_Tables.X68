@@ -311,6 +311,11 @@ OP_ADDA     JSR         OPC_ADDA
             
 OP_ADD      JSR         OPC_ADD
             RTS
+            
+*------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
+
+JMP_EX      
+            RTS
 
      
 

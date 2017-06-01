@@ -6,7 +6,8 @@
 
 *------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
 
-JMP_EX      JMP         INVALID
+JMP_EX      
+            RTS
 
 
 
