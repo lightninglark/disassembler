@@ -14,117 +14,7 @@ START       LSL.B       #$01,D0
             LSL.B       D4,D7    
             LSL.B       D5,D7
             LSL.B       D6,D7    
-            LSL.B       D7,D7
-            LSL.B       #$01,D0
-            LSL.B       #$02,D1
-            LSL.B       #$03,D2
-            LSL.B       #$04,D3
-            LSL.B       #$05,D4
-            LSL.B       #$06,D5
-            LSL.B       #$07,D6
-            LSL.B       D0,D7    
-            LSL.B       D1,D7  
-            LSL.B       D2,D7    
-            LSL.B       D3,D7 
-            LSL.B       D4,D7    
-            LSL.B       D5,D7
-            LSL.B       D6,D7    
-            LSL.B       D7,D7
-            LSL.B       #$01,D0
-            LSL.B       #$02,D1
-            LSL.B       #$03,D2
-            LSL.B       #$04,D3
-            LSL.B       #$05,D4
-            LSL.B       #$06,D5
-            LSL.B       #$07,D6
-            LSL.B       D0,D7    
-            LSL.B       D1,D7  
-            LSL.B       D2,D7    
-            LSL.B       D3,D7 
-            LSL.B       D4,D7    
-            LSL.B       D5,D7
-            LSL.B       D6,D7    
-            LSL.B       D7,D7
-            LSL.B       #$01,D0
-            LSL.B       #$02,D1
-            LSL.B       #$03,D2
-            LSL.B       #$04,D3
-            LSL.B       #$05,D4
-            LSL.B       #$06,D5
-            LSL.B       #$07,D6
-            LSL.B       D0,D7    
-            LSL.B       D1,D7  
-            LSL.B       D2,D7    
-            LSL.B       D3,D7 
-            LSL.B       D4,D7    
-            LSL.B       D5,D7
-            LSL.B       D6,D7    
-            LSL.B       D7,D7
-            LSL.B       #$01,D0
-            LSL.B       #$02,D1
-            LSL.B       #$03,D2
-            LSL.B       #$04,D3
-            LSL.B       #$05,D4
-            LSL.B       #$06,D5
-            LSL.B       #$07,D6
-            LSL.B       D0,D7    
-            LSL.B       D1,D7  
-            LSL.B       D2,D7    
-            LSL.B       D3,D7 
-            LSL.B       D4,D7    
-            LSL.B       D5,D7
-            LSL.B       D6,D7    
-            LSL.B       D7,D7
-            LSL.B       #$01,D0
-            LSL.B       #$02,D1
-            LSL.B       #$03,D2
-            LSL.B       #$04,D3
-            LSL.B       #$05,D4
-            LSL.B       #$06,D5
-            LSL.B       #$07,D6
-            LSL.B       D0,D7    
-            LSL.B       D1,D7  
-            LSL.B       D2,D7    
-            LSL.B       D3,D7 
-            LSL.B       D4,D7    
-            LSL.B       D5,D7
-            LSL.B       D6,D7    
-            LSL.B       D7,D7
-            LSL.B       #$01,D0
-            LSL.B       #$02,D1
-            LSL.B       #$03,D2
-            LSL.B       #$04,D3
-            LSL.B       #$05,D4
-            LSL.B       #$06,D5
-            LSL.B       #$07,D6
-            LSL.B       D0,D7    
-            LSL.B       D1,D7  
-            LSL.B       D2,D7    
-            LSL.B       D3,D7 
-            LSL.B       D4,D7    
-            LSL.B       D5,D7
-            LSL.B       D6,D7    
-            LSL.B       D7,D7
-            LSL.B       #$01,D0
-            LSL.B       #$02,D1
-            LSL.B       #$03,D2
-            LSL.B       #$04,D3
-            LSL.B       #$05,D4
-            LSL.B       #$06,D5
-            LSL.B       #$07,D6
-            LSL.B       D0,D7    
-            LSL.B       D1,D7  
-            LSL.B       D2,D7    
-            LSL.B       D3,D7 
-            LSL.B       D4,D7    
-            LSL.B       D5,D7
-            LSL.B       D6,D7    
-            LSL.B       D7,D7
-            LSL.B       #$01,D0
-            LSL.B       #$02,D1
-            LSL.B       #$03,D2
-            LSL.B       #$04,D3
-
+            LSL.B       D7,D7            
             
             ADDA.W      D0,A0
             ADDA.W      A1,A2
@@ -635,6 +525,7 @@ TEST1       RTS
 
 
         END    START
+
 
 
 
