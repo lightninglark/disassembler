@@ -173,7 +173,8 @@ J_CLR_DM    CLR.L       D2
 J_CLR_SHFT  CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
-            LSL.W       #11,D2      *Clear the most sig 11 bits
+            MOVE.B      #11,D4      *Moves 11 into D4
+            LSL.W       D4,D2      *Clear the most sig 11 bits
             MOVE.B      #14,D1      *Moves 14 into D1
             LSR.W       D1,D2       *Shifts 14 right to isolate the bits we're working with 
             RTS                     *Return back to JMP_Xn 
@@ -324,7 +325,7 @@ OP_ADD      JSR         OPC_ADD
             
 *------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
 
-JMP_EX      JSR         J_CLR_3     *Isolate Count/Reg bits to determine if the OPCODE is a MEMORY variant
+JMP_EX      JSR         J_CLR3      *Isolate Count/Reg bits to determine if the OPCODE is a MEMORY variant
             CMP.B       #0,D2       
             BEQ         JMP_AS_MEM  *Instruction is determined to be ASR or ASL MEMORY variant
             CMP.B       #1,D2
@@ -333,34 +334,34 @@ JMP_EX      JSR         J_CLR_3     *Isolate Count/Reg bits to determine if the 
             BEQ         JMP_RO_MEM  *Instruction is determined to be ROR or ROL MEMORY variant
                                     *If none of the above, possibly a REGISTER variant
                                     
-           JSR          J_CLR_SHFT  *Isolate the identifying bits that determine whether LS(L/R) / AS(L/R) / RO(L/R) for the REGISTER variant          
-           CMP.B        #0,D2
-           BEQ          JMP_AS_REG  *Instruction is determined to be ASR or ASL REGISTER variant
-           CMP.B        #1,D2
-           BEQ          JMP_LS_REG  *Instruction is determined to be LSR or LSL REGISTER variant 
-           CMP.B        #3,D2
-           BEQ          JMP_RO_REG  *Instruction is determined to be ROR or ROL REGISTER variant
+            JSR         J_CLR_SHFT  *Isolate the identifying bits that determine whether LS(L/R) / AS(L/R) / RO(L/R) for the REGISTER variant          
+            CMP.B       #0,D2
+            BEQ         JMP_AS_REG  *Instruction is determined to be ASR or ASL REGISTER variant
+            CMP.B       #1,D2
+            BEQ         JMP_LS_REG  *Instruction is determined to be LSR or LSL REGISTER variant 
+            CMP.B       #3,D2
+            BEQ         JMP_RO_REG  *Instruction is determined to be ROR or ROL REGISTER variant
            
-           JSR INVALID             *Otherwise instruction is determined to be invalid
-           RTS
+            JSR         INVALID     *Otherwise instruction is determined to be invalid
+            RTS
            
-JMP_AS_MEM JSR          OPC_AS_MEM
-           RTS
+JMP_AS_MEM  JSR         OPC_AS_MEM
+            RTS
 
-JMP_LS_MEM JSR          OPC_LS_MEM
-           RTS
+JMP_LS_MEM  JSR         OPC_LS_MEM
+            RTS
 
-JMP_RO_MEM JSR          OPC_RO_MEM
-           RTS
+JMP_RO_MEM  JSR         OPC_RO_MEM
+            RTS
 
-JMP_AS_REG JSR          OPC_AS_REG
-           RTS
+JMP_AS_REG  JSR         OPC_AS_REG
+            RTS
 
-JMP_LS_REG JSR          OPC_LS_REG
-           RTS
+JMP_LS_REG  JSR         OPC_LS_REG
+            RTS
 
-JMP_RO_REG JSR          OPC_RO_REG
-           RTS           
+JMP_RO_REG  JSR         OPC_RO_REG
+            RTS           
 
      
 
@@ -700,7 +701,7 @@ OPC_RTS     MOVE.B      #'R',(A4)+
 *------------AS(L/R) OPCODE MEMORY variant------------------          
 OPC_AS_MEM  MOVE.B      #'A',(A4)+
             MOVE.B      #'S',(A4)+
-            JSR         SHIFT_DECODE
+            JSR         SHFT_DECODE
             MOVE.B      #'.',(A4)+
                        
             JSR         SR_MEM
@@ -709,7 +710,7 @@ OPC_AS_MEM  MOVE.B      #'A',(A4)+
 *------------LS(L/R) OPCODE MEMORY variant------------------    
 OPC_LS_MEM  MOVE.B      #'L',(A4)+
             MOVE.B      #'S',(A4)+
-            JSR         SHIFT_DECODE
+            JSR         SHFT_DECODE
             MOVE.B      #'.',(A4)+
                         
             JSR         SR_MEM
@@ -718,7 +719,7 @@ OPC_LS_MEM  MOVE.B      #'L',(A4)+
 *------------RO(L/R) OPCODE MEMORY variant------------------     
 OPC_RO_MEM  MOVE.B      #'R',(A4)+
             MOVE.B      #'O',(A4)+
-            JSR         SHIFT_DECODE
+            JSR         SHFT_DECODE
             MOVE.B      #'.',(A4)+
                        
             JSR         SR_MEM
@@ -727,35 +728,35 @@ OPC_RO_MEM  MOVE.B      #'R',(A4)+
 *----------AS(L/R) OPCODE REGISTER variant------------------      
 OPC_AS_REG  MOVE.B      #'A',(A4)+
             MOVE.B      #'S',(A4)+
-            JSR         SHIFT_DECODE
+            JSR         SHFT_DECODE
             MOVE.B      #'.',(A4)+
             
             JSR         GET_SIZE_2
             JSR         ADD_SIZE
-            JSR         SR_REGISTER
+            JSR         SR_REG
             
             RTS
 
 *----------LS(L/R) OPCODE REGISTER variant------------------ 
 OPC_LS_REG  MOVE.B      #'L',(A4)+
             MOVE.B      #'S',(A4)+
-            JSR         SHIFT_DECODE
+            JSR         SHFT_DECODE
             MOVE.B      #'.',(A4)+
             
             JSR         GET_SIZE_2
             JSR         ADD_SIZE
-            JSR         SR_REGISTER
+            JSR         SR_REG
             RTS
 
 *----------RO(L/R) OPCODE REGISTER variant------------------ 
 OPC_RO_REG  MOVE.B      #'R',(A4)+
             MOVE.B      #'O',(A4)+
-            JSR         SHIFT_DECODE
+            JSR         SHFT_DECODE
             MOVE.B      #'.',(A4)+
 
             JSR         GET_SIZE_2
             JSR         ADD_SIZE
-            JSR         SR_REGISTER
+            JSR         SR_REG
             RTS          
 
 *===========================================================
@@ -764,7 +765,7 @@ OPC_RO_REG  MOVE.B      #'R',(A4)+
 
 *---------------Determine Shift Direction-------------------
 * %0000 000X 0000 0000 
-DECODE_SHFT CLR.L       D2
+SHFT_DECODE CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
             LSL.W       #7,D2       *Clear the most sig 7 bits
@@ -1050,6 +1051,9 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
+
+
 
 
 
