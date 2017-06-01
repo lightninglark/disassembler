@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/23/2017 4:34:29 PM
+Created On: 5/31/2017 8:03:19 PM
 
 00000000                             1  ************************************************************
 00000000                             2  * TEAM NEVERY LUCKY DISSASSEMBLER
@@ -15,474 +15,646 @@ Created On: 5/23/2017 4:34:29 PM
 00000000                            11  * AN_DEST, DATA_SRC (But maybe not since we'll know the 
 00000000                            12  * specific order of operands for those functions.
 00000000                            13  
-00000000                            14  *---------------------EA SOURCE-----------------------------
-00000000                            15  * Logic for an EA source operand for opcodes: 
-00000000                            16  * ADD, AND, OR, SUB
-00000000                            17  *-----------------------------------------------------------
-00000000  4EB9 00000032             18  EA_SRC      JSR         GEN_EA_CODE *Deal with EA code First
-00000006  18FC 002C                 19              MOVE.B      #',',(A4)+
-0000000A  18FC 0044                 20              MOVE.B      #'D',(A4)+
-0000000E  4EB9 0000009A             21              JSR         REG_CODE    *Decode Dn and add number to string
-00000014  4E75                      22              RTS
-00000016                            23  
-00000016                            24  *---------------------DN SOURCE-----------------------------
-00000016                            25  * Logic for a DN source operand for opcodes:
-00000016                            26  * ADD, AND, OR, SUB
-00000016                            27  *-----------------------------------------------------------
-00000016  18FC 0044                 28  DN_SRC      MOVE.B      #'D',(A4)+
-0000001A  4EB9 0000009A             29              JSR         REG_CODE     *Decode Dn and add number to string
-00000020  18FC 002C                 30              MOVE.B      #',',(A4)+
-00000024  4EB9 00000032             31              JSR         GEN_EA_CODE *Deal with EA code Second
-0000002A  4E75                      32              RTS
-0000002C                            33  
-0000002C                            34  *---------------------MM OPERATION ORDER--------------------
-0000002C                            35  * Identifies whether the order of the parameters is:
-0000002C                            36  * <EA>,<list> or <list>,<EA>. It then branches to the 
-0000002C                            37  * appropriate order based subroutines. This subroutine is
-0000002C                            38  * for opcodes: MOVEM
-0000002C                            39  *-----------------------------------------------------------
-0000002C                            40  MM_OP_ORD 
-0000002C  4E75                      41              RTS
-0000002E                            42  
-0000002E                            43  *---------------------MM EA SOURCE--------------------------
-0000002E                            44  * Logic for an EA source operand for MOVEM
-0000002E                            45  *-----------------------------------------------------------
-0000002E                            46  MM_EA_SRC   *Deal with EA code first
-0000002E                            47              *Deal with list second
-0000002E  4E75                      48              RTS
-00000030                            49  
-00000030                            50  *---------------------MM LIST SOURCE------------------------
-00000030                            51  * Logic for a LIST source operand for MOVEM
-00000030                            52  *-----------------------------------------------------------
-00000030                            53  MM_LS_SRC   *Deal with list first
-00000030                            54              *Deal with EA code second
-00000030  4E75                      55              RTS
-00000032                            56  
-00000032                            57  
-00000032                            58  *============================================================
-00000032                            59  *======================BIT ISOLATORS=========================
-00000032                            60  *============================================================
-00000032                            61  
-00000032                            62  *-------------------------GEN EA CODE-----------------------
-00000032                            63  * For: SUBI, ADDI, MOVEM, LEA, JSR, ADDQ, OR, DIVU, SUB,
-00000032                            64  *     MULS, AND, ADD, ADDA
-00000032                            65  * Probably for: LSL/LSR, ASL/ASR,ROL/ROR.
-00000032                            66  *
-00000032                            67  *     - Isolates EA mode into D6
-00000032                            68  *     - Isolates EA register into D3
-00000032                            69  *     - initiates EA decode chain
-00000032                            70  *-----------------------------------------------------------
-00000032  4283                      71  GEN_EA_CODE CLR.L       D3          *Make sure D3 is clear
-00000034  4286                      72              CLR.L       D6          *Make sure D6 is clear
-00000036  4281                      73              CLR.L       D1          *Make sure D1 is clear for shifting
-00000038                            74              
-00000038  3607                      75              MOVE.W      D7,D3       *Move untouched opcode into D3
-0000003A  3C07                      76              MOVE.W      D7,D6       *Move untouched opcode into D6
-0000003C                            77              
-0000003C  123C 000A                 78              MOVE.B      #10,D1      *Shifting to isolate MODE
-00000040  E36E                      79              LSL.W       D1,D6       
-00000042  123C 000D                 80              MOVE.B      #13,D1
-00000046  E26E                      81              LSR.W       D1,D6       *Move MODE bits to LSB position
-00000048                            82              
-00000048  E36B                      83              LSL.W       D1,D3       *Shifting to isolate REGISTER (#13 already in D1)
-0000004A  E26B                      84              LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
-0000004C                            85              
-0000004C  4EB9 000000B0             86              JSR         EA_TBL      *Decode MODE to select correct <EA>
-00000052  4E75                      87              RTS
-00000054                            88              
-00000054                            89  *-------------------------MOVE EA CODE-----------------------
-00000054                            90  * For: MOVE, MOVEA
-00000054                            91  *
-00000054                            92  *     - Isolates Source Mode and Reg into D3, D6 respec.
-00000054                            93  *     - initiates SOURCE decode chain
-00000054                            94  *     - Isolates Dest Mode and REg into D3, and D6 respec.
-00000054                            95  *     - initiates DEST decode chain
-00000054                            96  *     - Code flows like this:
-00000054                            97  *       SOURCE
-00000054                            98  *       SEPERATOR
-00000054                            99  *       DESTINATION
-00000054                           100  *-----------------------------------------------------------
-00000054  4283                     101  MOV_EA_CODE CLR.L       D3          *Make sure D3 is clear
-00000056  4286                     102              CLR.L       D6          *Make sure D6 is clear
-00000058  4281                     103              CLR.L       D1          *Make sure D1 is clear for shifting
-0000005A                           104              
-0000005A  3607                     105              MOVE.W      D7,D3       *Move untouched opcode into D3
-0000005C  3C07                     106              MOVE.W      D7,D6       *Move untouched opcode into D6
-0000005E                           107              
-0000005E  123C 000A                108              MOVE.B      #10,D1      *Shifting to isolate MODE
-00000062  E36E                     109              LSL.W       D1,D6       
-00000064  123C 000D                110              MOVE.B      #13,D1
-00000068  E26E                     111              LSR.W       D1,D6       *Move MODE bits to LSB position
-0000006A                           112              
-0000006A  E36B                     113              LSL.W       D1,D3       *Shifting to isolate REGISTER (#13 already in D1)
-0000006C  E26B                     114              LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
-0000006E                           115              
-0000006E  4EB9 000000B0            116              JSR         EA_TBL      *Decode MODE to select correct <EA>
-00000074                           117              
-00000074  18FC 002C                118              MOVE.B      #',',(A4)+  *SEPERATOR
-00000078                           119              
-00000078  4283                     120              CLR.L       D3          *Make sure D3 is clear
-0000007A  4286                     121              CLR.L       D6          *Make sure D6 is clear
-0000007C  4281                     122              CLR.L       D1          *Make sure D1 is clear for shifting
-0000007E                           123              
-0000007E  3607                     124              MOVE.W      D7,D3       *Move untouched opcode into D3
-00000080  3C07                     125              MOVE.W      D7,D6       *Move untouched opcode into D6
-00000082                           126              
-00000082  123C 0007                127              MOVE.B      #7,D1      *Shifting to isolate MODE
-00000086  E36E                     128              LSL.W       D1,D6       
-00000088  123C 000D                129              MOVE.B      #13,D1
-0000008C  E26E                     130              LSR.W       D1,D6       *Move MODE bits to LSB position
-0000008E                           131              
-0000008E  E94B                     132              LSL.W       #4,D3       *Shifting to isolate Dest REGISTER
-00000090  E26B                     133              LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
-00000092                           134              
-00000092  4EB9 000000B0            135              JSR         EA_TBL      *Decode MODE to select correct <EA>
-00000098                           136              
-00000098  4E75                     137              RTS
-0000009A                           138              
-0000009A                           139              
-0000009A                           140  *-------------------------DECODE DN--------------------------
-0000009A                           141  * This function decides a DN to get the data register number
-0000009A                           142  * It then adds the number to the output strings
-0000009A                           143  *------------------------------------------------------------
-0000009A  4283                     144  REG_CODE    CLR.L       D3          *Make sure D3 is empty to isolate Dn register
-0000009C  3607                     145              MOVE.W      D7,D3       *Copy untoched opcode into D3 for manipulation
-0000009E  E94B                     146              LSL.W       #4,D3       *Isolate bits and move to LSB position
-000000A0  4282                     147              CLR.L       D2
-000000A2  143C 000D                148              MOVE.B      #13,D2
-000000A6  E46B                     149              LSR.W       D2,D3
-000000A8  4EB9 0000014A            150              JSR         REG_TBL     *Jump to register table.
-000000AE  4E75                     151              RTS
-000000B0                           152  
-000000B0                           153  *============================================================
-000000B0                           154  *=========================JUMP TABLES========================
-000000B0                           155  *============================================================
-000000B0                           156  
-000000B0                           157  *-------------------------EA_TBL----------------------------
-000000B0                           158  * This is a jump table for selecting the correct addressing
-000000B0                           159  * MODE which is in D6.
-000000B0                           160  * Possible Modes: Dn = 0, An = 1, (An) = 2, (An)+ = 3,
-000000B0                           161  *                  -(An) = 4, Absolutes = 111
-000000B0                           162  *-----------------------------------------------------------
-000000B0  BC3C 0000                163  EA_TBL      CMP.B       #0,D6       *Select correct <EA> mode
-000000B4  6700 0030                164              BEQ         DRD
-000000B8  BC3C 0001                165              CMP.B       #1,D6
-000000BC  6700 0034                166              BEQ         ARD
-000000C0  BC3C 0002                167              CMP.B       #2,D6
-000000C4  6700 0038                168              BEQ         ARI
-000000C8  BC3C 0003                169              CMP.B       #3,D6
-000000CC  6700 0044                170              BEQ         ARI_INC
-000000D0  BC3C 0004                171              CMP.B       #4,D6
-000000D4  6700 0054                172              BEQ         ARI_DEC
-000000D8  BC3C 0007                173              CMP.B       #7,D6
-000000DC  6700 0064                174              BEQ         ABS_ADDR
-Line 175 ERROR: Undefined symbol
-000000E0  4EF9 004DBB8E            175              JMP         INVALID     *Got here? Must be bad data.
-000000E6                           176  
-000000E6  18FC 0044                177  DRD         MOVE.B      #'D',(A4)+
-000000EA  4EB9 0000014A            178              JSR         REG_TBL     *Reg num should be in D3
-000000F0  4E75                     179              RTS
-000000F2                           180  
-000000F2  18FC 0041                181  ARD         MOVE.B      #'A',(A4)+
-000000F6  4EB9 0000014A            182              JSR         REG_TBL     *Reg num should be in D3
-000000FC  4E75                     183              RTS
-000000FE                           184  
-000000FE  18FC 0028                185  ARI         MOVE.B      #'(',(A4)+
-00000102  18FC 0041                186              MOVE.B      #'A',(A4)+
-00000106  4EB9 0000014A            187              JSR         REG_TBL     *Reg num should be in D3
-0000010C  18FC 0029                188              MOVE.B      #')',(A4)+
-00000110  4E75                     189              RTS
-00000112                           190  
-00000112  18FC 0028                191  ARI_INC     MOVE.B      #'(',(A4)+
-00000116  18FC 0041                192              MOVE.B      #'A',(A4)+
-0000011A  4EB9 0000014A            193              JSR         REG_TBL     *Reg num should be in D3
-00000120  18FC 0029                194              MOVE.B      #')',(A4)+
-00000124  18FC 002B                195              MOVE.B      #'+',(A4)+
-00000128  4E75                     196              RTS
-0000012A                           197  
-0000012A  18FC 002D                198  ARI_DEC     MOVE.B      #'-',(A4)+
-0000012E  18FC 0028                199              MOVE.B      #'(',(A4)+
-00000132  18FC 0041                200              MOVE.B      #'A',(A4)+
-00000136  4EB9 0000014A            201              JSR         REG_TBL     *Reg num should be in D3
-0000013C  18FC 0029                202              MOVE.B      #')',(A4)+
-00000140  4E75                     203              RTS
-00000142                           204  
-00000142  4EB9 000001C0            205  ABS_ADDR    JSR         ABS_TBL
-00000148  4E75                     206              RTS
-0000014A                           207              
-0000014A                           208  *-------------------------REG_TBL---------------------------
-0000014A                           209  * This is a jump table for selecting register (both data and
-0000014A                           210  * address) numbers. It looks for the bit value in D3
-0000014A                           211  *-----------------------------------------------------------
-0000014A  B63C 0000                212  REG_TBL     CMP.B       #0,D3       *Select correct number to add to output strings
-0000014E  6700 0040                213              BEQ         NUM_0
-00000152  B63C 0001                214              CMP.B       #1,D3
-00000156  6700 003E                215              BEQ         NUM_1
-0000015A  B63C 0002                216              CMP.B       #2,D3
-0000015E  6700 003C                217              BEQ         NUM_2
-00000162  B63C 0003                218              CMP.B       #3,D3
-00000166  6700 003A                219              BEQ         NUM_3
-0000016A  B63C 0004                220              CMP.B       #4,D3
-0000016E  6700 0038                221              BEQ         NUM_4
-00000172  B63C 0005                222              CMP.B       #5,D3
-00000176  6700 0036                223              BEQ         NUM_5
-0000017A  B63C 0006                224              CMP.B       #6,D3
-0000017E  6700 0034                225              BEQ         NUM_6
-00000182  B63C 0007                226              CMP.B       #7,D3
-00000186  6700 0032                227              BEQ         NUM_7
-Line 228 ERROR: Undefined symbol
-0000018A  4EF9 004DBB8E            228              JMP         INVALID     *Got here? Must be bad data.
-00000190                           229              
-00000190  18FC 0030                230  NUM_0       MOVE.B      #'0',(A4)+
-00000194  4E75                     231              RTS              
-00000196  18FC 0031                232  NUM_1       MOVE.B      #'1',(A4)+
-0000019A  4E75                     233              RTS
-0000019C  18FC 0032                234  NUM_2       MOVE.B      #'2',(A4)+
-000001A0  4E75                     235              RTS
-000001A2  18FC 0033                236  NUM_3       MOVE.B      #'3',(A4)+
-000001A6  4E75                     237              RTS
-000001A8  18FC 0034                238  NUM_4       MOVE.B      #'4',(A4)+
-000001AC  4E75                     239              RTS
-000001AE  18FC 0035                240  NUM_5       MOVE.B      #'5',(A4)+
-000001B2  4E75                     241              RTS
-000001B4  18FC 0036                242  NUM_6       MOVE.B      #'6',(A4)+
-000001B8  4E75                     243              RTS
-000001BA  18FC 0037                244  NUM_7       MOVE.B      #'7',(A4)+
-000001BE  4E75                     245              RTS
-000001C0                           246  
-000001C0                           247  *-------------------------ABS_TBL----------------------------
-000001C0                           248  * This is a jump table for selecting the correct ABSOLUTE
-000001C0                           249  * Addressing mode [(xxx).W, (xxx).L, #<data>.
-000001C0                           250  * 3 Possibilities: (xxx).W = 0, (xxx).L = 1, #<data> = 4
-000001C0                           251  * Register number should be in D3
-000001C0                           252  *-----------------------------------------------------------
-000001C0  B63C 0000                253  ABS_TBL     CMP.B       #0,D3       *Select correct number to add to output strings
-000001C4  6700 0018                254              BEQ         ABW
-000001C8  B63C 0001                255              CMP.B       #1,D3
-000001CC  6700 0020                256              BEQ         ABL
-000001D0  B63C 0004                257              CMP.B       #4,D3
-000001D4  6700 0028                258              BEQ         IDATA
-Line 259 ERROR: Undefined symbol
-000001D8  4EF9 004DBB8E            259              JMP         INVALID     *Got here? Must be bad data.
-000001DE                           260              
-000001DE  18FC 0024                261  ABW         MOVE.B      #'$',(A4)+
-000001E2  4281                     262              CLR.L       D1          *Make sure D1 is clear
-000001E4  321D                     263              MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
-000001E6  4EB9 000002A8            264              JSR         W_H2A       *convert absolute value to ascii and add to good string
-000001EC  4E75                     265              RTS
-000001EE                           266  
-000001EE  18FC 0024                267  ABL         MOVE.B      #'$',(A4)+
-000001F2  4281                     268              CLR.L       D1          *Make sure D1 is clear
-000001F4  221D                     269              MOVE.L      (A5)+, D1   *Increment counter by WORD (grab word data)
-000001F6  4EB9 000002EA            270              JSR         L_H2A
-000001FC  4E75                     271              RTS
-000001FE                           272              
-000001FE  18FC 0023                273  IDATA       MOVE.B      #'#',(A4)+
-00000202  18FC 0024                274              MOVE.B      #'$',(A4)+  *Immediate value will be in Hex
-00000206  4EB9 0000020E            275              JSR         IMD_TBL
-0000020C  4E75                     276              RTS
-0000020E                           277              
-0000020E                           278  *-------------------------IMD_TBL---------------------------
-0000020E                           279  * This is a jump table for selecting the correct Immediate
-0000020E                           280  * Data output based on the size code. Size code should be in
-0000020E                           281  * D4
-0000020E                           282  *-----------------------------------------------------------
-0000020E  B83C 0000                283  IMD_TBL     CMP.B       #0,D4       *Is it byte size code?
-00000212  6700 002E                284              BEQ         B_IMD       
-00000216  B83C 0004                285              CMP.B       #4,D4
-0000021A  6700 0026                286              BEQ         B_IMD
-0000021E                           287  
-0000021E  B83C 0001                288              CMP.B       #1,D4       *Is it a word size code?
-00000222  6700 002A                289              BEQ         W_IMD
-00000226  B83C 0005                290              CMP.B       #5,D4
-0000022A  6700 0022                291              BEQ         W_IMD
-0000022E                           292              
-0000022E  B83C 0002                293              CMP.B       #2,D4       *Is it a long word size code?
-00000232  6700 0026                294              BEQ         L_IMD
-00000236  B83C 0006                295              CMP.B       #6,D4
-0000023A  6700 001E                296              BEQ         L_IMD
-0000023E                           297              
-Line 298 ERROR: Undefined symbol
-0000023E  6000 B94E                298              BRA         INVALID     *Got here? Must be bad data.
-00000242                           299              
-00000242  4281                     300  B_IMD       CLR.L       D1
-00000244  321D                     301              MOVE.W      (A5)+,D1    *Make sure D1 is clear
-00000246  4EB9 00000266            302              JSR         B_H2A       *Incremeint by WORD (but translate byte only)
-0000024C  4E75                     303              RTS
-0000024E                           304  
-0000024E  4281                     305  W_IMD       CLR.L       D1          *Make sure D1 is clear
-00000250  321D                     306              MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
-00000252  4EB9 000002A8            307              JSR         W_H2A
-00000258  4E75                     308              RTS
-0000025A                           309  
-0000025A  4281                     310  L_IMD       CLR.L       D1          *Make sure D1 is clear
-0000025C  221D                     311              MOVE.L      (A5)+, D1   *Increment counter by LONGWORD (grab LONGWORD data)
-0000025E  4EB9 000002EA            312              JSR         L_H2A
-00000264  4E75                     313              RTS
-00000266                           314                                 
-00000266                           315  
-00000266                           316  
-00000266                           317  *============================================================
-00000266                           318  *=========================HELPER SUBROUTINES=================
-00000266                           319  *============================================================
-00000266                           320  
-00000266                           321  *-------------------------Byte Hex to Ascii-----------------
-00000266                           322  * 
-00000266                           323  *-----------------------------------------------------------
-00000266  4280                     324  B_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
-00000268  4282                     325              CLR.L       D2          *Make sure D2 is empty (each individual char)
-0000026A  4283                     326              CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
-0000026C  103C 0002                327              MOVE.B      #$2,D0      *Counter
-00000270  6000 0002                328              BRA         B_ISO_DIG   *Begin isolating chars
-00000274                           329              
-00000274  E919                     330  B_ISO_DIG   ROL.B       #4,D1       *Move first significant hex char to least sig position
-00000276                           331              
-00000276  1401                     332              MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
-00000278                           333              
-00000278  163C 000C                334              MOVE.B      #12,D3      *Shift left 28 times
-0000027C  E72A                     335              LSL.B       D3,D2       *Isolated hex digit now is $X0000000
-0000027E  E91A                     336              ROL.B       #4,D2       *Isolated hex digit is now $0000000X
-00000280                           337              
-00000280  0C02 0009                338              CMPI.B      #$9,D2      *Is it a number?
-00000284  6F00 0006                339              BLE         B_NUM       *If it is, process number
-00000288  6000 000A                340              BRA         B_LET       *If not, process letter
-0000028C                           341              
-0000028C  0602 0030                342  B_NUM       ADDI.B      #$30,D2     *Make it an ascii number
-00000290  6000 000A                343              BRA         B_ADD_CHAR  *add to strings and continue
-00000294                           344              
-00000294  0602 0037                345  B_LET       ADDI.B      #$37,D2     *Make it an ascii letter
-00000298  6000 0002                346              BRA         B_ADD_CHAR  *add to strings and continue
-0000029C                           347  
-0000029C  18C2                     348  B_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
-0000029E  5300                     349              SUBI.B      #$1,D0      *decrement counter
-000002A0  0C00 0000                350              CMPI.B      #$0,D0      *Check if we're done            
-000002A4  6ECE                     351              BGT         B_ISO_DIG   *If not, continue tranlation   
-000002A6                           352              
-000002A6  4E75                     353              RTS
-000002A8                           354  
-000002A8                           355  *-------------------------Word Hex to Ascii-----------------
-000002A8                           356  * 
-000002A8                           357  *-----------------------------------------------------------
-000002A8  4280                     358  W_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
-000002AA  4282                     359              CLR.L       D2          *Make sure D2 is empty (each individual char)
-000002AC  4283                     360              CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
-000002AE  103C 0004                361              MOVE.B      #$4,D0      *Counter
-000002B2  6000 0002                362              BRA         W_ISO_DIG   *Begin isolating chars
-000002B6                           363              
-000002B6  E959                     364  W_ISO_DIG   ROL.W       #4,D1       *Move first significant hex char to least sig position
-000002B8                           365              
-000002B8  1401                     366              MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
-000002BA                           367              
-000002BA  163C 0004                368              MOVE.B      #4,D3      *Shift left 28 times
-000002BE  E76A                     369              LSL.W       D3,D2       *Isolated hex digit now is $X0000000
-000002C0  E95A                     370              ROL.W       #4,D2       *Isolated hex digit is now $0000000X
-000002C2                           371              
-000002C2  0C02 0009                372              CMPI.B      #$9,D2      *Is it a number?
-000002C6  6F00 0006                373              BLE         W_NUM       *If it is, process number
-000002CA  6000 000A                374              BRA         W_LET       *If not, process letter
-000002CE                           375              
-000002CE  0602 0030                376  W_NUM       ADDI.B      #$30,D2     *Make it an ascii number
-000002D2  6000 000A                377              BRA         W_ADD_CHAR  *add to strings and continue
-000002D6                           378              
-000002D6  0602 0037                379  W_LET       ADDI.B      #$37,D2     *Make it an ascii letter
-000002DA  6000 0002                380              BRA         W_ADD_CHAR  *add to strings and continue
-000002DE                           381  
-000002DE  18C2                     382  W_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
-000002E0  5300                     383              SUBI.B      #$1,D0      *decrement counter
-000002E2  0C00 0000                384              CMPI.B      #$0,D0      *Check if we're done            
-000002E6  6ECE                     385              BGT         W_ISO_DIG   *If not, continue tranlation   
-000002E8                           386              
-000002E8  4E75                     387              RTS
-000002EA                           388  *-------------------------Long Hex to Ascii-----------------
-000002EA                           389  * 
-000002EA                           390  *-----------------------------------------------------------
-000002EA  4280                     391  L_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
-000002EC  4282                     392              CLR.L       D2          *Make sure D2 is empty (each individual char)
-000002EE  4283                     393              CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
-000002F0  103C 0008                394              MOVE.B      #$8,D0      *Counter
-000002F4  6000 0002                395              BRA         L_ISO_DIG   *Begin isolating chars
-000002F8                           396              
-000002F8  E999                     397  L_ISO_DIG   ROL.L       #4,D1       *Move first significant hex char to least sig position
-000002FA                           398              
-000002FA  1401                     399              MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
-000002FC                           400              
-000002FC  163C 001C                401              MOVE.B      #28,D3      *Shift left 28 times
-00000300  E7AA                     402              LSL.L       D3,D2       *Isolated hex digit now is $X0000000
-00000302  E99A                     403              ROL.L       #4,D2       *Isolated hex digit is now $0000000X
-00000304                           404              
-00000304  0C02 0009                405              CMPI.B      #$9,D2      *Is it a number?
-00000308  6F00 0006                406              BLE         L_NUM       *If it is, process number
-0000030C  6000 000A                407              BRA         L_LET       *If not, process letter
-00000310                           408              
-00000310  0602 0030                409  L_NUM       ADDI.B      #$30,D2     *Make it an ascii number
-00000314  6000 000A                410              BRA         L_ADD_CHAR  *add to strings and continue
-00000318                           411              
-00000318  0602 0037                412  L_LET       ADDI.B      #$37,D2     *Make it an ascii letter
-0000031C  6000 0002                413              BRA         L_ADD_CHAR  *add to strings and continue
-00000320                           414  
-00000320  18C2                     415  L_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
-00000322  5300                     416              SUBI.B      #$1,D0      *decrement counter
-00000324  0C00 0000                417              CMPI.B      #$0,D0      *Check if we're done            
-00000328  6ECE                     418              BGT         L_ISO_DIG   *If not, continue tranlation   
-0000032A                           419              
-0000032A  4E75                     420              RTS
-0000032C                           421  
-0000032C                           422  
-0000032C                           423  
-0000032C                           424  
-Line 425 WARNING: END directive missing, starting address not set
+00000000                            14  
+00000000                            15  *---------------------EA SOURCE with Dn dest----------------
+00000000                            16  * Logic for an EA source operand for opcodes: 
+00000000                            17  * ADD, AND, OR, SUB
+00000000                            18  *-----------------------------------------------------------
+00000000  4EB9 00000112             19  EASRC_DDES  JSR         GEN_EA_CODE *Deal with EA code First
+00000006  18FC 002C                 20              MOVE.B      #',',(A4)+
+0000000A  18FC 0044                 21              MOVE.B      #'D',(A4)+
+0000000E  4EB9 0000017A             22              JSR         REG_CODE    *Decode Dn and add number to string
+00000014  4E75                      23              RTS
+00000016                            24  
+00000016                            25  *---------------------EA SOURCE with An dest----------------
+00000016                            26  * Logic for an EA source operand for opcodes: 
+00000016                            27  * LEA, ADDA, (Maybe MOVEA)
+00000016                            28  *-----------------------------------------------------------
+00000016  4EB9 00000112             29  EASRC_ADES  JSR         GEN_EA_CODE *Deal with EA code first
+0000001C  18FC 002C                 30              MOVE.B      #',',(A4)+
+00000020  18FC 0041                 31              MOVE.B      #'A',(A4)+
+00000024  4EB9 0000017A             32              JSR         REG_CODE    *Decode Dn and add number to string
+0000002A  4E75                      33              RTS        
+0000002C                            34  
+0000002C                            35  *---------------------DN SOURCE-----------------------------
+0000002C                            36  * Logic for a DN source operand for opcodes:
+0000002C                            37  * ADD, AND, OR, SUB
+0000002C                            38  *-----------------------------------------------------------
+0000002C  18FC 0044                 39  DN_SRC      MOVE.B      #'D',(A4)+
+00000030  4EB9 0000017A             40              JSR         REG_CODE    *Decode Dn and add number to string
+00000036  18FC 002C                 41              MOVE.B      #',',(A4)+
+0000003A  4EB9 00000112             42              JSR         GEN_EA_CODE *Deal with EA code Second
+00000040  4E75                      43              RTS
+00000042                            44  
+00000042                            45  *---------------------Data source, EA dest------------------
+00000042                            46  * Logic for opcodes with a #<data> source, <EA> destination
+00000042                            47  * opcodes: SUBI, ADDI
+00000042                            48  *-----------------------------------------------------------
+00000042  4EB9 000002DE             49  IDATASRC_EA JSR     IDATA       *Add immediate data
+00000048  18FC 002C                 50              MOVE.B  #',',(A4)+  
+0000004C  4EB9 00000112             51              JSR     GEN_EA_CODE *Add ea code
+00000052  4E75                      52              RTS
+00000054                            53  
+00000054                            54  
+00000054                            55  *---------------------MM OPERATION ORDER--------------------
+00000054                            56  * Identifies whether the order of the parameters is:
+00000054                            57  * <EA>,<list> or <list>,<EA>. It then branches to the 
+00000054                            58  * appropriate order based subroutines. This subroutine is
+00000054                            59  * for opcodes: MOVEM
+00000054                            60  *-----------------------------------------------------------
+00000054  4EB9 00000102             61  MM_OP_ORD   JSR         MM_DR       *Isolate DR bit into D2
+0000005A                            62  
+0000005A  B43C 0000                 63              CMP.B       #0,D2       *Is it Register to Memory
+0000005E  6700 000A                 64              BEQ         MM_R2M
+00000062  B43C 0001                 65              CMP.B       #1,D2       *Is it Memory to Register
+00000066  6700 000A                 66              BEQ         MM_M2R
+0000006A                            67              
+0000006A  4EB9 00000090             68  MM_R2M      JSR         MM_LS_SRC
+00000070  4E75                      69              RTS
+00000072                            70  
+00000072  4EB9 0000007A             71  MM_M2R      JSR         MM_EA_SRC
+00000078  4E75                      72              RTS
+0000007A                            73  
+0000007A                            74  *---------------------MM EA SOURCE--------------------------
+0000007A                            75  * Logic for an EA source operand for MOVEM
+0000007A                            76  *-----------------------------------------------------------
+0000007A  4EB9 00000112             77  MM_EA_SRC   JSR         GEN_EA_CODE *Add EA code
+00000080  18FC 002C                 78              MOVE.B      #',',(A4)+
+00000084                            79              *JSR         ISO_MASK    *Isolate the Mask
+00000084                            80              
+00000084                            81              *Bandaid, instead of decoding list, just display hex value
+00000084  18FC 0024                 82              MOVE.B      #'$',(A4)+
+00000088  4EB9 0000032E             83              JSR         W_IMD
+0000008E                            84                      
+0000008E                            85              *deal with list
+0000008E  4E75                      86              RTS
+00000090                            87  
+00000090                            88  *---------------------MM LIST SOURCE------------------------
+00000090                            89  * Logic for a LIST source operand for MOVEM
+00000090                            90  *-----------------------------------------------------------
+00000090                            91  MM_LS_SRC   *Bandaid, instead of decoding list, just display hex value
+00000090  18FC 0024                 92              MOVE.B      #'$',(A4)+
+00000094  4EB9 0000032E             93              JSR         W_IMD
+0000009A                            94              
+0000009A                            95              *Deal with list first
+0000009A  18FC 002C                 96              MOVE.B      #',',(A4)+
+0000009E  4EB9 00000112             97              JSR         GEN_EA_CODE *Add EA code
+000000A4  4E75                      98              RTS
+000000A6                            99  
+000000A6                           100  *---------------------MOVEQ_EA-------------------------------
+000000A6                           101  * Logic for the MOVEQ.L OPCODE to produce an operand.
+000000A6                           102  * D2/D3/D6 avaliable for shifting
+000000A6                           103  * Data must end up in D1 before longword to ascii trans
+000000A6                           104  *-----------------------------------------------------------
+000000A6  4281                     105  MOVEQ_EA    CLR.L       D1          *Make sure D1 is clear
+000000A8  3207                     106              MOVE.W      D7,D1       *copy original opcode
+000000AA  18FC 0020                107              MOVE.B      #' ',(A4)+
+000000AE  18FC 0020                108              MOVE.B      #' ',(A4)+
+000000B2  18FC 0023                109              MOVE.B      #'#',(A4)+
+000000B6  18FC 0024                110              MOVE.B      #'$',(A4)+
+000000BA  4EB9 000003BC            111              JSR         B_H2A       *Add data in 8 least sig bits (byte)
+000000C0  18FC 002C                112              MOVE.B      #',',(A4)+
+000000C4  18FC 0044                113              MOVE.B      #'D',(A4)+
+000000C8                           114              
+000000C8  4281                     115              CLR.L       D1
+000000CA  123C 000D                116              MOVE.B      #13,D1
+000000CE  E94B                     117              LSL.W       #4,D3       *Shifting to isolate Dest REGISTER
+000000D0  E26B                     118              LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+000000D2                           119              
+000000D2  4EB9 0000017A            120              JSR         REG_CODE    *Decode Dn and add number to string            
+000000D8                           121  
+000000D8  4E75                     122              RTS
+000000DA                           123              
+000000DA                           124  *---------------------ADDQ_EA-------------------------------
+000000DA                           125  * Logic for the ADDQ OPCODE to produce an operand.
+000000DA                           126  * D1/D2/D3/D6 avaliable for shifting
+000000DA                           127  *-----------------------------------------------------------
+000000DA  4281                     128  ADDQ_EA     CLR.L       D1          *Make sure D1 is clear
+000000DC  3207                     129              MOVE.W      D7,D1       *Move untoched opcode into D1 for Manipulation
+000000DE                           130              
+000000DE  E949                     131              LSL.W       #4,D1       *Clear more sig bits
+000000E0  4282                     132              CLR.L       D2          * for shifting
+000000E2  143C 000D                133              MOVE.B      #13,D2      *To move data bits into lsb
+000000E6  E469                     134              LSR.W       D2,D1       *Data now in lsb
+000000E8                           135              
+000000E8  18FC 0023                136              MOVE.B      #'#',(A4)+
+000000EC  18FC 0024                137              MOVE.B      #'$',(A4)+
+000000F0  4EB9 00000346            138              JSR         ADDQ_ID     *Jump to ADDQ_ID (immeidate data selector)
+000000F6  18FC 002C                139              MOVE.B      #',',(A4)+  *Add seperator
+000000FA  4EB9 00000112            140              JSR         GEN_EA_CODE *Add the ea code
+00000100                           141              
+00000100  4E75                     142              RTS
+00000102                           143  
+00000102                           144  *---------------------LEA_EA-------------------------------
+00000102                           145  * Logic for the ADDQ OPCODE to produce an operand.
+00000102                           146  * D1/D2/D3/D6 avaliable for shifting
+00000102                           147  *-----------------------------------------------------------
+00000102                           148  
+00000102                           149  *============================================================
+00000102                           150  *======================BIT ISOLATORS=========================
+00000102                           151  *============================================================
+00000102                           152  
+00000102                           153  *-------------------------MM_DR-----------------------------
+00000102                           154  * For:MOVEM. This subroutine isolates the MOVEM DR bit into
+00000102                           155  *     D2
+00000102                           156  *-----------------------------------------------------------
+00000102  4281                     157  MM_DR       CLR.L       D1
+00000104  4282                     158              CLR.L       D2
+00000106  3407                     159              MOVE.W      D7,D2
+00000108  EB4A                     160              LSL.W       #5,D2
+0000010A  123C 000F                161              MOVE.B      #15,D1
+0000010E  E26A                     162              LSR.W       D1,D2
+00000110  4E75                     163              RTS
+00000112                           164  
+00000112                           165  *-------------------------GEN EA CODE-----------------------
+00000112                           166  * For: SUBI, ADDI, MOVEM, LEA, JSR, ADDQ, OR, DIVU, SUB,
+00000112                           167  *     MULS, AND, ADD, ADDA
+00000112                           168  * Probably for: LSL/LSR, ASL/ASR,ROL/ROR.
+00000112                           169  *
+00000112                           170  *     - Isolates EA mode into D6
+00000112                           171  *     - Isolates EA register into D3
+00000112                           172  *     - initiates EA decode chain
+00000112                           173  *-----------------------------------------------------------
+00000112  4283                     174  GEN_EA_CODE CLR.L       D3          *Make sure D3 is clear
+00000114  4286                     175              CLR.L       D6          *Make sure D6 is clear
+00000116  4281                     176              CLR.L       D1          *Make sure D1 is clear for shifting
+00000118                           177              
+00000118  3607                     178              MOVE.W      D7,D3       *Move untouched opcode into D3
+0000011A  3C07                     179              MOVE.W      D7,D6       *Move untouched opcode into D6
+0000011C                           180              
+0000011C  123C 000A                181              MOVE.B      #10,D1      *Shifting to isolate MODE
+00000120  E36E                     182              LSL.W       D1,D6       
+00000122  123C 000D                183              MOVE.B      #13,D1
+00000126  E26E                     184              LSR.W       D1,D6       *Move MODE bits to LSB position
+00000128                           185              
+00000128  E36B                     186              LSL.W       D1,D3       *Shifting to isolate REGISTER (#13 already in D1)
+0000012A  E26B                     187              LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+0000012C                           188              
+0000012C  4EB9 00000190            189              JSR         EA_TBL      *Decode MODE to select correct <EA>
+00000132  4E75                     190              RTS
+00000134                           191              
+00000134                           192  *-------------------------MOVE EA CODE-----------------------
+00000134                           193  * For: MOVE, MOVEA
+00000134                           194  *
+00000134                           195  *     - Isolates Source Mode and Reg into D3, D6 respec.
+00000134                           196  *     - initiates SOURCE decode chain
+00000134                           197  *     - Isolates Dest Mode and REg into D3, and D6 respec.
+00000134                           198  *     - initiates DEST decode chain
+00000134                           199  *     - Code flows like this:
+00000134                           200  *       SOURCE
+00000134                           201  *       SEPERATOR
+00000134                           202  *       DESTINATION
+00000134                           203  *-----------------------------------------------------------
+00000134  4283                     204  MOV_EA_CODE CLR.L       D3          *Make sure D3 is clear
+00000136  4286                     205              CLR.L       D6          *Make sure D6 is clear
+00000138  4281                     206              CLR.L       D1          *Make sure D1 is clear for shifting
+0000013A                           207              
+0000013A  3607                     208              MOVE.W      D7,D3       *Move untouched opcode into D3
+0000013C  3C07                     209              MOVE.W      D7,D6       *Move untouched opcode into D6
+0000013E                           210              
+0000013E  123C 000A                211              MOVE.B      #10,D1      *Shifting to isolate MODE
+00000142  E36E                     212              LSL.W       D1,D6       
+00000144  123C 000D                213              MOVE.B      #13,D1
+00000148  E26E                     214              LSR.W       D1,D6       *Move MODE bits to LSB position
+0000014A                           215              
+0000014A  E36B                     216              LSL.W       D1,D3       *Shifting to isolate REGISTER (#13 already in D1)
+0000014C  E26B                     217              LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+0000014E                           218              
+0000014E  4EB9 00000190            219              JSR         EA_TBL      *Decode MODE to select correct <EA>
+00000154                           220              
+00000154  18FC 002C                221              MOVE.B      #',',(A4)+  *SEPERATOR
+00000158                           222              
+00000158  4283                     223              CLR.L       D3          *Make sure D3 is clear
+0000015A  4286                     224              CLR.L       D6          *Make sure D6 is clear
+0000015C  4281                     225              CLR.L       D1          *Make sure D1 is clear for shifting
+0000015E                           226              
+0000015E  3607                     227              MOVE.W      D7,D3       *Move untouched opcode into D3
+00000160  3C07                     228              MOVE.W      D7,D6       *Move untouched opcode into D6
+00000162                           229              
+00000162  123C 0007                230              MOVE.B      #7,D1      *Shifting to isolate MODE
+00000166  E36E                     231              LSL.W       D1,D6       
+00000168  123C 000D                232              MOVE.B      #13,D1
+0000016C  E26E                     233              LSR.W       D1,D6       *Move MODE bits to LSB position
+0000016E                           234              
+0000016E  E94B                     235              LSL.W       #4,D3       *Shifting to isolate Dest REGISTER
+00000170  E26B                     236              LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+00000172                           237              
+00000172  4EB9 00000190            238              JSR         EA_TBL      *Decode MODE to select correct <EA>
+00000178                           239              
+00000178  4E75                     240              RTS
+0000017A                           241              
+0000017A                           242              
+0000017A                           243  *-------------------------DECODE REG NUM--------------------
+0000017A                           244  * This function decides a DN to get the data register number
+0000017A                           245  * It then adds the number to the output strings
+0000017A                           246  *-----------------------------------------------------------
+0000017A  4283                     247  REG_CODE    CLR.L       D3          *Make sure D3 is empty to isolate Dn register
+0000017C  3607                     248              MOVE.W      D7,D3       *Copy untoched opcode into D3 for manipulation
+0000017E  E94B                     249              LSL.W       #4,D3       *Isolate bits and move to LSB position
+00000180  4282                     250              CLR.L       D2
+00000182  143C 000D                251              MOVE.B      #13,D2
+00000186  E46B                     252              LSR.W       D2,D3
+00000188  4EB9 0000022A            253              JSR         REG_TBL     *Jump to register table.
+0000018E  4E75                     254              RTS
+00000190                           255              
+00000190                           256  
+00000190                           257  
+00000190                           258  *===========================================================
+00000190                           259  *=========================JUMP TABLES=======================
+00000190                           260  *===========================================================
+00000190                           261  
+00000190                           262  *-------------------------EA_TBL----------------------------
+00000190                           263  * This is a jump table for selecting the correct addressing
+00000190                           264  * MODE which is in D6.
+00000190                           265  * Possible Modes: Dn = 0, An = 1, (An) = 2, (An)+ = 3,
+00000190                           266  *                  -(An) = 4, Absolutes = 111
+00000190                           267  *-----------------------------------------------------------
+00000190  BC3C 0000                268  EA_TBL      CMP.B       #0,D6       *Select correct <EA> mode
+00000194  6700 0030                269              BEQ         DRD
+00000198  BC3C 0001                270              CMP.B       #1,D6
+0000019C  6700 0034                271              BEQ         ARD
+000001A0  BC3C 0002                272              CMP.B       #2,D6
+000001A4  6700 0038                273              BEQ         ARI
+000001A8  BC3C 0003                274              CMP.B       #3,D6
+000001AC  6700 0044                275              BEQ         ARI_INC
+000001B0  BC3C 0004                276              CMP.B       #4,D6
+000001B4  6700 0054                277              BEQ         ARI_DEC
+000001B8  BC3C 0007                278              CMP.B       #7,D6
+000001BC  6700 0064                279              BEQ         ABS_ADDR
+Line 280 ERROR: Undefined symbol
+000001C0  4EF9 004DBB8E            280              JMP         INVALID     *Got here? Must be bad data.
+000001C6                           281  
+000001C6  18FC 0044                282  DRD         MOVE.B      #'D',(A4)+
+000001CA  4EB9 0000022A            283              JSR         REG_TBL     *Reg num should be in D3
+000001D0  4E75                     284              RTS
+000001D2                           285  
+000001D2  18FC 0041                286  ARD         MOVE.B      #'A',(A4)+
+000001D6  4EB9 0000022A            287              JSR         REG_TBL     *Reg num should be in D3
+000001DC  4E75                     288              RTS
+000001DE                           289  
+000001DE  18FC 0028                290  ARI         MOVE.B      #'(',(A4)+
+000001E2  18FC 0041                291              MOVE.B      #'A',(A4)+
+000001E6  4EB9 0000022A            292              JSR         REG_TBL     *Reg num should be in D3
+000001EC  18FC 0029                293              MOVE.B      #')',(A4)+
+000001F0  4E75                     294              RTS
+000001F2                           295  
+000001F2  18FC 0028                296  ARI_INC     MOVE.B      #'(',(A4)+
+000001F6  18FC 0041                297              MOVE.B      #'A',(A4)+
+000001FA  4EB9 0000022A            298              JSR         REG_TBL     *Reg num should be in D3
+00000200  18FC 0029                299              MOVE.B      #')',(A4)+
+00000204  18FC 002B                300              MOVE.B      #'+',(A4)+
+00000208  4E75                     301              RTS
+0000020A                           302  
+0000020A  18FC 002D                303  ARI_DEC     MOVE.B      #'-',(A4)+
+0000020E  18FC 0028                304              MOVE.B      #'(',(A4)+
+00000212  18FC 0041                305              MOVE.B      #'A',(A4)+
+00000216  4EB9 0000022A            306              JSR         REG_TBL     *Reg num should be in D3
+0000021C  18FC 0029                307              MOVE.B      #')',(A4)+
+00000220  4E75                     308              RTS
+00000222                           309  
+00000222  4EB9 000002A0            310  ABS_ADDR    JSR         ABS_TBL
+00000228  4E75                     311              RTS
+0000022A                           312              
+0000022A                           313  *-------------------------REG_TBL---------------------------
+0000022A                           314  * This is a jump table for selecting register (both data and
+0000022A                           315  * address) numbers. It looks for the bit value in D3
+0000022A                           316  *-----------------------------------------------------------
+0000022A  B63C 0000                317  REG_TBL     CMP.B       #0,D3       *Select correct number to add to output strings
+0000022E  6700 0040                318              BEQ         NUM_0
+00000232  B63C 0001                319              CMP.B       #1,D3
+00000236  6700 003E                320              BEQ         NUM_1
+0000023A  B63C 0002                321              CMP.B       #2,D3
+0000023E  6700 003C                322              BEQ         NUM_2
+00000242  B63C 0003                323              CMP.B       #3,D3
+00000246  6700 003A                324              BEQ         NUM_3
+0000024A  B63C 0004                325              CMP.B       #4,D3
+0000024E  6700 0038                326              BEQ         NUM_4
+00000252  B63C 0005                327              CMP.B       #5,D3
+00000256  6700 0036                328              BEQ         NUM_5
+0000025A  B63C 0006                329              CMP.B       #6,D3
+0000025E  6700 0034                330              BEQ         NUM_6
+00000262  B63C 0007                331              CMP.B       #7,D3
+00000266  6700 0032                332              BEQ         NUM_7
+Line 333 ERROR: Undefined symbol
+0000026A  4EF9 004DBB8E            333              JMP         INVALID     *Got here? Must be bad data.
+00000270                           334              
+00000270  18FC 0030                335  NUM_0       MOVE.B      #'0',(A4)+
+00000274  4E75                     336              RTS              
+00000276  18FC 0031                337  NUM_1       MOVE.B      #'1',(A4)+
+0000027A  4E75                     338              RTS
+0000027C  18FC 0032                339  NUM_2       MOVE.B      #'2',(A4)+
+00000280  4E75                     340              RTS
+00000282  18FC 0033                341  NUM_3       MOVE.B      #'3',(A4)+
+00000286  4E75                     342              RTS
+00000288  18FC 0034                343  NUM_4       MOVE.B      #'4',(A4)+
+0000028C  4E75                     344              RTS
+0000028E  18FC 0035                345  NUM_5       MOVE.B      #'5',(A4)+
+00000292  4E75                     346              RTS
+00000294  18FC 0036                347  NUM_6       MOVE.B      #'6',(A4)+
+00000298  4E75                     348              RTS
+0000029A  18FC 0037                349  NUM_7       MOVE.B      #'7',(A4)+
+0000029E  4E75                     350              RTS
+000002A0                           351  
+000002A0                           352  *-------------------------ABS_TBL----------------------------
+000002A0                           353  * This is a jump table for selecting the correct ABSOLUTE
+000002A0                           354  * Addressing mode [(xxx).W, (xxx).L, #<data>.
+000002A0                           355  * 3 Possibilities: (xxx).W = 0, (xxx).L = 1, #<data> = 4
+000002A0                           356  * Register number should be in D3
+000002A0                           357  *-----------------------------------------------------------
+000002A0  B63C 0000                358  ABS_TBL     CMP.B       #0,D3       *Select correct number to add to output strings
+000002A4  6700 0018                359              BEQ         ABW
+000002A8  B63C 0001                360              CMP.B       #1,D3
+000002AC  6700 0020                361              BEQ         ABL
+000002B0  B63C 0004                362              CMP.B       #4,D3
+000002B4  6700 0028                363              BEQ         IDATA
+Line 364 ERROR: Undefined symbol
+000002B8  4EF9 004DBB8E            364              JMP         INVALID     *Got here? Must be bad data.
+000002BE                           365              
+000002BE  18FC 0024                366  ABW         MOVE.B      #'$',(A4)+
+000002C2  4281                     367              CLR.L       D1          *Make sure D1 is clear
+000002C4  321D                     368              MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
+000002C6  4EB9 000003FE            369              JSR         W_H2A       *convert absolute value to ascii and add to good string
+000002CC  4E75                     370              RTS
+000002CE                           371  
+000002CE  18FC 0024                372  ABL         MOVE.B      #'$',(A4)+
+000002D2  4281                     373              CLR.L       D1          *Make sure D1 is clear
+000002D4  221D                     374              MOVE.L      (A5)+, D1   *Increment counter by WORD (grab word data)
+000002D6  4EB9 00000440            375              JSR         L_H2A
+000002DC  4E75                     376              RTS
+000002DE                           377              
+000002DE  18FC 0023                378  IDATA       MOVE.B      #'#',(A4)+
+000002E2  18FC 0024                379              MOVE.B      #'$',(A4)+  *Immediate value will be in Hex
+000002E6  4EB9 000002EE            380              JSR         IMD_TBL
+000002EC  4E75                     381              RTS
+000002EE                           382              
+000002EE                           383  *-------------------------IMD_TBL---------------------------
+000002EE                           384  * This is a jump table for selecting the correct Immediate
+000002EE                           385  * Data output based on the size code. Size code should be in
+000002EE                           386  * D4
+000002EE                           387  *-----------------------------------------------------------
+000002EE  B83C 0000                388  IMD_TBL     CMP.B       #0,D4       *Is it byte size code?
+000002F2  6700 002E                389              BEQ         B_IMD       
+000002F6  B83C 0004                390              CMP.B       #4,D4
+000002FA  6700 0026                391              BEQ         B_IMD
+000002FE                           392  
+000002FE  B83C 0001                393              CMP.B       #1,D4       *Is it a word size code?
+00000302  6700 002A                394              BEQ         W_IMD
+00000306  B83C 0005                395              CMP.B       #5,D4
+0000030A  6700 0022                396              BEQ         W_IMD
+0000030E                           397              
+0000030E  B83C 0002                398              CMP.B       #2,D4       *Is it a long word size code?
+00000312  6700 0026                399              BEQ         L_IMD
+00000316  B83C 0006                400              CMP.B       #6,D4
+0000031A  6700 001E                401              BEQ         L_IMD
+0000031E                           402              
+Line 403 ERROR: Undefined symbol
+0000031E  6000 B86E                403              BRA         INVALID     *Got here? Must be bad data.
+00000322                           404              
+00000322  4281                     405  B_IMD       CLR.L       D1
+00000324  321D                     406              MOVE.W      (A5)+,D1    *Make sure D1 is clear
+00000326  4EB9 000003BC            407              JSR         B_H2A       *Incremeint by WORD (but translate byte only)
+0000032C  4E75                     408              RTS
+0000032E                           409  
+0000032E  4281                     410  W_IMD       CLR.L       D1          *Make sure D1 is clear
+00000330  321D                     411              MOVE.W      (A5)+, D1   *Increment counter by WORD (grab word data)
+00000332  4EB9 000003FE            412              JSR         W_H2A
+00000338  4E75                     413              RTS
+0000033A                           414  
+0000033A  4281                     415  L_IMD       CLR.L       D1          *Make sure D1 is clear
+0000033C  221D                     416              MOVE.L      (A5)+, D1   *Increment counter by LONGWORD (grab LONGWORD data)
+0000033E  4EB9 00000440            417              JSR         L_H2A
+00000344  4E75                     418              RTS
+00000346                           419  
+00000346                           420  *---------------------ADDQ_ID-------------------------------
+00000346                           421  * A simple immeidate data selector for ADDQ. Simply adds
+00000346                           422  * the the correct character (1 thru 8) to good string based
+00000346                           423  * on data bits in D1
+00000346                           424  *-----------------------------------------------------------
+00000346  B23C 0000                425  ADDQ_ID     CMP.B       #0,D1       *Select correct number to add to output strings
+0000034A  6700 0040                426              BEQ         AQ_0
+0000034E  B23C 0001                427              CMP.B       #1,D1
+00000352  6700 003E                428              BEQ         AQ_1
+00000356  B23C 0002                429              CMP.B       #2,D1
+0000035A  6700 003C                430              BEQ         AQ_2
+0000035E  B23C 0003                431              CMP.B       #3,D1
+00000362  6700 003A                432              BEQ         AQ_3
+00000366  B23C 0004                433              CMP.B       #4,D1
+0000036A  6700 0038                434              BEQ         AQ_4
+0000036E  B23C 0005                435              CMP.B       #5,D1
+00000372  6700 0036                436              BEQ         AQ_5
+00000376  B23C 0006                437              CMP.B       #6,D1
+0000037A  6700 0034                438              BEQ         AQ_6
+0000037E  B23C 0007                439              CMP.B       #7,D1
+00000382  6700 0032                440              BEQ         AQ_7
+Line 441 ERROR: Undefined symbol
+00000386  4EF9 004DBB8E            441              JMP         INVALID     *Got here? Something is wrong.
+0000038C                           442              
+0000038C  18FC 0038                443  AQ_0        MOVE.B      #'8',(A4)+
+00000390  4E75                     444              RTS              
+00000392  18FC 0031                445  AQ_1        MOVE.B      #'1',(A4)+
+00000396  4E75                     446              RTS
+00000398  18FC 0032                447  AQ_2        MOVE.B      #'2',(A4)+
+0000039C  4E75                     448              RTS
+0000039E  18FC 0033                449  AQ_3        MOVE.B      #'3',(A4)+
+000003A2  4E75                     450              RTS
+000003A4  18FC 0034                451  AQ_4        MOVE.B      #'4',(A4)+
+000003A8  4E75                     452              RTS
+000003AA  18FC 0035                453  AQ_5        MOVE.B      #'5',(A4)+
+000003AE  4E75                     454              RTS
+000003B0  18FC 0036                455  AQ_6        MOVE.B      #'6',(A4)+
+000003B4  4E75                     456              RTS
+000003B6  18FC 0037                457  AQ_7        MOVE.B      #'7',(A4)+
+000003BA  4E75                     458              RTS          
+000003BC                           459  
+000003BC                           460              
+000003BC                           461  
+000003BC                           462  *============================================================
+000003BC                           463  *=========================HELPER SUBROUTINES=================
+000003BC                           464  *============================================================
+000003BC                           465  
+000003BC                           466  *-------------------------INVALID DATA----------------------
+000003BC                           467  * This subroutine adds invalid data to invalid string.
+000003BC                           468  *-----------------------------------------------------------
+000003BC                           469  INV_DATA *need to implement currently invalid data is treated as an invalid opcode.
+000003BC                           470  
+000003BC                           471  
+000003BC                           472  *-------------------------Byte Hex to Ascii-----------------
+000003BC                           473  * Converts a Byte value hex address to ascii in D1
+000003BC                           474  *-----------------------------------------------------------
+000003BC  4280                     475  B_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
+000003BE  4282                     476              CLR.L       D2          *Make sure D2 is empty (each individual char)
+000003C0  4283                     477              CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+000003C2  103C 0002                478              MOVE.B      #$2,D0      *Counter
+000003C6  6000 0002                479              BRA         B_ISO_DIG   *Begin isolating chars
+000003CA                           480              
+000003CA  E919                     481  B_ISO_DIG   ROL.B       #4,D1       *Move first significant hex char to least sig position
+000003CC                           482              
+000003CC  1401                     483              MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
+000003CE                           484              
+000003CE  163C 0004                485              MOVE.B      #4,D3      *Shift left 28 times
+000003D2  E72A                     486              LSL.B       D3,D2       *Isolated hex digit now is $X0000000
+000003D4  E91A                     487              ROL.B       #4,D2       *Isolated hex digit is now $0000000X
+000003D6                           488              
+000003D6  0C02 0009                489              CMPI.B      #$9,D2      *Is it a number?
+000003DA  6F00 0006                490              BLE         B_NUM       *If it is, process number
+000003DE  6000 000A                491              BRA         B_LET       *If not, process letter
+000003E2                           492              
+000003E2  0602 0030                493  B_NUM       ADDI.B      #$30,D2     *Make it an ascii number
+000003E6  6000 000A                494              BRA         B_ADD_CHAR  *add to strings and continue
+000003EA                           495              
+000003EA  0602 0037                496  B_LET       ADDI.B      #$37,D2     *Make it an ascii letter
+000003EE  6000 0002                497              BRA         B_ADD_CHAR  *add to strings and continue
+000003F2                           498  
+000003F2  18C2                     499  B_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
+000003F4  5300                     500              SUBI.B      #$1,D0      *decrement counter
+000003F6  0C00 0000                501              CMPI.B      #$0,D0      *Check if we're done            
+000003FA  6ECE                     502              BGT         B_ISO_DIG   *If not, continue tranlation   
+000003FC                           503              
+000003FC  4E75                     504              RTS
+000003FE                           505  
+000003FE                           506  *-------------------------Word Hex to Ascii-----------------
+000003FE                           507  * Converts a Word length hex value to ASCII in D1
+000003FE                           508  *-----------------------------------------------------------
+000003FE  4280                     509  W_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
+00000400  4282                     510              CLR.L       D2          *Make sure D2 is empty (each individual char)
+00000402  4283                     511              CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+00000404  103C 0004                512              MOVE.B      #$4,D0      *Counter
+00000408  6000 0002                513              BRA         W_ISO_DIG   *Begin isolating chars
+0000040C                           514              
+0000040C  E959                     515  W_ISO_DIG   ROL.W       #4,D1       *Move first significant hex char to least sig position
+0000040E                           516              
+0000040E  1401                     517              MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
+00000410                           518              
+00000410  163C 000C                519              MOVE.B      #12,D3      *Shift left 28 times
+00000414  E76A                     520              LSL.W       D3,D2       *Isolated hex digit now is $X0000000
+00000416  E95A                     521              ROL.W       #4,D2       *Isolated hex digit is now $0000000X
+00000418                           522              
+00000418  0C02 0009                523              CMPI.B      #$9,D2      *Is it a number?
+0000041C  6F00 0006                524              BLE         W_NUM       *If it is, process number
+00000420  6000 000A                525              BRA         W_LET       *If not, process letter
+00000424                           526              
+00000424  0602 0030                527  W_NUM       ADDI.B      #$30,D2     *Make it an ascii number
+00000428  6000 000A                528              BRA         W_ADD_CHAR  *add to strings and continue
+0000042C                           529              
+0000042C  0602 0037                530  W_LET       ADDI.B      #$37,D2     *Make it an ascii letter
+00000430  6000 0002                531              BRA         W_ADD_CHAR  *add to strings and continue
+00000434                           532  
+00000434  18C2                     533  W_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
+00000436  5300                     534              SUBI.B      #$1,D0      *decrement counter
+00000438  0C00 0000                535              CMPI.B      #$0,D0      *Check if we're done            
+0000043C  6ECE                     536              BGT         W_ISO_DIG   *If not, continue tranlation   
+0000043E                           537              
+0000043E  4E75                     538              RTS
+00000440                           539  *-------------------------Long Hex to Ascii-----------------
+00000440                           540  * Converts a Longword hex sequence to ascii in D1
+00000440                           541  *-----------------------------------------------------------
+00000440  4280                     542  L_H2A       CLR.L       D0          *Make sure D0 is clear (for counting)
+00000442  4282                     543              CLR.L       D2          *Make sure D2 is empty (each individual char)
+00000444  4283                     544              CLR.L       D3          *Make sure D3 is empty (for shifting source operand)
+00000446  103C 0008                545              MOVE.B      #$8,D0      *Counter
+0000044A  6000 0002                546              BRA         L_ISO_DIG   *Begin isolating chars
+0000044E                           547              
+0000044E  E999                     548  L_ISO_DIG   ROL.L       #4,D1       *Move first significant hex char to least sig position
+00000450                           549              
+00000450  1401                     550              MOVE.B      D1,D2       *Move to D2 to isolate least sig hex char
+00000452                           551              
+00000452  163C 001C                552              MOVE.B      #28,D3      *Shift left 28 times
+00000456  E7AA                     553              LSL.L       D3,D2       *Isolated hex digit now is $X0000000
+00000458  E99A                     554              ROL.L       #4,D2       *Isolated hex digit is now $0000000X
+0000045A                           555              
+0000045A  0C02 0009                556              CMPI.B      #$9,D2      *Is it a number?
+0000045E  6F00 0006                557              BLE         L_NUM       *If it is, process number
+00000462  6000 000A                558              BRA         L_LET       *If not, process letter
+00000466                           559              
+00000466  0602 0030                560  L_NUM       ADDI.B      #$30,D2     *Make it an ascii number
+0000046A  6000 000A                561              BRA         L_ADD_CHAR  *add to strings and continue
+0000046E                           562              
+0000046E  0602 0037                563  L_LET       ADDI.B      #$37,D2     *Make it an ascii letter
+00000472  6000 0002                564              BRA         L_ADD_CHAR  *add to strings and continue
+00000476                           565  
+00000476  18C2                     566  L_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
+00000478  5300                     567              SUBI.B      #$1,D0      *decrement counter
+0000047A  0C00 0000                568              CMPI.B      #$0,D0      *Check if we're done            
+0000047E  6ECE                     569              BGT         L_ISO_DIG   *If not, continue tranlation   
+00000480                           570              
+00000480  4E75                     571              RTS
+00000482                           572  
+00000482                           573  
+00000482                           574  
+00000482                           575  
+00000482                           576  
+00000482                           577  
+00000482                           578  
+Line 579 WARNING: END directive missing, starting address not set
 
-4 errors detected
+5 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ABL                 1EE
-ABS_ADDR            142
-ABS_TBL             1C0
-ABW                 1DE
-ARD                 F2
-ARI                 FE
-ARI_DEC             12A
-ARI_INC             112
-B_ADD_CHAR          29C
-B_H2A               266
-B_IMD               242
-B_ISO_DIG           274
-B_LET               294
-B_NUM               28C
-DN_SRC              16
-DRD                 E6
-EA_SRC              0
-EA_TBL              B0
-GEN_EA_CODE         32
-IDATA               1FE
-IMD_TBL             20E
-L_ADD_CHAR          320
-L_H2A               2EA
-L_IMD               25A
-L_ISO_DIG           2F8
-L_LET               318
-L_NUM               310
-MM_EA_SRC           2E
-MM_LS_SRC           30
-MM_OP_ORD           2C
-MOV_EA_CODE         54
-NUM_0               190
-NUM_1               196
-NUM_2               19C
-NUM_3               1A2
-NUM_4               1A8
-NUM_5               1AE
-NUM_6               1B4
-NUM_7               1BA
-REG_CODE            9A
-REG_TBL             14A
-W_ADD_CHAR          2DE
-W_H2A               2A8
-W_IMD               24E
-W_ISO_DIG           2B6
-W_LET               2D6
-W_NUM               2CE
+ABL                 2CE
+ABS_ADDR            222
+ABS_TBL             2A0
+ABW                 2BE
+ADDQ_EA             DA
+ADDQ_ID             346
+AQ_0                38C
+AQ_1                392
+AQ_2                398
+AQ_3                39E
+AQ_4                3A4
+AQ_5                3AA
+AQ_6                3B0
+AQ_7                3B6
+ARD                 1D2
+ARI                 1DE
+ARI_DEC             20A
+ARI_INC             1F2
+B_ADD_CHAR          3F2
+B_H2A               3BC
+B_IMD               322
+B_ISO_DIG           3CA
+B_LET               3EA
+B_NUM               3E2
+DN_SRC              2C
+DRD                 1C6
+EASRC_ADES          16
+EASRC_DDES          0
+EA_TBL              190
+GEN_EA_CODE         112
+IDATA               2DE
+IDATASRC_EA         42
+IMD_TBL             2EE
+INV_DATA            3BC
+L_ADD_CHAR          476
+L_H2A               440
+L_IMD               33A
+L_ISO_DIG           44E
+L_LET               46E
+L_NUM               466
+MM_DR               102
+MM_EA_SRC           7A
+MM_LS_SRC           90
+MM_M2R              72
+MM_OP_ORD           54
+MM_R2M              6A
+MOVEQ_EA            A6
+MOV_EA_CODE         134
+NUM_0               270
+NUM_1               276
+NUM_2               27C
+NUM_3               282
+NUM_4               288
+NUM_5               28E
+NUM_6               294
+NUM_7               29A
+REG_CODE            17A
+REG_TBL             22A
+W_ADD_CHAR          434
+W_H2A               3FE
+W_IMD               32E
+W_ISO_DIG           40C
+W_LET               42C
+W_NUM               424

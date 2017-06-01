@@ -139,7 +139,24 @@ J_CLR1  CLR.L       D2
         LSL.W       #7,D2           *Clear the most sig 7 bits
         MOVE.B      #15,D1          *Moves 16 into D1
         LSR.W       D1,D2           *Shifts 16 right to isolate the bit we're working with 
-        RTS                         *Return back to JMP_Xn  
+        RTS                         *Return back to JMP_Xn
+        
+        
+J_CLR_LEA   CLR.L       D2          
+            MOVE.W      D7,D2           *Copies D7 contents to D2 for manipulation
+            CLR.L       D1
+            LSL.W       #7,D2           *Clear the most sig 7 bits
+            MOVE.B      #13,D1          *Moves 16 into D1
+            LSR.W       D1,D2           *Shifts 16 right to isolate the bit we're working with 
+            RTS    
+            
+
+J_CLR_MM    CLR.L       D2          
+            MOVE.W      D7,D2           *Copies D7 contents to D2 for manipulation
+            CLR.L       D1   
+            MOVE.B      #11,D1          *Moves 16 into D1
+            LSR.W       D1,D2           *Shifts 16 right to isolate the bit we're working with 
+            RTS  
      
 * J_CLR_DM prepares the data registers for data manipulation by isolating the DESTINATION MODE bits:
 * Also alternatively known as the OPMODE bits for some OPCODES: OR, DIVU, SUB, ADDA, ADD
@@ -203,9 +220,11 @@ JMP_4X      JSR         J_CLR4      *Isolate next hex digit
             CMP.B       #$E,D2      *Is the next hex digit E?
             BEQ         J_47X       *Instruction is determined to be NOP, JSR, or RTS. Jump to JMP_47X to determine.
             JSR         J_CLR1      *Otherwise, isolate the %0000 000X 0000 0000 digit
-            CMP.B       #1,D2       *Is the last bit 1?
+            JSR         J_CLR_LEA
+            CMP.B       #7,D2       *Is the last bit 7?
             BEQ         J_LEA       *Instruction is determined to be LEA. Jump to intermediate OPCODE table jump 
-            CMP.B       #0,D2       *Is the last bit 0?
+            JSR         J_CLR_MM
+            CMP.B       #9,D2       *Is the last bit 0?
             BEQ         J_MOVEM     *Instruction is determined to be MOVEM. Jump to intermediate OPCODE table jump 
             JSR         INVALID     *If none of the above, OPCODE is invalid
             RTS                                         
@@ -422,7 +441,29 @@ OPC_LEA     MOVE.B      #'L',(A4)+
             RTS
             
 *------------------MOVEM OPCODE----------------------------- 
-OPC_MOVEM   RTS
+OPC_MOVEM   MOVE.B      #'M',(A4)+
+            MOVE.B      #'O',(A4)+
+            MOVE.B      #'V',(A4)+
+            MOVE.B      #'E',(A4)+
+            MOVE.B      #'M',(A4)+
+            MOVE.B      #'.',(A4)+
+            
+            JSR         GET_SIZE_1
+            
+            CMP.B       #0,D4       *Change size code so it matches standard formatting
+            BEQ         MM_WORD
+            CMP.B       #1,D4
+            BEQ         MM_LONG
+
+MM_WORD     MOVE.B      #1,D4
+            BRA         MM_ADD_S
+
+MM_LONG     MOVE.B      #2,D4
+       
+MM_ADD_S    JSR         ADD_SIZE
+            JSR         MM_OP_ORD
+            
+            RTS
 
 
 *------------------MOVEA.L OPCODE----------------------------
@@ -757,6 +798,7 @@ BCC_LE      MOVE.B      #'L',(A4)+
             JSR         ABW         *Add absolute word in next word address.
             RTS
 
+
 *--------------------ADD SIZE-------------------------------
 * A simple helper that looks at the size code in D4 to add
 * the appropriate B,W,L to the string.
@@ -786,7 +828,7 @@ L_SIZE      MOVE.B      #'L',(A4)+  *Add size character to good string
 *--------------------GET SIZE CODE--------------------------
 * The following three subroutines isolate the size bits for
 * all opcodes. They are by number of bits (e.g. 3 bits for
-* size implies GET_SIZE_3)
+* size implies GET_SIZE_3). Bit(s) are isolated into D4)
 *-----------------------------------------------------------
 GET_SIZE_3  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
             MOVE.W      D7,D4       *Copy untouched opcode into D4
@@ -879,6 +921,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 
 

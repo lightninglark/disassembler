@@ -8,7 +8,7 @@
 *
 *****************************
 
-start		EQU	$00009000	* ORG and END address
+start		EQU	$00007F00	* ORG and END address
 
 * ORG the program so that it straddles the address boundary $00007FFF to $00008000
 
@@ -104,6 +104,7 @@ NOP
     MOVE.L    -(A0),(A1)
     MOVE.L    -(A0),(A1)+
     MOVE.L    -(A0),-(A1)
+    MOVEM.W   D0-D7/A0-A6,(A1)
     MOVEM.W   A1-A7,-(A1)
     MOVEM.L   D1-D7,-(A1)
     MOVEM.W   A1/D7,-(A1)
@@ -420,6 +421,7 @@ label4
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

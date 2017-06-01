@@ -58,21 +58,43 @@ IDATASRC_EA JSR     IDATA       *Add immediate data
 * appropriate order based subroutines. This subroutine is
 * for opcodes: MOVEM
 *-----------------------------------------------------------
-MM_OP_ORD 
+MM_OP_ORD   JSR         MM_DR       *Isolate DR bit into D2
+
+            CMP.B       #0,D2       *Is it Register to Memory
+            BEQ         MM_R2M
+            CMP.B       #1,D2       *Is it Memory to Register
+            BEQ         MM_M2R
+            
+MM_R2M      JSR         MM_LS_SRC
+            RTS
+
+MM_M2R      JSR         MM_EA_SRC
             RTS
 
 *---------------------MM EA SOURCE--------------------------
 * Logic for an EA source operand for MOVEM
 *-----------------------------------------------------------
-MM_EA_SRC   *Deal with EA code first
-            *Deal with list second
+MM_EA_SRC   JSR         GEN_EA_CODE *Add EA code
+            MOVE.B      #',',(A4)+
+            *JSR         ISO_MASK    *Isolate the Mask
+            
+            *Bandaid, instead of decoding list, just display hex value
+            MOVE.B      #'$',(A4)+
+            JSR         W_IMD
+                    
+            *deal with list
             RTS
 
 *---------------------MM LIST SOURCE------------------------
 * Logic for a LIST source operand for MOVEM
 *-----------------------------------------------------------
-MM_LS_SRC   *Deal with list first
-            *Deal with EA code second
+MM_LS_SRC   *Bandaid, instead of decoding list, just display hex value
+            MOVE.B      #'$',(A4)+
+            JSR         W_IMD
+            
+            *Deal with list first
+            MOVE.B      #',',(A4)+
+            JSR         GEN_EA_CODE *Add EA code
             RTS
 
 *---------------------MOVEQ_EA-------------------------------
@@ -127,6 +149,18 @@ ADDQ_EA     CLR.L       D1          *Make sure D1 is clear
 *============================================================
 *======================BIT ISOLATORS=========================
 *============================================================
+
+*-------------------------MM_DR-----------------------------
+* For:MOVEM. This subroutine isolates the MOVEM DR bit into
+*     D2
+*-----------------------------------------------------------
+MM_DR       CLR.L       D1
+            CLR.L       D2
+            MOVE.W      D7,D2
+            LSL.W       #5,D2
+            MOVE.B      #15,D1
+            LSR.W       D1,D2
+            RTS
 
 *-------------------------GEN EA CODE-----------------------
 * For: SUBI, ADDI, MOVEM, LEA, JSR, ADDQ, OR, DIVU, SUB,
@@ -535,6 +569,7 @@ L_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
             BGT         L_ISO_DIG   *If not, continue tranlation   
             
             RTS
+
 
 
 

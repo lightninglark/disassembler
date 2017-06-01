@@ -115,7 +115,9 @@ PRINT_GOOD  JSR         PRINT_G     *Jump to Print good string
 INVALID     JSR         PRINT_B     *Jump to Pring bad string
             BRA         CONTINUE    *Continue the loop            
             
-CONTINUE    CMP.W       A5,A6       *Check if we're done
+CONTINUE    MOVE.L      A5,D1
+            MOVE.L      A6,D2
+            CMP.L       D1,D2
             BLE         END_OPT     *if we're done, move to end options (ask user what to do)
             
                         
@@ -433,6 +435,7 @@ SPACERE     DC.L        80
 SPACERF     DC.L        80
 
             END         START       *LAST LINE
+
 
 
 
