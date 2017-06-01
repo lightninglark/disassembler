@@ -5,8 +5,6 @@
 ************************************************************
 
 
-
-
 *============================================================
 *================OPERAND ORDER SUBROUTINES===================
 *============================================================
@@ -82,6 +80,7 @@ MM_EA_SRC   JSR         GEN_EA_CODE *Add EA code
             *JSR         ISO_MASK    *Isolate the Mask
             
             *Bandaid, instead of decoding list, just display hex value
+            MOVE.B      #'#',(A4)+
             MOVE.B      #'$',(A4)+
             JSR         W_IMD
                     
@@ -92,6 +91,7 @@ MM_EA_SRC   JSR         GEN_EA_CODE *Add EA code
 * Logic for a LIST source operand for MOVEM
 *-----------------------------------------------------------
 MM_LS_SRC   *Bandaid, instead of decoding list, just display hex value
+            MOVE.B      #'#',(A4)+
             MOVE.B      #'$',(A4)+
             JSR         W_IMD
             
@@ -144,18 +144,19 @@ ADDQ_EA     CLR.L       D1          *Make sure D1 is clear
             
             RTS
 
-*---------------------Data source, EA dest------------------
-* Logic for opcodes with a #<data> source, <EA> destination
-* opcodes: SUBI, ADDI
+*---------------------SR_MEM--------------------------------
+* This is a function for the shifting and rotation opcodes
+* that are the MEMORY variant. It controls operand flow.
 *-----------------------------------------------------------
 SR_MEM      JSR         SR_MEM_ADDS     *Add Size characters
             JSR         GEN_EA_CODE
             RTS
 
 
-*---------------------Data source, EA dest------------------
-* Logic for opcodes with a #<data> source, <EA> destination
-* opcodes: SUBI, ADDI Size is in D4
+*---------------------SR_REG--------------------------------
+* This subroutine is for shifting and rotation opcodes that
+* are the REGISTRY variant. It controls the operand decode
+* order/flow.
 *-----------------------------------------------------------
 SR_REG      JSR         ISO_IR      *Place in D3
             JSR         ISO_RCOUNT  *Place in D2
@@ -181,6 +182,8 @@ DN_SR       MOVE.B      D2,D3
             
             CLR.L       D1
             MOVE.B      #13,D1
+            CLR.L       D3
+            MOVE.W      D7,D3
             LSL.W       D1,D3       *Shifting to isolate REGISTER (#13 already in D1)
             LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
             JSR         REG_TBL
@@ -191,7 +194,7 @@ DN_SR       MOVE.B      D2,D3
 *======================BIT ISOLATORS=========================
 *============================================================
 
-*-------------------------MM_DR-----------------------------
+*-------------------------ISO_IR----------------------------
 * For:SHIFTS/ROTATIONS. Place IR bit in D3
 *-----------------------------------------------------------
 ISO_IR      CLR.L       D1
@@ -206,7 +209,7 @@ ISO_IR      CLR.L       D1
               
             RTS
 
-*-------------------------MM_DR-----------------------------
+*-------------------------Iso_RCOUNT------------------------
 * For:SHIFTS/ROTATIONS. Place Reg/Gount in D2
 *-----------------------------------------------------------
 ISO_RCOUNT  CLR.L       D1
@@ -533,9 +536,9 @@ AQ_7        MOVE.B      #'7',(A4)+
 *=========================HELPER SUBROUTINES=================
 *============================================================
 
-*-------------------------INVALID DATA----------------------
+*-------------------------Add Size code to SR MEM-----------
 * Helper function to add size characters to SR_MEM
-*
+* BUG: MEM AS/LS/RO does not have .L addressing!
 *-----------------------------------------------------------
 SR_MEM_ADDS CLR.L       D2
             MOVE.W      D7,D2
@@ -555,16 +558,10 @@ SR_MEM_W    MOVE.B      #'W',(A4)+
             MOVE.B      #' ',(A4)+
             RTS
 
-SR_MEM_L    MOVE.B      #'L',(A4)+
+SR_MEM_L    MOVE.B      #'W',(A4)+
             MOVE.B      #' ',(A4)+
             MOVE.B      #' ',(A4)+
             RTS
-
-*-------------------------INVALID DATA----------------------
-* This subroutine adds invalid data to invalid string.
-*-----------------------------------------------------------
-INV_DATA *need to implement currently invalid data is treated as an invalid opcode.
-
 
 *-------------------------Byte Hex to Ascii-----------------
 * Converts a Byte value hex address to ascii in D1
@@ -666,6 +663,7 @@ L_ADD_CHAR  MOVE.B      D2,(A4)+    *Add to the good data string
             BGT         L_ISO_DIG   *If not, continue tranlation   
             
             RTS
+
 
 
 

@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/31/2017 11:09:13 PM
+Created On: 6/1/2017 7:38:00 AM
 
 00000000                             1  ************************************************************
 00000000                             2  * TEAM NEVERY LUCKY DISSASSEMBLER
@@ -25,52 +25,52 @@ Created On: 5/31/2017 11:09:13 PM
 0000000C                            21                          
 0000000C  B43C 0000                 22  JMP_0       CMP.B       #$0,D2      *Following section determines what hex value the first 4 digits are
 00000010  6600 000A                 23              BNE         JMP_1       *If the first hex value is not 0, branch and see if its 1
-00000014  4EB9 00000184             24              JSR         JMP_0X      *If the first hex value is 0, jump to JMP_0X to determine the next set of digits
+00000014  4EB9 00000186             24              JSR         JMP_0X      *If the first hex value is 0, jump to JMP_0X to determine the next set of digits
 0000001A  4E75                      25              RTS                     *Finished all jumping; whole instruction should be identified at this point
 0000001C                            26              
 0000001C  B43C 0001                 27  JMP_1       CMP.B       #$1,D2
 00000020  6600 000A                 28              BNE         JMP_2       *If the first hex value is not 2, branch and see if its 3, and so on
-00000024  4EB9 0000040A             29              JSR         OPC_MOVEB   *If the first hex value is 1, the instruction is determined to be MOVE.B. Jump to OPC_MOVEB in OPCODE table.
+00000024  4EB9 00000446             29              JSR         OPC_MOVEB   *If the first hex value is 1, the instruction is determined to be MOVE.B. Jump to OPC_MOVEB in OPCODE table.
 0000002A  4E75                      30              RTS                     *Finished all jumping; whole instruction should be identified at this point, and so on       
 0000002C                            31             
 0000002C  B43C 0002                 32  JMP_2       CMP.B       #$2,D2
 00000030  6600 000A                 33              BNE         JMP_3 
-00000034  4EB9 000001B0             34              JSR         JMP_2X      *If the first hex value is 2, jump to JMP_2X to determine the next set of digits
+00000034  4EB9 000001B2             34              JSR         JMP_2X      *If the first hex value is 2, jump to JMP_2X to determine the next set of digits
 0000003A  4E75                      35              RTS
 0000003C                            36              
 0000003C  B43C 0003                 37  JMP_3       CMP.B       #$3,D2
 00000040  6600 000A                 38              BNE         JMP_4
-00000044  4EB9 000001D4             39              JSR         JMP_3X      *If the first hex value is 3, jump to JMP_3X to determine the next set of digits
+00000044  4EB9 000001D6             39              JSR         JMP_3X      *If the first hex value is 3, jump to JMP_3X to determine the next set of digits
 0000004A  4E75                      40              RTS
 0000004C                            41           
 0000004C  B43C 0004                 42  JMP_4       CMP.B       #$4,D2      *Where NOP SHOULD LAND
 00000050  6600 000A                 43              BNE         JMP_5
-00000054  4EB9 000001F8             44              JSR         JMP_4X      *If the first hex value is 4, jump to JMP_4X to determine the next set of digits
+00000054  4EB9 000001FA             44              JSR         JMP_4X      *If the first hex value is 4, jump to JMP_4X to determine the next set of digits
 0000005A  4E75                      45              RTS
 0000005C                            46              
 0000005C  B43C 0005                 47  JMP_5       CMP.B       #$5,D2
 00000060  6600 000A                 48              BNE         JMP_6
-00000064  4EB9 0000042E             49              JSR         OPC_ADDQ    *If the first hex digit is 5, the instruction is determined to be ADDQ. Jump to OPC_ADDQ in OPCODE table.
+00000064  4EB9 0000046A             49              JSR         OPC_ADDQ    *If the first hex digit is 5, the instruction is determined to be ADDQ. Jump to OPC_ADDQ in OPCODE table.
 0000006A  4E75                      50              RTS
 0000006C                            51              
 0000006C  B43C 0006                 52  JMP_6       CMP.B       #$6,D2
 00000070  6600 000A                 53              BNE         JMP_7
-00000074  4EB9 00000240             54              JSR         JMP_6X      *If the first hex value is 6, jump to JMP_6X to determine the next set of digits
+00000074  4EB9 00000242             54              JSR         JMP_6X      *If the first hex value is 6, jump to JMP_6X to determine the next set of digits
 0000007A  4E75                      55              RTS
 0000007C                            56              
 0000007C  B43C 0007                 57  JMP_7       CMP.B       #$7,D2
 00000080  6600 000A                 58              BNE         JMP_8
-00000084  4EB9 00000456             59              JSR         OPC_MOVEQ    *If the first hex digit is 7, the instruction is determined to be MOVEQ. Jump to OPC_MOVEQ in OPCODE table.
+00000084  4EB9 00000492             59              JSR         OPC_MOVEQ    *If the first hex digit is 7, the instruction is determined to be MOVEQ. Jump to OPC_MOVEQ in OPCODE table.
 0000008A  4E75                      60              RTS
 0000008C                            61              
 0000008C  B43C 0008                 62  JMP_8       CMP.B       #$8,D2
 00000090  6600 000A                 63              BNE         JMP_9
-00000094  4EB9 00000264             64              JSR         JMP_8X      *If the first hex value is 8, jump to JMP_8X to determine the next set of digits
+00000094  4EB9 00000266             64              JSR         JMP_8X      *If the first hex value is 8, jump to JMP_8X to determine the next set of digits
 0000009A  4E75                      65              RTS
 0000009C                            66              
 0000009C  B43C 0009                 67  JMP_9       CMP.B       #$9,D2
 000000A0  6600 000A                 68              BNE         JMP_A
-000000A4  4EB9 00000472             69              JSR         OPC_SUB    *If the first hex digit is 9, the instruction is determined to be SUB. Jump to OPC_9XXX in OPCODE table.
+000000A4  4EB9 000004AE             69              JSR         OPC_SUB    *If the first hex digit is 9, the instruction is determined to be SUB. Jump to OPC_9XXX in OPCODE table.
 000000AA  4E75                      70              RTS
 000000AC                            71              
 000000AC  B43C 000A                 72  JMP_A       CMP.B       #$A,D2
@@ -87,1174 +87,1242 @@ Line 79 ERROR: Undefined symbol
 000000CC                            81              
 000000CC  B43C 000C                 82  JMP_C       CMP.B       #$C,D2
 000000D0  6600 000A                 83              BNE         JMP_D
-000000D4  4EB9 00000288             84              JSR         JMP_CX
+000000D4  4EB9 0000028A             84              JSR         JMP_CX
 000000DA                            85        *If the first hex value is C, jump to JMP_CX to determine the next set of digits
 000000DA  4E75                      86              RTS
 000000DC                            87              
 000000DC  B43C 000D                 88  JMP_D       CMP.B       #$D,D2
 000000E0  6600 000A                 89              BNE         JMP_E   
-000000E4  4EB9 000002AC             90              JSR         JMP_DX      *If the first hex value is D, jump to JMP_DX to determine the next set of digits
+000000E4  4EB9 000002AE             90              JSR         JMP_DX      *If the first hex value is D, jump to JMP_DX to determine the next set of digits
 000000EA  4E75                      91              RTS
 000000EC                            92              
 000000EC  B43C 000F                 93  JMP_E       CMP.B       #$F,D2      *If first hex value is not 0-D, it must be E(valid) or F(invalid)
-Line 94 ERROR: Undefined symbol
-000000F0  6700 BA9C                 94              BEQ         INVALID     *If first hex value is F, jump to INVALID
-000000F4  4EB9 00000310             95              JSR         JMP_EX      *If the first hex value is E, jump to JMP_EX to determine the next set of digits
-000000FA                            96              
-Line 97 ERROR: Undefined symbol
-000000FA  4EF9 004DBB8E             97              JMP         INVALID     *Got here? Must be invalid.
-00000100  4E75                      98              RTS
-00000102                            99   
-00000102                           100  *============================================================
-00000102                           101  *==================ID SECOND OPCODE DIGIT====================
-00000102                           102  *============================================================
-00000102                           103  *------------------ Helper functions ------------------------
-00000102                           104  * J_CLR4 prepares the data registers for data manipulation on the second input hex digit by isolating the next 4 bits:
-00000102                           105  * %0000 XXXX 0000 0000
-00000102  4282                     106  J_CLR4      CLR.L       D2                                
-00000104  3407                     107              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00000106  4281                     108              CLR.L       D1
-00000108  E94A                     109              LSL.W       #4,D2       *Clear the most sig hex digit
-0000010A  123C 000C                110              MOVE.B      #12,D1      *Moves 12 into D1
-0000010E  E26A                     111              LSR.W       D1,D2       *Shifts 12 right to isolate the bits we're working with
-00000110  4E75                     112              RTS                     *Return back to JMP_Xn    
-00000112                           113              
-00000112                           114  * J_CLR3 prepares the data registers for data manipulation by isolating the next 3 bits:
-00000112                           115  * %0000 XXX0 0000 0000 0000          
-00000112  4282                     116  J_CLR3      CLR.L       D2          
-00000114  3407                     117              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00000116  4281                     118              CLR.L       D1
-00000118  E94A                     119              LSL.W       #4,D2       *Clear the most sig hex digit
-0000011A  123C 000D                120              MOVE.B      #13,D1      *Moves 13 into D1
-0000011E  E26A                     121              LSR.W       D1,D2       *Shifts 13 right to isolate the bits we're working with 
-00000120  4E75                     122              RTS                     *Return back to JMP_Xn  
-00000122                           123  
-00000122                           124  * J_CLR1 prepares the data registers for data manipulation by isolating the rightmost bit of the second hex dig:
-00000122                           125  * %0000 0000 0000 XX00 0000                   
-00000122  4282                     126  J_CLR2      CLR.L       D2          
-00000124  3407                     127              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00000126  4281                     128              CLR.L       D1
-00000128  E14A                     129              LSL.W       #8,D2       *Clear the most sig 7 bits
-0000012A  123C 000E                130              MOVE.B      #14,D1      *Moves 16 into D1
-0000012E  E26A                     131              LSR.W       D1,D2       *Shifts 16 right to isolate the bit we're working with 
-00000130  4E75                     132              RTS     
-00000132                           133  
-00000132                           134  * J_CLR1 prepares the data registers for data manipulation by isolating the rightmost bit of the second hex dig:
-00000132                           135  * %0000 000X 0000 0000 0000                   
-00000132  4282                     136  J_CLR1      CLR.L       D2          
-00000134  3407                     137              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00000136  4281                     138              CLR.L       D1
-00000138  EF4A                     139              LSL.W       #7,D2       *Clear the most sig 7 bits
-0000013A  123C 000F                140              MOVE.B      #15,D1      *Moves 16 into D1
-0000013E  E26A                     141              LSR.W       D1,D2       *Shifts 16 right to isolate the bit we're working with 
-00000140  4E75                     142              RTS                     *Return back to JMP_Xn
-00000142                           143          
-00000142                           144  * %0000 000X XX00 0000        
-00000142  4282                     145  J_CLR_LEA   CLR.L       D2          
-00000144  3407                     146              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00000146  4281                     147              CLR.L       D1
-00000148  EF4A                     148              LSL.W       #7,D2       *Clear the most sig 7 bits
-0000014A  123C 000D                149              MOVE.B      #13,D1      *Moves 13 into D1
-0000014E  E26A                     150              LSR.W       D1,D2       *Shifts 13 right to isolate the bit we're working with 
-00000150  4E75                     151              RTS    
-00000152                           152              
-00000152                           153  * %XXXX X000 0000 0000   
-00000152  4282                     154  J_CLR_MM    CLR.L       D2          
-00000154  3407                     155              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00000156  4281                     156              CLR.L       D1   
-00000158  123C 000B                157              MOVE.B      #11,D1      *Moves 11 into D1
-0000015C  E26A                     158              LSR.W       D1,D2       *Shifts 11 right to isolate the bit we're working with 
-0000015E  4E75                     159              RTS  
-00000160                           160       
-00000160                           161  * J_CLR_DM prepares the data registers for data manipulation by isolating the DESTINATION MODE bits:
-00000160                           162  * Also alternatively known as the OPMODE bits for some OPCODES: OR, DIVU, SUB, ADDA, ADD
-00000160                           163  * %0000 000X XX00 0000 0000          
-00000160  4282                     164  J_CLR_DM    CLR.L       D2          
-00000162  3407                     165              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00000164  4281                     166              CLR.L       D1
-00000166  EF4A                     167              LSL.W       #7,D2       *Clear the most sig 7 bits
-00000168  123C 000D                168              MOVE.B      #13,D1      *Moves 13 into D1
-0000016C  E26A                     169              LSR.W       D1,D2       *Shifts 13 right to isolate the bits we're working with 
-0000016E  4E75                     170              RTS                     *Return back to JMP_Xn     
-00000170                           171  
-00000170                           172  * %0000 0000 000X X000            
-00000170  4282                     173  J_CLR_SHFT  CLR.L       D2
-00000172  3407                     174              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-00000174  4281                     175              CLR.L       D1
-00000176  183C 000B                176              MOVE.B      #11,D4      *Moves 11 into D4
-0000017A  E96A                     177              LSL.W       D4,D2      *Clear the most sig 11 bits
-0000017C  123C 000E                178              MOVE.B      #14,D1      *Moves 14 into D1
-00000180  E26A                     179              LSR.W       D1,D2       *Shifts 14 right to isolate the bits we're working with 
-00000182  4E75                     180              RTS                     *Return back to JMP_Xn 
-00000184                           181              
-00000184                           182   
-00000184                           183  *---------------End Helper functions ------------------------
-00000184                           184  
-00000184                           185          
-00000184                           186  *---------------------SUBI, ADDI-----------------------------
-00000184  4EB8 0102                187  JMP_0X      JSR         J_CLR4      *Isolate next hex digit
-00000188  B43C 0004                188              CMP.B       #$4,D2      *Is the next hex digit 4?
-0000018C  6700 0012                189              BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
-00000190  B43C 0006                190              CMP.B       #$6,D2      *Is the next hex digit 5?
-00000194  6700 0012                191              BEQ         J_ADDI      *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
-Line 192 ERROR: Undefined symbol
-00000198  4EB9 004DBB8E            192              JSR         INVALID     *If neither, OPCODE is invalid
-0000019E  4E75                     193              RTS
-000001A0                           194  
-000001A0  4EB9 000003BA            195  J_SUBI      JSR         OPC_SUBI    *Jump to OPC_SUBI in OPCODE table
-000001A6  4E75                     196              RTS
-000001A8                           197              
-000001A8  4EB9 000003E2            198  J_ADDI      JSR         OPC_ADDI    *Jump to OPC_ADDI in OPCODE table
-000001AE  4E75                     199              RTS              
-000001B0                           200  
-000001B0                           201  *---------------------MOVE.L, MOVEA.L----------------------------- 
-000001B0                           202  * NOTE - NO INVALID CASE. Probably correct tho-
-000001B0                           203  
-000001B0  4EB8 0160                204  JMP_2X      JSR         J_CLR_DM    *Isolate the destination mode bits %0000 000X XX00 0000 0000  
-000001B4  B43C 0001                205              CMP.B       #$1,D2      *is the DEST MODE 1?
-000001B8  6700 000A                206              BEQ         J_MOVEAL    *Instruction is determined to be MOVEA.L Jump to intermediate OPCODE table jump
-000001BC  4EB9 000001CC            207              JSR         J_MOVEL     *Otherwise, Instruction is determined to be MOVE.L Jump to intermediate OPCODE table jump
-000001C2  4E75                     208              RTS
-000001C4                           209  
-000001C4  4EB9 000004FA            210  J_MOVEAL    JSR         OPC_MOVEAL  *Jump to OPC_MOVEAL in OPCODE table
-000001CA  4E75                     211              RTS
-000001CC                           212  
-000001CC  4EB9 00000526            213  J_MOVEL     JSR         OPC_MOVEL   *Jump to OPC_MOVEL in OPCODE table   
-000001D2  4E75                     214              RTS                           
-000001D4                           215  *---------------------MOVE.W, MOVEA.W----------------------------- 
-000001D4                           216  * NOTE - NO INVALID CASE. Probably correct tho- 
-000001D4                           217              
-000001D4  4EB8 0160                218  JMP_3X      JSR         J_CLR_DM    *Isolate the destination mode bits %0000 000X XX00 0000 0000  
-000001D8  B43C 0001                219              CMP.B       #$1,D2      *is the DEST MODE 1?
-000001DC  6700 000A                220              BEQ         J_MOVEAW    *Instruction is determined to be MOVEA.W Jump to intermediate OPCODE table jump
-000001E0  4EB9 000001F0            221              JSR         J_MOVEW     *Otherwise, Instruction is determined to be MOVE.W Jump to intermediate OPCODE table jump
-000001E6  4E75                     222              RTS
-000001E8                           223  
-000001E8  4EB9 0000054E            224  J_MOVEAW    JSR         OPC_MOVEAW  *Jump to OPC_MOVEAW in OPCODE table
-000001EE  4E75                     225              RTS
-000001F0                           226  
-000001F0  4EB9 0000057A            227  J_MOVEW     JSR         OPC_MOVEW   *Jump to OPC_MOVEW in OPCODE table 
-000001F6  4E75                     228              RTS
-000001F8                           229  *-----------------NOP, MOVEM, LEA, JSR, RTS-----------------------
-000001F8  4EB8 0102                230  JMP_4X      JSR         J_CLR4      *Isolate next hex digit   
-000001FC  B43C 000E                231              CMP.B       #$E,D2      *Is the next hex digit E?
-00000200  6700 0026                232              BEQ         J_47X       *Instruction is determined to be NOP, JSR, or RTS. Jump to JMP_47X to determine.
-00000204  4EB8 0132                233              JSR         J_CLR1      *Otherwise, isolate the %0000 000X 0000 0000 digit
-00000208  4EB8 0142                234              JSR         J_CLR_LEA
-0000020C  B43C 0007                235              CMP.B       #7,D2       *Is the last bit 7?
-00000210  6700 001E                236              BEQ         J_LEA       *Instruction is determined to be LEA. Jump to intermediate OPCODE table jump 
-00000214  4EB8 0152                237              JSR         J_CLR_MM
-00000218  B43C 0009                238              CMP.B       #9,D2       *Is the last bit 0?
-0000021C  6700 001A                239              BEQ         J_MOVEM     *Instruction is determined to be MOVEM. Jump to intermediate OPCODE table jump 
-Line 240 ERROR: Undefined symbol
-00000220  4EB9 004DBB8E            240              JSR         INVALID     *If none of the above, OPCODE is invalid
-00000226  4E75                     241              RTS                                         
-00000228                           242              
-00000228  4EB9 00000380            243  J_47X       JSR         JMP_47X     *Instruction is NOP, JSR, or RTS. Jump to JMP_47X to determine.
-0000022E  4E75                     244              RTS
-00000230                           245              
-00000230  4EB9 00000490            246  J_LEA       JSR         OPC_LEA     *Jump to OPC_LEA in the OPCODE table    
-00000236  4E75                     247              RTS
-00000238                           248              
-00000238  4EB9 000004B2            249  J_MOVEM     JSR         OPC_MOVEM   *Jump to OPC_MOVEM in the OPCODE table
-0000023E  4E75                     250              RTS
-00000240                           251              
-00000240                           252  *------------------Bcc(BCC, BLT, BGE), BRA------------------------
-00000240  4EB8 0102                253  JMP_6X      JSR         J_CLR4       *Isolate next hex digit 
-00000244  B43C 0000                254              CMP.B       #0,D2        *Is the next hex digit 0?
-00000248  6700 000A                255              BEQ         J_BRA        *Instruction is determined to be BRA. Jump to intermediate OPCODE table jump
-0000024C  4EB9 0000025C            256              JSR         J_Bcc        *Otherwise, Instruction is determined to be some form of Bcc. Jump to intermediate OPCODE table jump
-00000252  4E75                     257              RTS
-00000254                           258              
-00000254  4EB9 000005A2            259  J_BRA       JSR         OPC_BRA      *Jump to OPC_BRA in the OPCODE table  
-0000025A                           260  
-0000025A  4E75                     261              RTS
-0000025C                           262  
-0000025C  4EB9 000005BE            263  J_Bcc       JSR         OPC_Bcc      *Jump to OPC_Bcc in the OPCODE table  
-00000262                           264  
-00000262  4E75                     265              RTS
-00000264                           266              
-00000264                           267  *------------------------OR, DIVU---------------------------------     
-00000264  4EB8 0160                268  JMP_8X      JSR         J_CLR_DM    *Isolate the OPMODE bits %0000 000X XX00 0000 0000
-00000268  B43C 0003                269              CMP.B       #3,D2       *Are the bits equivalent to $3?
-0000026C  6700 000A                270              BEQ         J_DIVU      *Instruction is determined to be DIVU. Jump to intermediate OPCODE table jump
-00000270  4EB9 00000280            271              JSR         J_OR        *Otherwise, Instruction is determined to be OR. Jump to intermediate OPCODE table jump
-00000276  4E75                     272              RTS
-00000278                           273  
-00000278  4EB9 000005CA            274  J_DIVU      JSR         OPC_DIVU    *Jump to OPC_DIVU in the OPCODE table  
-0000027E  4E75                     275              RTS
-00000280                           276              
-00000280  4EB9 000005F0            277  J_OR        JSR         OPC_OR      *Jump to OPC_OR in the OPCODE table  
-00000286  4E75                     278              RTS
-00000288                           279  
-00000288                           280  *-----------------------MULS, AND---------------------------------  
-00000288  4EB8 0160                281  JMP_CX      JSR         J_CLR_DM    *Isolate the OPMODE bits %0000 000X XX00 0000 0000
-0000028C  B43C 0007                282              CMP.B       #7,D2       *Are the bits equivalent to $7?
-00000290  6700 000A                283              BEQ         J_MULS      *Instruction is determined to be MULS. Jump to intermediate OPCODE table jump
-00000294  4EB9 000002A4            284              JSR         J_AND       *Otherwise, Instruction is determined to be AND. Jump to intermediate OPCODE table jump
-0000029A  4E75                     285              RTS
-0000029C                           286  
-0000029C  4EB9 0000060A            287  J_MULS      JSR         OPC_MULS    *Jump to OPC_MULS in the OPCODE table  
-000002A2  4E75                     288              RTS
-000002A4                           289              
-000002A4  4EB9 00000630            290  J_AND       JSR         OPC_AND     *Jump to OPC_AND in the OPCODE table  
-000002AA  4E75                     291              RTS
-000002AC                           292  
-000002AC                           293  *-----------------------ADD, ADDA--------------------------------
-000002AC  4EB8 0160                294  JMP_DX      JSR         J_CLR_DM    *Isolate OPMODE bits to determine if ADD or ADDA
-000002B0  4284                     295              CLR.L       D4          *For adding size (easy to do it here).
-000002B2  183C 0001                296              MOVE.B      #1,D4       *Set size to WORD
-000002B6  B43C 0003                297              CMP.B       #3,D2       *Is it Word ADDA?
-000002BA  6700 0044                298              BEQ         OP_ADDA
-000002BE  183C 0002                299              MOVE.B      #2,D4       *set size to LONG
-000002C2  B43C 0007                300              CMP.B       #7,D2       *is it Long ADDA?
-000002C6  6700 0038                301              BEQ         OP_ADDA
-000002CA                           302              
-000002CA  4284                     303              CLR.L       D4          *Not ADDA? Clear the manual size sets
-000002CC                           304              
-000002CC  B83C 0000                305              CMP.B       #0,D4       Is it ADD?
-000002D0  6700 0036                306              BEQ         OP_ADD
-000002D4  B83C 0001                307              CMP.B       #1,D4       
-000002D8  6700 002E                308              BEQ         OP_ADD
-000002DC  B83C 0002                309              CMP.B       #2,D4       
-000002E0  6700 0026                310              BEQ         OP_ADD
-000002E4  B83C 0004                311              CMP.B       #4,D4 
-000002E8  6700 001E                312              BEQ         OP_ADD
-000002EC  B83C 0005                313              CMP.B       #5,D4     
-000002F0  6700 0016                314              BEQ         OP_ADD
-000002F4  B83C 0006                315              CMP.B       #6,D4     
-000002F8  6700 000E                316              BEQ         OP_ADD       
-000002FC                           317           
-Line 318 ERROR: Undefined symbol
-000002FC  6000 B890                318              BRA         INVALID     *Got here, must be invalid data.    
-00000300                           319              
-00000300  4EB9 0000064E            320  OP_ADDA     JSR         OPC_ADDA
-00000306  4E75                     321              RTS
-00000308                           322              
-00000308  4EB9 00000670            323  OP_ADD      JSR         OPC_ADD
-0000030E  4E75                     324              RTS
-00000310                           325              
-00000310                           326  *------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
-00000310                           327  
-00000310  4EB8 0112                328  JMP_EX      JSR         J_CLR3     *Isolate Count/Reg bits to determine if the OPCODE is a MEMORY variant
-00000314  B43C 0000                329              CMP.B       #0,D2       
-00000318  6700 0036                330              BEQ         JMP_AS_MEM  *Instruction is determined to be ASR or ASL MEMORY variant
-0000031C  B43C 0001                331              CMP.B       #1,D2
-00000320  6700 0036                332              BEQ         JMP_LS_MEM  *Instruction is determined to be LSR or LSL MEMORY variant
-00000324  B43C 0003                333              CMP.B       #3,D2       
-00000328  6700 0036                334              BEQ         JMP_RO_MEM  *Instruction is determined to be ROR or ROL MEMORY variant
-0000032C                           335                                      *If none of the above, possibly a REGISTER variant
-0000032C                           336                                      
-0000032C  4EB8 0170                337             JSR          J_CLR_SHFT  *Isolate the identifying bits that determine whether LS(L/R) / AS(L/R) / RO(L/R) for the REGISTER variant          
-00000330  B43C 0000                338             CMP.B        #0,D2
-00000334  6700 0032                339             BEQ          JMP_AS_REG  *Instruction is determined to be ASR or ASL REGISTER variant
-00000338  B43C 0001                340             CMP.B        #1,D2
-0000033C  6700 0032                341             BEQ          JMP_LS_REG  *Instruction is determined to be LSR or LSL REGISTER variant 
-00000340  B43C 0003                342             CMP.B        #3,D2
-00000344  6700 0032                343             BEQ          JMP_RO_REG  *Instruction is determined to be ROR or ROL REGISTER variant
-00000348                           344             
-Line 345 ERROR: Undefined symbol
-00000348  4EB9 004DBB8E            345             JSR INVALID             *Otherwise instruction is determined to be invalid
-0000034E  4E75                     346             RTS
-00000350                           347             
-00000350  4EB9 000006C6            348  JMP_AS_MEM JSR          OPC_AS_MEM
-00000356  4E75                     349             RTS
-00000358                           350  
-00000358  4EB9 000006E0            351  JMP_LS_MEM JSR          OPC_LS_MEM
-0000035E  4E75                     352             RTS
-00000360                           353  
-00000360  4EB9 000006FA            354  JMP_RO_MEM JSR          OPC_RO_MEM
-00000366  4E75                     355             RTS
-00000368                           356  
-00000368  4EB9 00000714            357  JMP_AS_REG JSR          OPC_AS_REG
-0000036E  4E75                     358             RTS
-00000370                           359  
-00000370  4EB9 0000073A            360  JMP_LS_REG JSR          OPC_LS_REG
-00000376  4E75                     361             RTS
-00000378                           362  
-00000378  4EB9 00000760            363  JMP_RO_REG JSR          OPC_RO_REG
-0000037E  4E75                     364             RTS           
-00000380                           365  
-00000380                           366       
-00000380                           367  
-00000380                           368  *============================================================
-00000380                           369  *==================ID THIRD OPCODE DIGIT=====================
-00000380                           370  *============================================================
-00000380                           371     
-00000380  BE7C 4E71                372  JMP_47X     CMP.W       #$4E71,D7    *Is it NOP?
-00000384  6700 001C                373              BEQ         O_NOP
-00000388  BE7C 4E75                374              CMP.W       #$4E75,D7       *Is it RTS?
-0000038C  6700 001C                375              BEQ         O_RTS
-00000390  4EB8 0122                376              JSR         J_CLR2       *Isolate the 6th and 7th bit
-00000394  B43C 0002                377              CMP.B       #2,D2        *Is it JSR?
-00000398  6700 0018                378              BEQ         O_JSR
+000000F0  6700 000A                 94              BEQ         INV_OP      *If first hex value is F, jump to INVALID
+000000F4  4EB9 00000312             95              JSR         JMP_EX      *If the first hex value is E, jump to JMP_EX to determine the next set of digits
+000000FA  4E75                      96              RTS
+000000FC                            97              
+Line 98 ERROR: Undefined symbol
+000000FC  4EF9 004DBB8E             98  INV_OP      JMP         INVALID     *Got here? Must be invalid.
+00000102  4E75                      99              RTS
+00000104                           100   
+00000104                           101  *============================================================
+00000104                           102  *==================ID SECOND OPCODE DIGIT====================
+00000104                           103  *============================================================
+00000104                           104  *------------------ Helper functions ------------------------
+00000104                           105  * J_CLR4 prepares the data registers for data manipulation on the second input hex digit by isolating the next 4 bits:
+00000104                           106  * %0000 XXXX 0000 0000
+00000104  4282                     107  J_CLR4      CLR.L       D2                                
+00000106  3407                     108              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00000108  4281                     109              CLR.L       D1
+0000010A  E94A                     110              LSL.W       #4,D2       *Clear the most sig hex digit
+0000010C  123C 000C                111              MOVE.B      #12,D1      *Moves 12 into D1
+00000110  E26A                     112              LSR.W       D1,D2       *Shifts 12 right to isolate the bits we're working with
+00000112  4E75                     113              RTS                     *Return back to JMP_Xn    
+00000114                           114              
+00000114                           115  * J_CLR3 prepares the data registers for data manipulation by isolating the next 3 bits:
+00000114                           116  * %0000 XXX0 0000 0000 0000          
+00000114  4282                     117  J_CLR3      CLR.L       D2          
+00000116  3407                     118              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00000118  4281                     119              CLR.L       D1
+0000011A  E94A                     120              LSL.W       #4,D2       *Clear the most sig hex digit
+0000011C  123C 000D                121              MOVE.B      #13,D1      *Moves 13 into D1
+00000120  E26A                     122              LSR.W       D1,D2       *Shifts 13 right to isolate the bits we're working with 
+00000122  4E75                     123              RTS                     *Return back to JMP_Xn  
+00000124                           124  
+00000124                           125  * J_CLR1 prepares the data registers for data manipulation by isolating the rightmost bit of the second hex dig:
+00000124                           126  * %0000 0000 0000 XX00 0000                   
+00000124  4282                     127  J_CLR2      CLR.L       D2          
+00000126  3407                     128              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00000128  4281                     129              CLR.L       D1
+0000012A  E14A                     130              LSL.W       #8,D2       *Clear the most sig 7 bits
+0000012C  123C 000E                131              MOVE.B      #14,D1      *Moves 16 into D1
+00000130  E26A                     132              LSR.W       D1,D2       *Shifts 16 right to isolate the bit we're working with 
+00000132  4E75                     133              RTS     
+00000134                           134  
+00000134                           135  * J_CLR1 prepares the data registers for data manipulation by isolating the rightmost bit of the second hex dig:
+00000134                           136  * %0000 000X 0000 0000 0000                   
+00000134  4282                     137  J_CLR1      CLR.L       D2          
+00000136  3407                     138              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00000138  4281                     139              CLR.L       D1
+0000013A  EF4A                     140              LSL.W       #7,D2       *Clear the most sig 7 bits
+0000013C  123C 000F                141              MOVE.B      #15,D1      *Moves 16 into D1
+00000140  E26A                     142              LSR.W       D1,D2       *Shifts 16 right to isolate the bit we're working with 
+00000142  4E75                     143              RTS                     *Return back to JMP_Xn
+00000144                           144          
+00000144                           145  * %0000 000X XX00 0000        
+00000144  4282                     146  J_CLR_LEA   CLR.L       D2          
+00000146  3407                     147              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00000148  4281                     148              CLR.L       D1
+0000014A  EF4A                     149              LSL.W       #7,D2       *Clear the most sig 7 bits
+0000014C  123C 000D                150              MOVE.B      #13,D1      *Moves 13 into D1
+00000150  E26A                     151              LSR.W       D1,D2       *Shifts 13 right to isolate the bit we're working with 
+00000152  4E75                     152              RTS    
+00000154                           153              
+00000154                           154  * %XXXX X000 0000 0000   
+00000154  4282                     155  J_CLR_MM    CLR.L       D2          
+00000156  3407                     156              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00000158  4281                     157              CLR.L       D1   
+0000015A  123C 000B                158              MOVE.B      #11,D1      *Moves 11 into D1
+0000015E  E26A                     159              LSR.W       D1,D2       *Shifts 11 right to isolate the bit we're working with 
+00000160  4E75                     160              RTS  
+00000162                           161       
+00000162                           162  * J_CLR_DM prepares the data registers for data manipulation by isolating the DESTINATION MODE bits:
+00000162                           163  * Also alternatively known as the OPMODE bits for some OPCODES: OR, DIVU, SUB, ADDA, ADD
+00000162                           164  * %0000 000X XX00 0000 0000          
+00000162  4282                     165  J_CLR_DM    CLR.L       D2          
+00000164  3407                     166              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00000166  4281                     167              CLR.L       D1
+00000168  EF4A                     168              LSL.W       #7,D2       *Clear the most sig 7 bits
+0000016A  123C 000D                169              MOVE.B      #13,D1      *Moves 13 into D1
+0000016E  E26A                     170              LSR.W       D1,D2       *Shifts 13 right to isolate the bits we're working with 
+00000170  4E75                     171              RTS                     *Return back to JMP_Xn     
+00000172                           172  
+00000172                           173  * %0000 0000 000X X000            
+00000172  4282                     174  J_CLR_SHFT  CLR.L       D2
+00000174  3407                     175              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+00000176  4281                     176              CLR.L       D1
+00000178  183C 000B                177              MOVE.B      #11,D4      *Moves 11 into D4
+0000017C  E96A                     178              LSL.W       D4,D2      *Clear the most sig 11 bits
+0000017E  123C 000E                179              MOVE.B      #14,D1      *Moves 14 into D1
+00000182  E26A                     180              LSR.W       D1,D2       *Shifts 14 right to isolate the bits we're working with 
+00000184  4E75                     181              RTS                     *Return back to JMP_Xn 
+00000186                           182              
+00000186                           183   
+00000186                           184  *---------------End Helper functions ------------------------
+00000186                           185  
+00000186                           186          
+00000186                           187  *---------------------SUBI, ADDI-----------------------------
+00000186  4EB8 0104                188  JMP_0X      JSR         J_CLR4      *Isolate next hex digit
+0000018A  B43C 0004                189              CMP.B       #$4,D2      *Is the next hex digit 4?
+0000018E  6700 0012                190              BEQ         J_SUBI      *Instruction is determined to be SUBI. Jump to intermediate OPCODE table jump
+00000192  B43C 0006                191              CMP.B       #$6,D2      *Is the next hex digit 5?
+00000196  6700 0012                192              BEQ         J_ADDI      *Instruction is determined to be ADDI. Jump to intermediate OPCODE table jump
+Line 193 ERROR: Undefined symbol
+0000019A  4EB9 004DBB8E            193              JSR         INVALID     *If neither, OPCODE is invalid
+000001A0  4E75                     194              RTS
+000001A2                           195  
+000001A2  4EB9 000003F6            196  J_SUBI      JSR         OPC_SUBI    *Jump to OPC_SUBI in OPCODE table
+000001A8  4E75                     197              RTS
+000001AA                           198              
+000001AA  4EB9 0000041E            199  J_ADDI      JSR         OPC_ADDI    *Jump to OPC_ADDI in OPCODE table
+000001B0  4E75                     200              RTS              
+000001B2                           201  
+000001B2                           202  *---------------------MOVE.L, MOVEA.L----------------------------- 
+000001B2                           203  * NOTE - NO INVALID CASE. Probably correct tho-
+000001B2                           204  
+000001B2  4EB8 0162                205  JMP_2X      JSR         J_CLR_DM    *Isolate the destination mode bits %0000 000X XX00 0000 0000  
+000001B6  B43C 0001                206              CMP.B       #$1,D2      *is the DEST MODE 1?
+000001BA  6700 000A                207              BEQ         J_MOVEAL    *Instruction is determined to be MOVEA.L Jump to intermediate OPCODE table jump
+000001BE  4EB9 000001CE            208              JSR         J_MOVEL     *Otherwise, Instruction is determined to be MOVE.L Jump to intermediate OPCODE table jump
+000001C4  4E75                     209              RTS
+000001C6                           210  
+000001C6  4EB9 00000536            211  J_MOVEAL    JSR         OPC_MOVEAL  *Jump to OPC_MOVEAL in OPCODE table
+000001CC  4E75                     212              RTS
+000001CE                           213  
+000001CE  4EB9 00000562            214  J_MOVEL     JSR         OPC_MOVEL   *Jump to OPC_MOVEL in OPCODE table   
+000001D4  4E75                     215              RTS                           
+000001D6                           216  *---------------------MOVE.W, MOVEA.W----------------------------- 
+000001D6                           217  * NOTE - NO INVALID CASE. Probably correct tho- 
+000001D6                           218              
+000001D6  4EB8 0162                219  JMP_3X      JSR         J_CLR_DM    *Isolate the destination mode bits %0000 000X XX00 0000 0000  
+000001DA  B43C 0001                220              CMP.B       #$1,D2      *is the DEST MODE 1?
+000001DE  6700 000A                221              BEQ         J_MOVEAW    *Instruction is determined to be MOVEA.W Jump to intermediate OPCODE table jump
+000001E2  4EB9 000001F2            222              JSR         J_MOVEW     *Otherwise, Instruction is determined to be MOVE.W Jump to intermediate OPCODE table jump
+000001E8  4E75                     223              RTS
+000001EA                           224  
+000001EA  4EB9 0000058A            225  J_MOVEAW    JSR         OPC_MOVEAW  *Jump to OPC_MOVEAW in OPCODE table
+000001F0  4E75                     226              RTS
+000001F2                           227  
+000001F2  4EB9 000005B6            228  J_MOVEW     JSR         OPC_MOVEW   *Jump to OPC_MOVEW in OPCODE table 
+000001F8  4E75                     229              RTS
+000001FA                           230  *-----------------NOP, MOVEM, LEA, JSR, RTS-----------------------
+000001FA  4EB8 0104                231  JMP_4X      JSR         J_CLR4      *Isolate next hex digit   
+000001FE  B43C 000E                232              CMP.B       #$E,D2      *Is the next hex digit E?
+00000202  6700 0026                233              BEQ         J_47X       *Instruction is determined to be NOP, JSR, or RTS. Jump to JMP_47X to determine.
+00000206  4EB8 0134                234              JSR         J_CLR1      *Otherwise, isolate the %0000 000X 0000 0000 digit
+0000020A  4EB8 0144                235              JSR         J_CLR_LEA
+0000020E  B43C 0007                236              CMP.B       #7,D2       *Is the last bit 7?
+00000212  6700 001E                237              BEQ         J_LEA       *Instruction is determined to be LEA. Jump to intermediate OPCODE table jump 
+00000216  4EB8 0154                238              JSR         J_CLR_MM
+0000021A  B43C 0009                239              CMP.B       #9,D2       *Is the last bit 0?
+0000021E  6700 001A                240              BEQ         J_MOVEM     *Instruction is determined to be MOVEM. Jump to intermediate OPCODE table jump 
+Line 241 ERROR: Undefined symbol
+00000222  4EB9 004DBB8E            241              JSR         INVALID     *If none of the above, OPCODE is invalid
+00000228  4E75                     242              RTS                                         
+0000022A                           243              
+0000022A  4EB9 000003BC            244  J_47X       JSR         JMP_47X     *Instruction is NOP, JSR, or RTS. Jump to JMP_47X to determine.
+00000230  4E75                     245              RTS
+00000232                           246              
+00000232  4EB9 000004CC            247  J_LEA       JSR         OPC_LEA     *Jump to OPC_LEA in the OPCODE table    
+00000238  4E75                     248              RTS
+0000023A                           249              
+0000023A  4EB9 000004EE            250  J_MOVEM     JSR         OPC_MOVEM   *Jump to OPC_MOVEM in the OPCODE table
+00000240  4E75                     251              RTS
+00000242                           252              
+00000242                           253  *------------------Bcc(BCC, BLT, BGE), BRA------------------------
+00000242  4EB8 0104                254  JMP_6X      JSR         J_CLR4       *Isolate next hex digit 
+00000246  B43C 0000                255              CMP.B       #0,D2        *Is the next hex digit 0?
+0000024A  6700 000A                256              BEQ         J_BRA        *Instruction is determined to be BRA. Jump to intermediate OPCODE table jump
+0000024E  4EB9 0000025E            257              JSR         J_Bcc        *Otherwise, Instruction is determined to be some form of Bcc. Jump to intermediate OPCODE table jump
+00000254  4E75                     258              RTS
+00000256                           259              
+00000256  4EB9 000005DE            260  J_BRA       JSR         OPC_BRA      *Jump to OPC_BRA in the OPCODE table  
+0000025C                           261  
+0000025C  4E75                     262              RTS
+0000025E                           263  
+0000025E  4EB9 000005FA            264  J_Bcc       JSR         OPC_Bcc      *Jump to OPC_Bcc in the OPCODE table  
+00000264                           265  
+00000264  4E75                     266              RTS
+00000266                           267              
+00000266                           268  *------------------------OR, DIVU---------------------------------     
+00000266  4EB8 0162                269  JMP_8X      JSR         J_CLR_DM    *Isolate the OPMODE bits %0000 000X XX00 0000 0000
+0000026A  B43C 0003                270              CMP.B       #3,D2       *Are the bits equivalent to $3?
+0000026E  6700 000A                271              BEQ         J_DIVU      *Instruction is determined to be DIVU. Jump to intermediate OPCODE table jump
+00000272  4EB9 00000282            272              JSR         J_OR        *Otherwise, Instruction is determined to be OR. Jump to intermediate OPCODE table jump
+00000278  4E75                     273              RTS
+0000027A                           274  
+0000027A  4EB9 00000606            275  J_DIVU      JSR         OPC_DIVU    *Jump to OPC_DIVU in the OPCODE table  
+00000280  4E75                     276              RTS
+00000282                           277              
+00000282  4EB9 0000062C            278  J_OR        JSR         OPC_OR      *Jump to OPC_OR in the OPCODE table  
+00000288  4E75                     279              RTS
+0000028A                           280  
+0000028A                           281  *-----------------------MULS, AND---------------------------------  
+0000028A  4EB8 0162                282  JMP_CX      JSR         J_CLR_DM    *Isolate the OPMODE bits %0000 000X XX00 0000 0000
+0000028E  B43C 0007                283              CMP.B       #7,D2       *Are the bits equivalent to $7?
+00000292  6700 000A                284              BEQ         J_MULS      *Instruction is determined to be MULS. Jump to intermediate OPCODE table jump
+00000296  4EB9 000002A6            285              JSR         J_AND       *Otherwise, Instruction is determined to be AND. Jump to intermediate OPCODE table jump
+0000029C  4E75                     286              RTS
+0000029E                           287  
+0000029E  4EB9 00000646            288  J_MULS      JSR         OPC_MULS    *Jump to OPC_MULS in the OPCODE table  
+000002A4  4E75                     289              RTS
+000002A6                           290              
+000002A6  4EB9 0000066C            291  J_AND       JSR         OPC_AND     *Jump to OPC_AND in the OPCODE table  
+000002AC  4E75                     292              RTS
+000002AE                           293  
+000002AE                           294  *-----------------------ADD, ADDA--------------------------------
+000002AE  4EB8 0162                295  JMP_DX      JSR         J_CLR_DM    *Isolate OPMODE bits to determine if ADD or ADDA
+000002B2  4284                     296              CLR.L       D4          *For adding size (easy to do it here).
+000002B4  183C 0001                297              MOVE.B      #1,D4       *Set size to WORD
+000002B8  B43C 0003                298              CMP.B       #3,D2       *Is it Word ADDA?
+000002BC  6700 0044                299              BEQ         OP_ADDA
+000002C0  183C 0002                300              MOVE.B      #2,D4       *set size to LONG
+000002C4  B43C 0007                301              CMP.B       #7,D2       *is it Long ADDA?
+000002C8  6700 0038                302              BEQ         OP_ADDA
+000002CC                           303              
+000002CC  4284                     304              CLR.L       D4          *Not ADDA? Clear the manual size sets
+000002CE                           305              
+000002CE  B83C 0000                306              CMP.B       #0,D4       Is it ADD?
+000002D2  6700 0036                307              BEQ         OP_ADD
+000002D6  B83C 0001                308              CMP.B       #1,D4       
+000002DA  6700 002E                309              BEQ         OP_ADD
+000002DE  B83C 0002                310              CMP.B       #2,D4       
+000002E2  6700 0026                311              BEQ         OP_ADD
+000002E6  B83C 0004                312              CMP.B       #4,D4 
+000002EA  6700 001E                313              BEQ         OP_ADD
+000002EE  B83C 0005                314              CMP.B       #5,D4     
+000002F2  6700 0016                315              BEQ         OP_ADD
+000002F6  B83C 0006                316              CMP.B       #6,D4     
+000002FA  6700 000E                317              BEQ         OP_ADD       
+000002FE                           318           
+Line 319 ERROR: Undefined symbol
+000002FE  6000 B88E                319              BRA         INVALID     *Got here, must be invalid data.    
+00000302                           320              
+00000302  4EB9 0000068A            321  OP_ADDA     JSR         OPC_ADDA
+00000308  4E75                     322              RTS
+0000030A                           323              
+0000030A  4EB9 000006AC            324  OP_ADD      JSR         OPC_ADD
+00000310  4E75                     325              RTS
+00000312                           326              
+00000312                           327  *------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
+00000312                           328  
+00000312  4EB8 0124                329  JMP_EX      JSR         J_CLR2
+00000316  B43C 0003                330              CMP.B       #3,D2          *Is it a memory variant?
+0000031A  6700 0020                331              BEQ         SR_MEM_VAR  
+0000031E  B43C 0000                332              CMP.B       #0,D2
+00000322  6700 0020                333              BEQ         SR_REG_VAR  *Is it a reg variant
+00000326  B43C 0001                334              CMP.B       #1,D2
+0000032A  6700 0018                335              BEQ         SR_REG_VAR
+0000032E  B43C 0002                336              CMP.B       #2,D2
+00000332  6700 0010                337              BEQ         SR_REG_VAR
+Line 338 ERROR: Undefined symbol
+00000336  4EF9 004DBB8E            338              JMP         INVALID     *Got here? Mus be invalid.
+0000033C                           339              
+0000033C  4EB9 0000034C            340  SR_MEM_VAR  JSR         SRMEM_VAR
+00000342  4E75                     341              RTS
+00000344                           342  
+00000344  4EB9 00000384            343  SR_REG_VAR  JSR         SRREG_VAR
+0000034A  4E75                     344              RTS
+0000034C                           345              
+0000034C                           346  *------------------SHIFT AND ROTATE MEM VAR-----------------
+0000034C                           347  * For memory variant shifts and rotations
+0000034C                           348  *-----------------------------------------------------------   
+0000034C  4EB8 0114                349  SRMEM_VAR   JSR         J_CLR3      *Isolate unique hardcoded mem section
+00000350  B43C 0000                350              CMP.B       #0,D2
+00000354  6700 0016                351              BEQ         OP_AS_MEM  *Is it as AS?
+00000358  B43C 0001                352              CMP.B       #1,D2
+0000035C  6700 0016                353              BEQ         OP_LS_MEM  *Is it a LS
+00000360  B43C 0003                354              CMP.B       #3,D2
+00000364  6700 0016                355              BEQ         OP_RO_MEM  *Is it a RO
+Line 356 ERROR: Undefined symbol
+00000368  6000 B824                356              BRA         INVALID     *Got here? Must be invalid
+0000036C                           357              
+0000036C  4EB9 00000702            358  OP_AS_MEM   JSR         OPC_AS_MEM
+00000372  4E75                     359              RTS
+00000374                           360  
+00000374  4EB9 0000071C            361  OP_LS_MEM   JSR         OPC_LS_MEM
+0000037A  4E75                     362              RTS
+0000037C                           363  
+0000037C  4EB9 00000736            364  OP_RO_MEM   JSR         OPC_RO_MEM
+00000382  4E75                     365              RTS
+00000384                           366              
+00000384                           367  
+00000384                           368  
+00000384                           369  *------------------SHIFT AND ROTATE MEM VAR-----------------
+00000384                           370  * For memory variant shifts and rotations
+00000384                           371  *-----------------------------------------------------------
+00000384  4EB8 0172                372  SRREG_VAR   JSR         J_CLR_SHFT *Isolate hardoced unique
+00000388  B43C 0000                373              CMP.B       #0,D2       *Is it a AS?
+0000038C  6700 0016                374              BEQ         OP_AS_REG
+00000390  B43C 0001                375              CMP.B       #1,D2       *Is it a LS?
+00000394  6700 0016                376              BEQ         OP_LS_REG
+00000398  B43C 0003                377              CMP.B       #3,D2       *is it a RO?
+0000039C  6700 0016                378              BEQ         OP_RO_REG
 Line 379 ERROR: Undefined symbol
-0000039C  4EF9 004DBB8E            379              JMP         INVALID      *Got here? Must be invalid data.
-000003A2                           380  
-000003A2  4EB9 000006AA            381  O_NOP       JSR         OPC_NOP
-000003A8  4E75                     382              RTS
-000003AA                           383  
-000003AA  4EB9 000006B8            384  O_RTS       JSR         OPC_RTS
-000003B0  4E75                     385              RTS
-000003B2                           386  
-000003B2  4EB9 0000068E            387  O_JSR       JSR         OPC_JSR
-000003B8  4E75                     388              RTS
-000003BA                           389           
-000003BA                           390  
-000003BA                           391  *============================================================
-000003BA                           392  *=====================OPCODE TABLE===========================
-000003BA                           393  *================OPCODE KNOWN, PRINTING======================
-000003BA                           394  *============================================================
-000003BA                           395  * IF YOU DO NOT USE A GET_SIZE_X SUBROUTINE, YOU MUST
-000003BA                           396  * MANUALLY SET THE SIZE CODE IN D4. (0 = B, 1 = W, 2 = L)
-000003BA                           397  
-000003BA                           398  *---------------------SUBI OPCODE----------------------------
-000003BA  18FC 0053                399  OPC_SUBI    MOVE.B      #'S',(A4)+
-000003BE  18FC 0055                400              MOVE.B      #'U',(A4)+
-000003C2  18FC 0042                401              MOVE.B      #'B',(A4)+
-000003C6  18FC 0049                402              MOVE.B      #'I',(A4)+
-000003CA  18FC 002E                403              MOVE.B      #'.',(A4)+
-000003CE                           404              
-000003CE  4EB9 000009DA            405              JSR         GET_SIZE_2  *Get 2 bit size code
-000003D4  4EB9 00000988            406              JSR         ADD_SIZE    *Add the size character based on size code
-000003DA                           407              
-Line 408 ERROR: Undefined symbol
-000003DA  4EB9 004DBB8E            408              JSR         IDATASRC_EA *Jump to #<data>,<ea> operand flow.
-000003E0                           409              
-000003E0  4E75                     410              RTS
-000003E2                           411  
-000003E2                           412  *---------------------ADDI OPCODE----------------------------
-000003E2  18FC 0041                413  OPC_ADDI    MOVE.B      #'A',(A4)+
-000003E6  18FC 0044                414              MOVE.B      #'D',(A4)+
-000003EA  18FC 0044                415              MOVE.B      #'D',(A4)+
-000003EE  18FC 0049                416              MOVE.B      #'I',(A4)+
-000003F2  18FC 002E                417              MOVE.B      #'.',(A4)+
-000003F6                           418              
-000003F6  4EB9 000009DA            419              JSR         GET_SIZE_2  *Get 2 bit size code
-000003FC  4EB9 00000988            420              JSR         ADD_SIZE    *Add the size character based on size code
-00000402                           421              
-Line 422 ERROR: Undefined symbol
-00000402  4EB9 004DBB8E            422              JSR         IDATASRC_EA *Jump to #<data>,<ea> operand flow.
-00000408                           423              
-00000408  4E75                     424              RTS
-0000040A                           425  
-0000040A                           426  *--------------------MOVE.B OPCODE---------------------------
-0000040A  18FC 004D                427  OPC_MOVEB   MOVE.B      #'M',(A4)+
-0000040E  18FC 004F                428              MOVE.B      #'O',(A4)+
-00000412  18FC 0056                429              MOVE.B      #'V',(A4)+
-00000416  18FC 0045                430              MOVE.B      #'E',(A4)+
-0000041A  18FC 002E                431              MOVE.B      #'.',(A4)+
-0000041E                           432  
-0000041E                           433  
-0000041E  4284                     434              CLR.L       D4          *Manually set size to byte (D4 = 0)
-00000420  4EB9 00000988            435              JSR         ADD_SIZE    *Add size characters
-00000426                           436              
-Line 437 ERROR: Undefined symbol
-00000426  4EB9 004DBB8E            437              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
-0000042C                           438              
-0000042C  4E75                     439              RTS
-0000042E                           440  
-0000042E                           441  *--------------------ADDQ OPCODE----------------------------
-0000042E  18FC 0041                442  OPC_ADDQ    MOVE.B      #'A',(A4)+
-00000432  18FC 0044                443              MOVE.B      #'D',(A4)+
-00000436  18FC 0044                444              MOVE.B      #'D',(A4)+
-0000043A  18FC 0051                445              MOVE.B      #'Q',(A4)+
-0000043E  18FC 002E                446              MOVE.B      #'.',(A4)+
-00000442                           447  
-00000442  4EB9 000009DA            448              JSR         GET_SIZE_2   *Get size code (placed in D4)
-00000448  4EB9 00000988            449              JSR         ADD_SIZE     *Add size character to string (B/W/L)
-0000044E                           450              
-Line 451 ERROR: Undefined symbol
-0000044E  4EB9 004DBB8E            451              JSR         ADDQ_EA      *Start the EA/operand decode logic
-00000454                           452   
-00000454  4E75                     453              RTS
-00000456                           454  
-00000456                           455  *------------------MOVEQ OPCODE-----------------------------
-00000456  18FC 004D                456  OPC_MOVEQ   MOVE.B      #'M',(A4)+
-0000045A  18FC 004F                457              MOVE.B      #'O',(A4)+
-0000045E  18FC 0056                458              MOVE.B      #'V',(A4)+
-00000462  18FC 0045                459              MOVE.B      #'E',(A4)+
-00000466  18FC 0051                460              MOVE.B      #'Q',(A4)+
-0000046A                           461              
-Line 462 ERROR: Undefined symbol
-0000046A  4EB9 004DBB8E            462              JSR         MOVEQ_EA     *Start the EA/opderand decode logic for moveq
-00000470                           463            
-00000470  4E75                     464              RTS
-00000472                           465  
-00000472                           466  *------------------SUB OPCODE-------------------------------
-00000472  18FC 0053                467  OPC_SUB     MOVE.B      #'S',(A4)+
-00000476  18FC 0055                468              MOVE.B      #'U',(A4)+
-0000047A  18FC 0042                469              MOVE.B      #'B',(A4)+
-0000047E  18FC 002E                470              MOVE.B      #'.',(A4)+
-00000482                           471  
-00000482  4EB9 000009CA            472              JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
-00000488                           473              
-00000488  4EB9 00000A00            474              JSR         OR_ADD_SIZE    * This will add size characters and start operand decode sequence
-0000048E                           475  
-0000048E  4E75                     476              RTS
-00000490                           477  
-00000490                           478  *------------------LEA OPCODE-------------------------------            
-00000490  18FC 004C                479  OPC_LEA     MOVE.B      #'L',(A4)+
-00000494  18FC 0045                480              MOVE.B      #'E',(A4)+
-00000498  18FC 0041                481              MOVE.B      #'A',(A4)+
-0000049C  18FC 0020                482              MOVE.B      #' ',(A4)+
-000004A0  18FC 0020                483              MOVE.B      #' ',(A4)+
-000004A4                           484              
-000004A4  4284                     485              CLR.L       D4          *Manually set size to byte (D4 = 0)
-000004A6  183C 0002                486              MOVE.B      #2,D4       *Manually set size to long.
-000004AA                           487              
+000003A0  6000 B7EC                379              BRA         INVALID     *Got here? Must be invalid.
+000003A4                           380  
+000003A4  4EB9 00000750            381  OP_AS_REG   JSR         OPC_AS_REG
+000003AA  4E75                     382              RTS   
+000003AC                           383  
+000003AC  4EB9 00000776            384  OP_LS_REG   JSR         OPC_LS_REG
+000003B2  4E75                     385              RTS
+000003B4                           386  
+000003B4  4EB9 0000079C            387  OP_RO_REG   JSR         OPC_RO_REG
+000003BA  4E75                     388              RTS
+000003BC                           389  
+000003BC                           390  
+000003BC                           391  
+000003BC                           392  
+000003BC                           393  *JMP_EX      *Change to isolate size
+000003BC                           394  *            JSR         J_CLR2      *Isolate size to see if memory variant
+000003BC                           395  *            CMP.B       #3,D2       
+000003BC                           396  *            BEQ         JMP_AS_MEM  *Instruction is determined to be ASR or ASL MEMORY variant
+000003BC                           397  *            CMP.B       #1,D2
+000003BC                           398  *            BEQ         JMP_LS_MEM  *Instruction is determined to be LSR or LSL MEMORY variant
+000003BC                           399  *            CMP.B       #3,D2       
+000003BC                           400  *            BEQ         JMP_RO_MEM  *Instruction is determined to be ROR or ROL MEMORY variant
+000003BC                           401  *                                    *If none of the above, possibly a REGISTER variant
+000003BC                           402  *                                    
+000003BC                           403  *            JSR         J_CLR_SHFT  *Isolate the identifying bits that determine whether LS(L/R) / AS(L/R) / RO(L/R) for the REGISTER variant          
+000003BC                           404  *            CMP.B       #0,D2
+000003BC                           405  *            BEQ         JMP_AS_REG  *Instruction is determined to be ASR or ASL REGISTER variant
+000003BC                           406  *            CMP.B       #1,D2
+000003BC                           407  *            BEQ         JMP_LS_REG  *Instruction is determined to be LSR or LSL REGISTER variant 
+000003BC                           408  *            CMP.B       #3,D2
+000003BC                           409  *            BEQ         JMP_RO_REG  *Instruction is determined to be ROR or ROL REGISTER variant
+000003BC                           410  *           
+000003BC                           411  *            JSR         INVALID     *Otherwise instruction is determined to be invalid
+000003BC                           412  *            RTS
+000003BC                           413  *           
+000003BC                           414  *JMP_AS_MEM  JSR         OPC_AS_MEM
+000003BC                           415  *            RTS
+000003BC                           416  *
+000003BC                           417  *JMP_LS_MEM  JSR         OPC_LS_MEM
+000003BC                           418  *            RTS
+000003BC                           419  *
+000003BC                           420  *JMP_RO_MEM  JSR         OPC_RO_MEM
+000003BC                           421  *            RTS
+000003BC                           422  *
+000003BC                           423  *JMP_AS_REG  JSR         OPC_AS_REG
+000003BC                           424  *            RTS
+000003BC                           425  *
+000003BC                           426  *JMP_LS_REG  JSR         OPC_LS_REG
+000003BC                           427  *            RTS
+000003BC                           428  *
+000003BC                           429  *JMP_RO_REG  JSR         OPC_RO_REG
+000003BC                           430  *            RTS           
+000003BC                           431  
+000003BC                           432       
+000003BC                           433  
+000003BC                           434  *============================================================
+000003BC                           435  *==================ID THIRD OPCODE DIGIT=====================
+000003BC                           436  *============================================================
+000003BC                           437     
+000003BC  BE7C 4E71                438  JMP_47X     CMP.W       #$4E71,D7    *Is it NOP?
+000003C0  6700 001C                439              BEQ         O_NOP
+000003C4  BE7C 4E75                440              CMP.W       #$4E75,D7       *Is it RTS?
+000003C8  6700 001C                441              BEQ         O_RTS
+000003CC  4EB8 0124                442              JSR         J_CLR2       *Isolate the 6th and 7th bit
+000003D0  B43C 0002                443              CMP.B       #2,D2        *Is it JSR?
+000003D4  6700 0018                444              BEQ         O_JSR
+Line 445 ERROR: Undefined symbol
+000003D8  4EF9 004DBB8E            445              JMP         INVALID      *Got here? Must be invalid data.
+000003DE                           446  
+000003DE  4EB9 000006E6            447  O_NOP       JSR         OPC_NOP
+000003E4  4E75                     448              RTS
+000003E6                           449  
+000003E6  4EB9 000006F4            450  O_RTS       JSR         OPC_RTS
+000003EC  4E75                     451              RTS
+000003EE                           452  
+000003EE  4EB9 000006CA            453  O_JSR       JSR         OPC_JSR
+000003F4  4E75                     454              RTS
+000003F6                           455           
+000003F6                           456  
+000003F6                           457  *============================================================
+000003F6                           458  *=====================OPCODE TABLE===========================
+000003F6                           459  *================OPCODE KNOWN, PRINTING======================
+000003F6                           460  *============================================================
+000003F6                           461  * IF YOU DO NOT USE A GET_SIZE_X SUBROUTINE, YOU MUST
+000003F6                           462  * MANUALLY SET THE SIZE CODE IN D4. (0 = B, 1 = W, 2 = L)
+000003F6                           463  
+000003F6                           464  *---------------------SUBI OPCODE----------------------------
+000003F6  18FC 0053                465  OPC_SUBI    MOVE.B      #'S',(A4)+
+000003FA  18FC 0055                466              MOVE.B      #'U',(A4)+
+000003FE  18FC 0042                467              MOVE.B      #'B',(A4)+
+00000402  18FC 0049                468              MOVE.B      #'I',(A4)+
+00000406  18FC 002E                469              MOVE.B      #'.',(A4)+
+0000040A                           470              
+0000040A  4EB9 00000A16            471              JSR         GET_SIZE_2  *Get 2 bit size code
+00000410  4EB9 000009C4            472              JSR         ADD_SIZE    *Add the size character based on size code
+00000416                           473              
+Line 474 ERROR: Undefined symbol
+00000416  4EB9 004DBB8E            474              JSR         IDATASRC_EA *Jump to #<data>,<ea> operand flow.
+0000041C                           475              
+0000041C  4E75                     476              RTS
+0000041E                           477  
+0000041E                           478  *---------------------ADDI OPCODE----------------------------
+0000041E  18FC 0041                479  OPC_ADDI    MOVE.B      #'A',(A4)+
+00000422  18FC 0044                480              MOVE.B      #'D',(A4)+
+00000426  18FC 0044                481              MOVE.B      #'D',(A4)+
+0000042A  18FC 0049                482              MOVE.B      #'I',(A4)+
+0000042E  18FC 002E                483              MOVE.B      #'.',(A4)+
+00000432                           484              
+00000432  4EB9 00000A16            485              JSR         GET_SIZE_2  *Get 2 bit size code
+00000438  4EB9 000009C4            486              JSR         ADD_SIZE    *Add the size character based on size code
+0000043E                           487              
 Line 488 ERROR: Undefined symbol
-000004AA  4EB9 004DBB8E            488              JSR         EASRC_ADES
-000004B0                           489              
-000004B0  4E75                     490              RTS
-000004B2                           491              
-000004B2                           492  *------------------MOVEM OPCODE----------------------------- 
-000004B2  18FC 004D                493  OPC_MOVEM   MOVE.B      #'M',(A4)+
-000004B6  18FC 004F                494              MOVE.B      #'O',(A4)+
-000004BA  18FC 0056                495              MOVE.B      #'V',(A4)+
-000004BE  18FC 0045                496              MOVE.B      #'E',(A4)+
-000004C2  18FC 004D                497              MOVE.B      #'M',(A4)+
-000004C6  18FC 002E                498              MOVE.B      #'.',(A4)+
-000004CA                           499              
-000004CA  4EB9 000009EA            500              JSR         GET_SIZE_1
-000004D0                           501              
-000004D0  B83C 0000                502              CMP.B       #0,D4       *Change size code so it matches standard formatting
-000004D4  6700 000A                503              BEQ         MM_WORD
-000004D8  B83C 0001                504              CMP.B       #1,D4
-000004DC  6700 000A                505              BEQ         MM_LONG
-000004E0                           506  
-000004E0  183C 0001                507  MM_WORD     MOVE.B      #1,D4
-000004E4  6000 0006                508              BRA         MM_ADD_S
-000004E8                           509  
-000004E8  183C 0002                510  MM_LONG     MOVE.B      #2,D4
-000004EC                           511         
-000004EC  4EB9 00000988            512  MM_ADD_S    JSR         ADD_SIZE
-Line 513 ERROR: Undefined symbol
-000004F2  4EB9 004DBB8E            513              JSR         MM_OP_ORD
-000004F8                           514              
-000004F8  4E75                     515              RTS
-000004FA                           516  
-000004FA                           517  
-000004FA                           518  *------------------MOVEA.L OPCODE----------------------------
-000004FA  18FC 004D                519  OPC_MOVEAL  MOVE.B      #'M',(A4)+
-000004FE  18FC 004F                520              MOVE.B      #'O',(A4)+
-00000502  18FC 0056                521              MOVE.B      #'V',(A4)+
-00000506  18FC 0045                522              MOVE.B      #'E',(A4)+
-0000050A  18FC 0041                523              MOVE.B      #'A',(A4)+
-0000050E  18FC 002E                524              MOVE.B      #'.',(A4)+
-00000512                           525  
-00000512  4284                     526              CLR.L       D4          *Manually set size to byte (D4 = 0)
-00000514  183C 0002                527              MOVE.B      #2,D4       *Set size code to long
-00000518  4EB9 00000988            528              JSR         ADD_SIZE    *Add size characters
-0000051E                           529              
-Line 530 ERROR: Undefined symbol
-0000051E  4EB9 004DBB8E            530              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
-00000524  4E75                     531              RTS
-00000526                           532  
-00000526                           533  
-00000526                           534  *------------------MOVEM.L OPCODE----------------------------
-00000526  18FC 004D                535  OPC_MOVEL   MOVE.B      #'M',(A4)+
-0000052A  18FC 004F                536              MOVE.B      #'O',(A4)+
-0000052E  18FC 0056                537              MOVE.B      #'V',(A4)+
-00000532  18FC 0045                538              MOVE.B      #'E',(A4)+
-00000536  18FC 002E                539              MOVE.B      #'.',(A4)+
-0000053A                           540  
-0000053A  4284                     541              CLR.L       D4          *Manually set size to byte (D4 = 0)
-0000053C  183C 0002                542              MOVE.B      #2,D4       *Set size code to long
-00000540  4EB9 00000988            543              JSR         ADD_SIZE    *Add size characters
-00000546                           544              
-Line 545 ERROR: Undefined symbol
-00000546  4EB9 004DBB8E            545              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
-0000054C  4E75                     546              RTS
-0000054E                           547  
-0000054E                           548  *------------------MOVEA.W OPCODE----------------------------
-0000054E  18FC 004D                549  OPC_MOVEAW  MOVE.B      #'M',(A4)+
-00000552  18FC 004F                550              MOVE.B      #'O',(A4)+
-00000556  18FC 0056                551              MOVE.B      #'V',(A4)+
-0000055A  18FC 0045                552              MOVE.B      #'E',(A4)+
-0000055E  18FC 0041                553              MOVE.B      #'A',(A4)+
-00000562  18FC 002E                554              MOVE.B      #'.',(A4)+
-00000566                           555  
-00000566  4284                     556              CLR.L       D4          *Manually set size to byte (D4 = 0)
-00000568  183C 0001                557              MOVE.B      #1,D4       *Set size code to word
-0000056C  4EB9 00000988            558              JSR         ADD_SIZE    *Add size characters
-00000572                           559              
-Line 560 ERROR: Undefined symbol
-00000572  4EB9 004DBB8E            560              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
-00000578  4E75                     561              RTS
-0000057A                           562  
-0000057A                           563  
-0000057A                           564  *------------------MOVE.W OPCODE----------------------------
-0000057A  18FC 004D                565  OPC_MOVEW   MOVE.B      #'M',(A4)+
-0000057E  18FC 004F                566              MOVE.B      #'O',(A4)+
-00000582  18FC 0056                567              MOVE.B      #'V',(A4)+
-00000586  18FC 0045                568              MOVE.B      #'E',(A4)+
-0000058A  18FC 002E                569              MOVE.B      #'.',(A4)+
-0000058E                           570  
-0000058E  4284                     571              CLR.L       D4          *Manually set size to byte (D4 = 0)
-00000590  183C 0001                572              MOVE.B      #1,D4       *Set size code to word
-00000594  4EB9 00000988            573              JSR         ADD_SIZE    *Add size characters
-0000059A                           574              
-Line 575 ERROR: Undefined symbol
-0000059A  4EB9 004DBB8E            575              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
-000005A0  4E75                     576              RTS
-000005A2                           577  
-000005A2                           578  
-000005A2                           579  *---------------------BRA OPCODE----------------------------
-000005A2  18FC 0042                580  OPC_BRA     MOVE.B      #'B',(A4)+
-000005A6  18FC 0052                581              MOVE.B      #'R',(A4)+
-000005AA  18FC 0041                582              MOVE.B      #'A',(A4)+
-000005AE  18FC 0020                583              MOVE.B      #' ',(A4)+
-000005B2  18FC 0020                584              MOVE.B      #' ',(A4)+
-000005B6                           585              
-Line 586 ERROR: Undefined symbol
-000005B6  4EB9 004DBB8E            586              JSR         ABW       *Grab the next word value (BRA bug)
-000005BC                           587                          
-000005BC  4E75                     588              RTS
-000005BE                           589  
-000005BE                           590  *---------------------Bcc OPCODE----------------------------
-000005BE  18FC 0042                591  OPC_Bcc     MOVE.B      #'B',(A4)+
-000005C2                           592              *BCC bug, does not use 8bit displacment, but is next word value (ABSW)
-000005C2  4EB9 000007AC            593              JSR         BCC_CODE    *Get condition code and start decoding
-000005C8                           594              
-000005C8  4E75                     595              RTS
-000005CA                           596  
-000005CA                           597  *--------------------DIVU OPCODE----------------------------
-000005CA  18FC 0044                598  OPC_DIVU    MOVE.B      #'D',(A4)+
-000005CE  18FC 0049                599              MOVE.B      #'I',(A4)+
-000005D2  18FC 0056                600              MOVE.B      #'V',(A4)+
-000005D6  18FC 0055                601              MOVE.B      #'U',(A4)+
-000005DA  18FC 0020                602              MOVE.B      #' ',(A4)+
-000005DE  18FC 0020                603              MOVE.B      #' ',(A4)+
-000005E2                           604              
-000005E2  4284                     605              CLR.L       D4          *Manually set size to byte (D4 = 0)
-000005E4  183C 0001                606              MOVE.B      #1,D4       *Set size code to word
-000005E8                           607              
-Line 608 ERROR: Undefined symbol
-000005E8  4EB9 004DBB8E            608              JSR         EASRC_DDES  *Start operand <ea>,Dn
-000005EE                           609              
-000005EE                           610              
-000005EE  4E75                     611              RTS
-000005F0                           612  
-000005F0                           613  *---------------------OR OPCODE-----------------------------
-000005F0  18FC 004F                614  OPC_OR      MOVE.B      #'O',(A4)+
-000005F4  18FC 0052                615              MOVE.B      #'R',(A4)+
-000005F8  18FC 002E                616              MOVE.B      #'.',(A4)+
-000005FC                           617  
-000005FC  4EB9 000009CA            618              JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
-00000602                           619              
-00000602  4EB9 00000A00            620              JSR         OR_ADD_SIZE    * This will add size characters and start operand decode sequence
-00000608                           621  
-00000608  4E75                     622              RTS
-0000060A                           623  
-0000060A                           624  *---------------------MULS  OPCODE--------------------------
-0000060A  18FC 004D                625  OPC_MULS    MOVE.B      #'M',(A4)+
-0000060E  18FC 0055                626              MOVE.B      #'U',(A4)+
-00000612  18FC 004C                627              MOVE.B      #'L',(A4)+
-00000616  18FC 0053                628              MOVE.B      #'S',(A4)+
-0000061A  18FC 0020                629              MOVE.B      #' ',(A4)+
-0000061E  18FC 0020                630              MOVE.B      #' ',(A4)+
-00000622                           631              
-00000622  4284                     632              CLR.L       D4          *Manually set size to byte (D4 = 0)
-00000624  183C 0001                633              MOVE.B      #1,D4       *Set size code to word
-00000628                           634              
-Line 635 ERROR: Undefined symbol
-00000628  4EB9 004DBB8E            635              JSR         EASRC_DDES  *Jump to <ea>,Dn
-0000062E                           636              
-0000062E  4E75                     637              RTS
-00000630                           638  
-00000630                           639  *---------------------AND  OPCODE---------------------------
-00000630  18FC 0041                640  OPC_AND     MOVE.B      #'A',(A4)+
-00000634  18FC 004E                641              MOVE.B      #'N',(A4)+
-00000638  18FC 0044                642              MOVE.B      #'D',(A4)+
-0000063C  18FC 002E                643              MOVE.B      #'.',(A4)+
-00000640                           644  
-00000640  4EB9 000009CA            645              JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
-00000646                           646              
-00000646  4EB9 00000A00            647              JSR         OR_ADD_SIZE *This will add size characters and start operand decode sequence
-0000064C                           648  
-0000064C  4E75                     649              RTS
-0000064E                           650              
-0000064E                           651  *-------------------ADDA OPCODE-----------------------------
-0000064E  18FC 0041                652  OPC_ADDA    MOVE.B      #'A',(A4)+
-00000652  18FC 0044                653              MOVE.B      #'D',(A4)+
-00000656  18FC 0044                654              MOVE.B      #'D',(A4)+
-0000065A  18FC 0041                655              MOVE.B      #'A',(A4)+
-0000065E  18FC 002E                656              MOVE.B      #'.',(A4)+
-00000662                           657              
-00000662  4EB9 00000988            658              JSR         ADD_SIZE    *Size should already be in D4 (special case for ADDA)
-00000668                           659              
-Line 660 ERROR: Undefined symbol
-00000668  4EB9 004DBB8E            660              JSR         EASRC_ADES  *Start operand decode for <ea>,An format
-0000066E                           661              
-0000066E  4E75                     662              RTS
-00000670                           663  
-00000670                           664  *--------------------ADD OPCODE-----------------------------
-00000670  18FC 0041                665  OPC_ADD     MOVE.B      #'A',(A4)+
-00000674  18FC 0044                666              MOVE.B      #'D',(A4)+
-00000678  18FC 0044                667              MOVE.B      #'D',(A4)+
-0000067C  18FC 002E                668              MOVE.B      #'.',(A4)+
-00000680                           669  
-00000680  4EB9 000009CA            670              JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
-00000686                           671              
-00000686  4EB9 00000A00            672              JSR         OR_ADD_SIZE *This will add size characters and start operand decode sequence
-0000068C                           673  
-0000068C  4E75                     674              RTS
-0000068E                           675  
-0000068E                           676  *--------------------JSR OPCODE-----------------------------
-0000068E  18FC 004A                677  OPC_JSR     MOVE.B      #'J',(A4)+
-00000692  18FC 0053                678              MOVE.B      #'S',(A4)+
-00000696  18FC 0052                679              MOVE.B      #'R',(A4)+
-0000069A  18FC 0020                680              MOVE.B      #' ',(A4)+
-0000069E  18FC 0020                681              MOVE.B      #' ',(A4)+
-Line 682 ERROR: Undefined symbol
-000006A2  4EB9 004DBB8E            682              JSR         GEN_EA_CODE *Get EA code
-000006A8                           683              
-000006A8  4E75                     684              RTS
-000006AA                           685  
-000006AA                           686  *--------------------NOP OPCODE-----------------------------
-000006AA  18FC 004E                687  OPC_NOP     MOVE.B      #'N',(A4)+
-000006AE  18FC 004F                688              MOVE.B      #'O',(A4)+
-000006B2  18FC 0050                689              MOVE.B      #'P',(A4)+
-000006B6                           690              
-000006B6  4E75                     691              RTS
-000006B8                           692  
-000006B8                           693  *--------------------RTS OPCODE-----------------------------
-000006B8  18FC 0052                694  OPC_RTS     MOVE.B      #'R',(A4)+
-000006BC  18FC 0054                695              MOVE.B      #'T',(A4)+
-000006C0  18FC 0053                696              MOVE.B      #'S',(A4)+
-000006C4                           697              
-000006C4  4E75                     698              RTS
-000006C6                           699              
-000006C6                           700  *-LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM OPCODE--  
-000006C6                           701  *------------AS(L/R) OPCODE MEMORY variant------------------          
-000006C6  18FC 0041                702  OPC_AS_MEM  MOVE.B      #'A',(A4)+
-000006CA  18FC 0053                703              MOVE.B      #'S',(A4)+
-Line 704 ERROR: Undefined symbol
-000006CE  4EB9 004DBB8E            704              JSR         SHIFT_DECODE
-000006D4  18FC 002E                705              MOVE.B      #'.',(A4)+
-000006D8                           706                         
-Line 707 ERROR: Undefined symbol
-000006D8  4EB9 004DBB8E            707              JSR         SR_MEM
-000006DE  4E75                     708              RTS
-000006E0                           709  
-000006E0                           710  *------------LS(L/R) OPCODE MEMORY variant------------------    
-000006E0  18FC 004C                711  OPC_LS_MEM  MOVE.B      #'L',(A4)+
-000006E4  18FC 0053                712              MOVE.B      #'S',(A4)+
-Line 713 ERROR: Undefined symbol
-000006E8  4EB9 004DBB8E            713              JSR         SHIFT_DECODE
-000006EE  18FC 002E                714              MOVE.B      #'.',(A4)+
-000006F2                           715                          
-Line 716 ERROR: Undefined symbol
-000006F2  4EB9 004DBB8E            716              JSR         SR_MEM
-000006F8  4E75                     717              RTS
-000006FA                           718  
-000006FA                           719  *------------RO(L/R) OPCODE MEMORY variant------------------     
-000006FA  18FC 0052                720  OPC_RO_MEM  MOVE.B      #'R',(A4)+
-000006FE  18FC 004F                721              MOVE.B      #'O',(A4)+
-Line 722 ERROR: Undefined symbol
-00000702  4EB9 004DBB8E            722              JSR         SHIFT_DECODE
-00000708  18FC 002E                723              MOVE.B      #'.',(A4)+
-0000070C                           724                         
-Line 725 ERROR: Undefined symbol
-0000070C  4EB9 004DBB8E            725              JSR         SR_MEM
-00000712  4E75                     726              RTS   
-00000714                           727  
-00000714                           728  *----------AS(L/R) OPCODE REGISTER variant------------------      
-00000714  18FC 0041                729  OPC_AS_REG  MOVE.B      #'A',(A4)+
-00000718  18FC 0053                730              MOVE.B      #'S',(A4)+
-Line 731 ERROR: Undefined symbol
-0000071C  4EB9 004DBB8E            731              JSR         SHIFT_DECODE
-00000722  18FC 002E                732              MOVE.B      #'.',(A4)+
-00000726                           733              
-00000726  4EB9 000009DA            734              JSR         GET_SIZE_2
-0000072C  4EB9 00000988            735              JSR         ADD_SIZE
-Line 736 ERROR: Undefined symbol
-00000732  4EB9 004DBB8E            736              JSR         SR_REGISTER
-00000738                           737              
-00000738  4E75                     738              RTS
-0000073A                           739  
-0000073A                           740  *----------LS(L/R) OPCODE REGISTER variant------------------ 
-0000073A  18FC 004C                741  OPC_LS_REG  MOVE.B      #'L',(A4)+
-0000073E  18FC 0053                742              MOVE.B      #'S',(A4)+
-Line 743 ERROR: Undefined symbol
-00000742  4EB9 004DBB8E            743              JSR         SHIFT_DECODE
-00000748  18FC 002E                744              MOVE.B      #'.',(A4)+
-0000074C                           745              
-0000074C  4EB9 000009DA            746              JSR         GET_SIZE_2
-00000752  4EB9 00000988            747              JSR         ADD_SIZE
+0000043E  4EB9 004DBB8E            488              JSR         IDATASRC_EA *Jump to #<data>,<ea> operand flow.
+00000444                           489              
+00000444  4E75                     490              RTS
+00000446                           491  
+00000446                           492  *--------------------MOVE.B OPCODE---------------------------
+00000446  18FC 004D                493  OPC_MOVEB   MOVE.B      #'M',(A4)+
+0000044A  18FC 004F                494              MOVE.B      #'O',(A4)+
+0000044E  18FC 0056                495              MOVE.B      #'V',(A4)+
+00000452  18FC 0045                496              MOVE.B      #'E',(A4)+
+00000456  18FC 002E                497              MOVE.B      #'.',(A4)+
+0000045A                           498  
+0000045A                           499  
+0000045A  4284                     500              CLR.L       D4          *Manually set size to byte (D4 = 0)
+0000045C  4EB9 000009C4            501              JSR         ADD_SIZE    *Add size characters
+00000462                           502              
+Line 503 ERROR: Undefined symbol
+00000462  4EB9 004DBB8E            503              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+00000468                           504              
+00000468  4E75                     505              RTS
+0000046A                           506  
+0000046A                           507  *--------------------ADDQ OPCODE----------------------------
+0000046A  18FC 0041                508  OPC_ADDQ    MOVE.B      #'A',(A4)+
+0000046E  18FC 0044                509              MOVE.B      #'D',(A4)+
+00000472  18FC 0044                510              MOVE.B      #'D',(A4)+
+00000476  18FC 0051                511              MOVE.B      #'Q',(A4)+
+0000047A  18FC 002E                512              MOVE.B      #'.',(A4)+
+0000047E                           513  
+0000047E  4EB9 00000A16            514              JSR         GET_SIZE_2   *Get size code (placed in D4)
+00000484  4EB9 000009C4            515              JSR         ADD_SIZE     *Add size character to string (B/W/L)
+0000048A                           516              
+Line 517 ERROR: Undefined symbol
+0000048A  4EB9 004DBB8E            517              JSR         ADDQ_EA      *Start the EA/operand decode logic
+00000490                           518   
+00000490  4E75                     519              RTS
+00000492                           520  
+00000492                           521  *------------------MOVEQ OPCODE-----------------------------
+00000492  18FC 004D                522  OPC_MOVEQ   MOVE.B      #'M',(A4)+
+00000496  18FC 004F                523              MOVE.B      #'O',(A4)+
+0000049A  18FC 0056                524              MOVE.B      #'V',(A4)+
+0000049E  18FC 0045                525              MOVE.B      #'E',(A4)+
+000004A2  18FC 0051                526              MOVE.B      #'Q',(A4)+
+000004A6                           527              
+Line 528 ERROR: Undefined symbol
+000004A6  4EB9 004DBB8E            528              JSR         MOVEQ_EA     *Start the EA/opderand decode logic for moveq
+000004AC                           529            
+000004AC  4E75                     530              RTS
+000004AE                           531  
+000004AE                           532  *------------------SUB OPCODE-------------------------------
+000004AE  18FC 0053                533  OPC_SUB     MOVE.B      #'S',(A4)+
+000004B2  18FC 0055                534              MOVE.B      #'U',(A4)+
+000004B6  18FC 0042                535              MOVE.B      #'B',(A4)+
+000004BA  18FC 002E                536              MOVE.B      #'.',(A4)+
+000004BE                           537  
+000004BE  4EB9 00000A06            538              JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+000004C4                           539              
+000004C4  4EB9 00000A3C            540              JSR         OR_ADD_SIZE    * This will add size characters and start operand decode sequence
+000004CA                           541  
+000004CA  4E75                     542              RTS
+000004CC                           543  
+000004CC                           544  *------------------LEA OPCODE-------------------------------            
+000004CC  18FC 004C                545  OPC_LEA     MOVE.B      #'L',(A4)+
+000004D0  18FC 0045                546              MOVE.B      #'E',(A4)+
+000004D4  18FC 0041                547              MOVE.B      #'A',(A4)+
+000004D8  18FC 0020                548              MOVE.B      #' ',(A4)+
+000004DC  18FC 0020                549              MOVE.B      #' ',(A4)+
+000004E0                           550              
+000004E0  4284                     551              CLR.L       D4          *Manually set size to byte (D4 = 0)
+000004E2  183C 0002                552              MOVE.B      #2,D4       *Manually set size to long.
+000004E6                           553              
+Line 554 ERROR: Undefined symbol
+000004E6  4EB9 004DBB8E            554              JSR         EASRC_ADES
+000004EC                           555              
+000004EC  4E75                     556              RTS
+000004EE                           557              
+000004EE                           558  *------------------MOVEM OPCODE----------------------------- 
+000004EE  18FC 004D                559  OPC_MOVEM   MOVE.B      #'M',(A4)+
+000004F2  18FC 004F                560              MOVE.B      #'O',(A4)+
+000004F6  18FC 0056                561              MOVE.B      #'V',(A4)+
+000004FA  18FC 0045                562              MOVE.B      #'E',(A4)+
+000004FE  18FC 004D                563              MOVE.B      #'M',(A4)+
+00000502  18FC 002E                564              MOVE.B      #'.',(A4)+
+00000506                           565              
+00000506  4EB9 00000A26            566              JSR         GET_SIZE_1
+0000050C                           567              
+0000050C  B83C 0000                568              CMP.B       #0,D4       *Change size code so it matches standard formatting
+00000510  6700 000A                569              BEQ         MM_WORD
+00000514  B83C 0001                570              CMP.B       #1,D4
+00000518  6700 000A                571              BEQ         MM_LONG
+0000051C                           572  
+0000051C  183C 0001                573  MM_WORD     MOVE.B      #1,D4
+00000520  6000 0006                574              BRA         MM_ADD_S
+00000524                           575  
+00000524  183C 0002                576  MM_LONG     MOVE.B      #2,D4
+00000528                           577         
+00000528  4EB9 000009C4            578  MM_ADD_S    JSR         ADD_SIZE
+Line 579 ERROR: Undefined symbol
+0000052E  4EB9 004DBB8E            579              JSR         MM_OP_ORD
+00000534                           580              
+00000534  4E75                     581              RTS
+00000536                           582  
+00000536                           583  
+00000536                           584  *------------------MOVEA.L OPCODE----------------------------
+00000536  18FC 004D                585  OPC_MOVEAL  MOVE.B      #'M',(A4)+
+0000053A  18FC 004F                586              MOVE.B      #'O',(A4)+
+0000053E  18FC 0056                587              MOVE.B      #'V',(A4)+
+00000542  18FC 0045                588              MOVE.B      #'E',(A4)+
+00000546  18FC 0041                589              MOVE.B      #'A',(A4)+
+0000054A  18FC 002E                590              MOVE.B      #'.',(A4)+
+0000054E                           591  
+0000054E  4284                     592              CLR.L       D4          *Manually set size to byte (D4 = 0)
+00000550  183C 0002                593              MOVE.B      #2,D4       *Set size code to long
+00000554  4EB9 000009C4            594              JSR         ADD_SIZE    *Add size characters
+0000055A                           595              
+Line 596 ERROR: Undefined symbol
+0000055A  4EB9 004DBB8E            596              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+00000560  4E75                     597              RTS
+00000562                           598  
+00000562                           599  
+00000562                           600  *------------------MOVEM.L OPCODE----------------------------
+00000562  18FC 004D                601  OPC_MOVEL   MOVE.B      #'M',(A4)+
+00000566  18FC 004F                602              MOVE.B      #'O',(A4)+
+0000056A  18FC 0056                603              MOVE.B      #'V',(A4)+
+0000056E  18FC 0045                604              MOVE.B      #'E',(A4)+
+00000572  18FC 002E                605              MOVE.B      #'.',(A4)+
+00000576                           606  
+00000576  4284                     607              CLR.L       D4          *Manually set size to byte (D4 = 0)
+00000578  183C 0002                608              MOVE.B      #2,D4       *Set size code to long
+0000057C  4EB9 000009C4            609              JSR         ADD_SIZE    *Add size characters
+00000582                           610              
+Line 611 ERROR: Undefined symbol
+00000582  4EB9 004DBB8E            611              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+00000588  4E75                     612              RTS
+0000058A                           613  
+0000058A                           614  *------------------MOVEA.W OPCODE----------------------------
+0000058A  18FC 004D                615  OPC_MOVEAW  MOVE.B      #'M',(A4)+
+0000058E  18FC 004F                616              MOVE.B      #'O',(A4)+
+00000592  18FC 0056                617              MOVE.B      #'V',(A4)+
+00000596  18FC 0045                618              MOVE.B      #'E',(A4)+
+0000059A  18FC 0041                619              MOVE.B      #'A',(A4)+
+0000059E  18FC 002E                620              MOVE.B      #'.',(A4)+
+000005A2                           621  
+000005A2  4284                     622              CLR.L       D4          *Manually set size to byte (D4 = 0)
+000005A4  183C 0001                623              MOVE.B      #1,D4       *Set size code to word
+000005A8  4EB9 000009C4            624              JSR         ADD_SIZE    *Add size characters
+000005AE                           625              
+Line 626 ERROR: Undefined symbol
+000005AE  4EB9 004DBB8E            626              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+000005B4  4E75                     627              RTS
+000005B6                           628  
+000005B6                           629  
+000005B6                           630  *------------------MOVE.W OPCODE----------------------------
+000005B6  18FC 004D                631  OPC_MOVEW   MOVE.B      #'M',(A4)+
+000005BA  18FC 004F                632              MOVE.B      #'O',(A4)+
+000005BE  18FC 0056                633              MOVE.B      #'V',(A4)+
+000005C2  18FC 0045                634              MOVE.B      #'E',(A4)+
+000005C6  18FC 002E                635              MOVE.B      #'.',(A4)+
+000005CA                           636  
+000005CA  4284                     637              CLR.L       D4          *Manually set size to byte (D4 = 0)
+000005CC  183C 0001                638              MOVE.B      #1,D4       *Set size code to word
+000005D0  4EB9 000009C4            639              JSR         ADD_SIZE    *Add size characters
+000005D6                           640              
+Line 641 ERROR: Undefined symbol
+000005D6  4EB9 004DBB8E            641              JSR         MOV_EA_CODE *JUMP to EACODE table for MOVE/MOVEA
+000005DC  4E75                     642              RTS
+000005DE                           643  
+000005DE                           644  
+000005DE                           645  *---------------------BRA OPCODE----------------------------
+000005DE  18FC 0042                646  OPC_BRA     MOVE.B      #'B',(A4)+
+000005E2  18FC 0052                647              MOVE.B      #'R',(A4)+
+000005E6  18FC 0041                648              MOVE.B      #'A',(A4)+
+000005EA  18FC 0020                649              MOVE.B      #' ',(A4)+
+000005EE  18FC 0020                650              MOVE.B      #' ',(A4)+
+000005F2                           651              
+Line 652 ERROR: Undefined symbol
+000005F2  4EB9 004DBB8E            652              JSR         ABW       *Grab the next word value (BRA bug)
+000005F8                           653                          
+000005F8  4E75                     654              RTS
+000005FA                           655  
+000005FA                           656  *---------------------Bcc OPCODE----------------------------
+000005FA  18FC 0042                657  OPC_Bcc     MOVE.B      #'B',(A4)+
+000005FE                           658              *BCC bug, does not use 8bit displacment, but is next word value (ABSW)
+000005FE  4EB9 000007E8            659              JSR         BCC_CODE    *Get condition code and start decoding
+00000604                           660              
+00000604  4E75                     661              RTS
+00000606                           662  
+00000606                           663  *--------------------DIVU OPCODE----------------------------
+00000606  18FC 0044                664  OPC_DIVU    MOVE.B      #'D',(A4)+
+0000060A  18FC 0049                665              MOVE.B      #'I',(A4)+
+0000060E  18FC 0056                666              MOVE.B      #'V',(A4)+
+00000612  18FC 0055                667              MOVE.B      #'U',(A4)+
+00000616  18FC 0020                668              MOVE.B      #' ',(A4)+
+0000061A  18FC 0020                669              MOVE.B      #' ',(A4)+
+0000061E                           670              
+0000061E  4284                     671              CLR.L       D4          *Manually set size to byte (D4 = 0)
+00000620  183C 0001                672              MOVE.B      #1,D4       *Set size code to word
+00000624                           673              
+Line 674 ERROR: Undefined symbol
+00000624  4EB9 004DBB8E            674              JSR         EASRC_DDES  *Start operand <ea>,Dn
+0000062A                           675              
+0000062A                           676              
+0000062A  4E75                     677              RTS
+0000062C                           678  
+0000062C                           679  *---------------------OR OPCODE-----------------------------
+0000062C  18FC 004F                680  OPC_OR      MOVE.B      #'O',(A4)+
+00000630  18FC 0052                681              MOVE.B      #'R',(A4)+
+00000634  18FC 002E                682              MOVE.B      #'.',(A4)+
+00000638                           683  
+00000638  4EB9 00000A06            684              JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+0000063E                           685              
+0000063E  4EB9 00000A3C            686              JSR         OR_ADD_SIZE    * This will add size characters and start operand decode sequence
+00000644                           687  
+00000644  4E75                     688              RTS
+00000646                           689  
+00000646                           690  *---------------------MULS  OPCODE--------------------------
+00000646  18FC 004D                691  OPC_MULS    MOVE.B      #'M',(A4)+
+0000064A  18FC 0055                692              MOVE.B      #'U',(A4)+
+0000064E  18FC 004C                693              MOVE.B      #'L',(A4)+
+00000652  18FC 0053                694              MOVE.B      #'S',(A4)+
+00000656  18FC 0020                695              MOVE.B      #' ',(A4)+
+0000065A  18FC 0020                696              MOVE.B      #' ',(A4)+
+0000065E                           697              
+0000065E  4284                     698              CLR.L       D4          *Manually set size to byte (D4 = 0)
+00000660  183C 0001                699              MOVE.B      #1,D4       *Set size code to word
+00000664                           700              
+Line 701 ERROR: Undefined symbol
+00000664  4EB9 004DBB8E            701              JSR         EASRC_DDES  *Jump to <ea>,Dn
+0000066A                           702              
+0000066A  4E75                     703              RTS
+0000066C                           704  
+0000066C                           705  *---------------------AND  OPCODE---------------------------
+0000066C  18FC 0041                706  OPC_AND     MOVE.B      #'A',(A4)+
+00000670  18FC 004E                707              MOVE.B      #'N',(A4)+
+00000674  18FC 0044                708              MOVE.B      #'D',(A4)+
+00000678  18FC 002E                709              MOVE.B      #'.',(A4)+
+0000067C                           710  
+0000067C  4EB9 00000A06            711              JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+00000682                           712              
+00000682  4EB9 00000A3C            713              JSR         OR_ADD_SIZE *This will add size characters and start operand decode sequence
+00000688                           714  
+00000688  4E75                     715              RTS
+0000068A                           716              
+0000068A                           717  *-------------------ADDA OPCODE-----------------------------
+0000068A  18FC 0041                718  OPC_ADDA    MOVE.B      #'A',(A4)+
+0000068E  18FC 0044                719              MOVE.B      #'D',(A4)+
+00000692  18FC 0044                720              MOVE.B      #'D',(A4)+
+00000696  18FC 0041                721              MOVE.B      #'A',(A4)+
+0000069A  18FC 002E                722              MOVE.B      #'.',(A4)+
+0000069E                           723              
+0000069E  4EB9 000009C4            724              JSR         ADD_SIZE    *Size should already be in D4 (special case for ADDA)
+000006A4                           725              
+Line 726 ERROR: Undefined symbol
+000006A4  4EB9 004DBB8E            726              JSR         EASRC_ADES  *Start operand decode for <ea>,An format
+000006AA                           727              
+000006AA  4E75                     728              RTS
+000006AC                           729  
+000006AC                           730  *--------------------ADD OPCODE-----------------------------
+000006AC  18FC 0041                731  OPC_ADD     MOVE.B      #'A',(A4)+
+000006B0  18FC 0044                732              MOVE.B      #'D',(A4)+
+000006B4  18FC 0044                733              MOVE.B      #'D',(A4)+
+000006B8  18FC 002E                734              MOVE.B      #'.',(A4)+
+000006BC                           735  
+000006BC  4EB9 00000A06            736              JSR         GET_SIZE_3  * Size bits will be in D4 after this statement
+000006C2                           737              
+000006C2  4EB9 00000A3C            738              JSR         OR_ADD_SIZE *This will add size characters and start operand decode sequence
+000006C8                           739  
+000006C8  4E75                     740              RTS
+000006CA                           741  
+000006CA                           742  *--------------------JSR OPCODE-----------------------------
+000006CA  18FC 004A                743  OPC_JSR     MOVE.B      #'J',(A4)+
+000006CE  18FC 0053                744              MOVE.B      #'S',(A4)+
+000006D2  18FC 0052                745              MOVE.B      #'R',(A4)+
+000006D6  18FC 0020                746              MOVE.B      #' ',(A4)+
+000006DA  18FC 0020                747              MOVE.B      #' ',(A4)+
 Line 748 ERROR: Undefined symbol
-00000758  4EB9 004DBB8E            748              JSR         SR_REGISTER
-0000075E  4E75                     749              RTS
-00000760                           750  
-00000760                           751  *----------RO(L/R) OPCODE REGISTER variant------------------ 
-00000760  18FC 0052                752  OPC_RO_REG  MOVE.B      #'R',(A4)+
-00000764  18FC 004F                753              MOVE.B      #'O',(A4)+
-Line 754 ERROR: Undefined symbol
-00000768  4EB9 004DBB8E            754              JSR         SHIFT_DECODE
-0000076E  18FC 002E                755              MOVE.B      #'.',(A4)+
-00000772                           756  
-00000772  4EB9 000009DA            757              JSR         GET_SIZE_2
-00000778  4EB9 00000988            758              JSR         ADD_SIZE
-Line 759 ERROR: Undefined symbol
-0000077E  4EB9 004DBB8E            759              JSR         SR_REGISTER
-00000784  4E75                     760              RTS          
-00000786                           761  
-00000786                           762  *===========================================================
-00000786                           763  *=====================HELPER SUBROUTINES====================
-00000786                           764  *===========================================================
-00000786                           765  
-00000786                           766  *---------------Determine Shift Direction-------------------
-00000786                           767  * %0000 000X 0000 0000 
-00000786  4282                     768  SHFT_DECODE CLR.L       D2
-00000788  3407                     769              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
-0000078A  4281                     770              CLR.L       D1
-0000078C  EF4A                     771              LSL.W       #7,D2       *Clear the most sig 7 bits
-0000078E  123C 000F                772              MOVE.B      #15,D1      *Moves 15 into D1
-00000792  E26A                     773              LSR.W       D1,D2       *Shifts 15 right to isolate the bits we're working with 
-00000794  B43C 0000                774              CMP.B       #0,D2       *If 0, direction is determined to be R       
-00000798  6700 0006                775              BEQ         DECODE_R
-0000079C  6000 0008                776              BRA         DECODE_L
-000007A0                           777              
-000007A0  18FC 0052                778  DECODE_R    MOVE.B      #'R',(A4)+  *Adds R to the output
-000007A4  4E75                     779              RTS
-000007A6                           780  
-000007A6  18FC 004C                781  DECODE_L    MOVE.B      #'L',(A4)+  *Adds L to the output
-000007AA  4E75                     782              RTS
-000007AC                           783                      
-000007AC                           784  
-000007AC                           785  *-------------------------BCC_DECODE------------------------
-000007AC                           786  * Isolates the 4 bit condition code for BCC OPCODES
-000007AC                           787  *-----------------------------------------------------------
-000007AC  4283                     788  BCC_CODE    CLR.L       D3          *Make sure D3 is empty to hold condition code
-000007AE  3607                     789              MOVE.W      D7,D3       *Move in original address to be shifted
-000007B0  E94B                     790              LSL.W       #4,D3
-000007B2  4282                     791              CLR.L       D2
-000007B4  143C 000C                792              MOVE.B      #12,D2
-000007B8  E46B                     793              LSR.W       D2,D3
-000007BA  4EB9 000007C2            794              JSR         BCC_TABLE   *Jump to BCC table now that condition code is in D3
-000007C0  4E75                     795              RTS
-000007C2                           796  
-000007C2                           797  *-------------------------BCC_TABLE-------------------------
-000007C2                           798  * This jump table looks at the condition code in D3 to
-000007C2                           799  * select the correct B"CC" for the BCC OPCODE. After the
-000007C2                           800  * correct condition code is selected, it then jumps to the
-000007C2                           801  * 8 bit displacment.
-000007C2                           802  *-----------------------------------------------------------
-000007C2  B63C 0002                803  BCC_TABLE   CMP.B       #$2,D3      *Is it BHI?
-000007C6  6700 0070                804              BEQ         BCC_HI
-000007CA  B63C 0003                805              CMP.B       #$3,D3      *Is it BLS?
-000007CE  6700 0080                806              BEQ         BCC_LS      
-000007D2  B63C 0004                807              CMP.B       #$4,D3      *Is it BCC?
-000007D6  6700 0090                808              BEQ         BCC_CC
-000007DA  B63C 0005                809              CMP.B       #$5,D3      *Is it BCS?
-000007DE  6700 00A0                810              BEQ         BCC_CS
-000007E2  B63C 0006                811              CMP.B       #$6,D3      *Is it BNE?
-000007E6  6700 00B0                812              BEQ         BCC_NE
-000007EA  B63C 0007                813              CMP.B       #$7,D3      *Is it BEQ?
-000007EE  6700 00C0                814              BEQ         BCC_EQ
-000007F2  B63C 0008                815              CMP.B       #$8,D3      *Is it BVC?
-000007F6  6700 00D0                816              BEQ         BCC_VC      
-000007FA  B63C 0009                817              CMP.B       #$9,D3      *Is it BVS?
-000007FE  6700 00E0                818              BEQ         BCC_VS
-00000802  B63C 000A                819              CMP.B       #$A,D3      *Is it BPL?
-00000806  6700 00F0                820              BEQ         BCC_PL
-0000080A  B63C 000B                821              CMP.B       #$B,D3      *Is it BMI?
-0000080E  6700 0100                822              BEQ         BCC_MI
-00000812  B63C 000C                823              CMP.B       #$C,D3      *Is it BGE?
-00000816  6700 0110                824              BEQ         BCC_GE
-0000081A  B63C 000D                825              CMP.B       #$D,D3      *Is it BLT?
-0000081E  6700 0120                826              BEQ         BCC_LT
-00000822  B63C 000E                827              CMP.B       #$E,D3      *Is it BGT?
-00000826  6700 0130                828              BEQ         BCC_GT      
-0000082A  B63C 000F                829              CMP.B       #$F,D3      *Is it BLE?
-0000082E  6700 0140                830              BEQ         BCC_LE
-Line 831 ERROR: Undefined symbol
-00000832  4EF9 004DBB8E            831              JMP         INVALID     *Got here? Something is wrong.
-00000838                           832  
-00000838  18FC 0048                833  BCC_HI      MOVE.B      #'H',(A4)+
-0000083C  18FC 0049                834              MOVE.B      #'I',(A4)+
-00000840  18FC 0020                835              MOVE.B      #' ',(A4)+
-00000844  18FC 0020                836              MOVE.B      #' ',(A4)+
-Line 837 ERROR: Undefined symbol
-00000848  4EB9 004DBB8E            837              JSR         ABW         *Add absolute word in next word address.
-0000084E  4E75                     838              RTS
-00000850                           839  
-00000850  18FC 004C                840  BCC_LS      MOVE.B      #'L',(A4)+
-00000854  18FC 0053                841              MOVE.B      #'S',(A4)+
-00000858  18FC 0020                842              MOVE.B      #' ',(A4)+
-0000085C  18FC 0020                843              MOVE.B      #' ',(A4)+
-Line 844 ERROR: Undefined symbol
-00000860  4EB9 004DBB8E            844              JSR         ABW         *Add absolute word in next word address.
-00000866  4E75                     845              RTS
-00000868                           846  
-00000868  18FC 0043                847  BCC_CC      MOVE.B      #'C',(A4)+
-0000086C  18FC 0043                848              MOVE.B      #'C',(A4)+
-00000870  18FC 0020                849              MOVE.B      #' ',(A4)+
-00000874  18FC 0020                850              MOVE.B      #' ',(A4)+
-Line 851 ERROR: Undefined symbol
-00000878  4EB9 004DBB8E            851              JSR         ABW         *Add absolute word in next word address.
-0000087E  4E75                     852              RTS
-00000880                           853              
-00000880  18FC 0043                854  BCC_CS      MOVE.B      #'C',(A4)+
-00000884  18FC 0053                855              MOVE.B      #'S',(A4)+
-00000888  18FC 0020                856              MOVE.B      #' ',(A4)+
-0000088C  18FC 0020                857              MOVE.B      #' ',(A4)+
-Line 858 ERROR: Undefined symbol
-00000890  4EB9 004DBB8E            858              JSR         ABW         *Add absolute word in next word address.
-00000896  4E75                     859              RTS
-00000898                           860              
-00000898  18FC 004E                861  BCC_NE      MOVE.B      #'N',(A4)+
-0000089C  18FC 0045                862              MOVE.B      #'E',(A4)+
-000008A0  18FC 0020                863              MOVE.B      #' ',(A4)+
-000008A4  18FC 0020                864              MOVE.B      #' ',(A4)+
-Line 865 ERROR: Undefined symbol
-000008A8  4EB9 004DBB8E            865              JSR         ABW         *Add absolute word in next word address.
-000008AE  4E75                     866              RTS
-000008B0                           867              
-000008B0  18FC 0045                868  BCC_EQ      MOVE.B      #'E',(A4)+
-000008B4  18FC 0051                869              MOVE.B      #'Q',(A4)+
-000008B8  18FC 0020                870              MOVE.B      #' ',(A4)+
-000008BC  18FC 0020                871              MOVE.B      #' ',(A4)+
-Line 872 ERROR: Undefined symbol
-000008C0  4EB9 004DBB8E            872              JSR         ABW         *Add absolute word in next word address.
-000008C6  4E75                     873              RTS
-000008C8                           874              
-000008C8  18FC 0056                875  BCC_VC      MOVE.B      #'V',(A4)+
-000008CC  18FC 0043                876              MOVE.B      #'C',(A4)+
-000008D0  18FC 0020                877              MOVE.B      #' ',(A4)+
-000008D4  18FC 0020                878              MOVE.B      #' ',(A4)+
-Line 879 ERROR: Undefined symbol
-000008D8  4EB9 004DBB8E            879              JSR         ABW         *Add absolute word in next word address.
-000008DE  4E75                     880              RTS
-000008E0                           881  
-000008E0  18FC 0056                882  BCC_VS      MOVE.B      #'V',(A4)+
-000008E4  18FC 0053                883              MOVE.B      #'S',(A4)+
-000008E8  18FC 0020                884              MOVE.B      #' ',(A4)+
-000008EC  18FC 0020                885              MOVE.B      #' ',(A4)+
-Line 886 ERROR: Undefined symbol
-000008F0  4EB9 004DBB8E            886              JSR         ABW         *Add absolute word in next word address.
-000008F6  4E75                     887              RTS
-000008F8                           888              
-000008F8  18FC 0050                889  BCC_PL      MOVE.B      #'P',(A4)+
-000008FC  18FC 004C                890              MOVE.B      #'L',(A4)+
-00000900  18FC 0020                891              MOVE.B      #' ',(A4)+
-00000904  18FC 0020                892              MOVE.B      #' ',(A4)+
-Line 893 ERROR: Undefined symbol
-00000908  4EB9 004DBB8E            893              JSR         ABW         *Add absolute word in next word address.
-0000090E  4E75                     894              RTS
-00000910                           895              
-00000910  18FC 004D                896  BCC_MI      MOVE.B      #'M',(A4)+
-00000914  18FC 0049                897              MOVE.B      #'I',(A4)+
-00000918  18FC 0020                898              MOVE.B      #' ',(A4)+
-0000091C  18FC 0020                899              MOVE.B      #' ',(A4)+
-Line 900 ERROR: Undefined symbol
-00000920  4EB9 004DBB8E            900              JSR         ABW         *Add absolute word in next word address.
-00000926  4E75                     901              RTS
-00000928                           902              
-00000928  18FC 0047                903  BCC_GE      MOVE.B      #'G',(A4)+
-0000092C  18FC 0045                904              MOVE.B      #'E',(A4)+
-00000930  18FC 0020                905              MOVE.B      #' ',(A4)+
-00000934  18FC 0020                906              MOVE.B      #' ',(A4)+
-Line 907 ERROR: Undefined symbol
-00000938  4EB9 004DBB8E            907              JSR         ABW         *Add absolute word in next word address.
-0000093E  4E75                     908              RTS
-00000940                           909              
-00000940  18FC 004C                910  BCC_LT      MOVE.B      #'L',(A4)+
-00000944  18FC 0054                911              MOVE.B      #'T',(A4)+
-00000948  18FC 0020                912              MOVE.B      #' ',(A4)+
-0000094C  18FC 0020                913              MOVE.B      #' ',(A4)+
-Line 914 ERROR: Undefined symbol
-00000950  4EB9 004DBB8E            914              JSR         ABW         *Add absolute word in next word address.
-00000956  4E75                     915              RTS
-00000958                           916              
-00000958  18FC 0047                917  BCC_GT      MOVE.B      #'G',(A4)+
-0000095C  18FC 0054                918              MOVE.B      #'T',(A4)+
-00000960  18FC 0020                919              MOVE.B      #' ',(A4)+
-00000964  18FC 0020                920              MOVE.B      #' ',(A4)+
-Line 921 ERROR: Undefined symbol
-00000968  4EB9 004DBB8E            921              JSR         ABW         *Add absolute word in next word address.
-0000096E  4E75                     922              RTS
-00000970                           923              
-00000970  18FC 004C                924  BCC_LE      MOVE.B      #'L',(A4)+
-00000974  18FC 0045                925              MOVE.B      #'E',(A4)+
-00000978  18FC 0020                926              MOVE.B      #' ',(A4)+
-0000097C  18FC 0020                927              MOVE.B      #' ',(A4)+
-Line 928 ERROR: Undefined symbol
-00000980  4EB9 004DBB8E            928              JSR         ABW         *Add absolute word in next word address.
-00000986  4E75                     929              RTS
-00000988                           930  
-00000988                           931  
-00000988                           932  *--------------------ADD SIZE-------------------------------
-00000988                           933  * A simple helper that looks at the size code in D4 to add
-00000988                           934  * the appropriate B,W,L to the string.
-00000988                           935  *-----------------------------------------------------------
-00000988  B83C 0000                936  ADD_SIZE    CMP.B       #0,D4       *Is it a B, <ea>,dn/an
-0000098C  6700 0012                937              BEQ         B_SIZE
-00000990  B83C 0001                938              CMP.B       #1,D4       *Is it a W, <ea>,dn/an
-00000994  6700 0018                939              BEQ         W_SIZE
-00000998  B83C 0002                940              CMP.B       #2,D4       *Is it a L, <ea>,dn/an
-0000099C  6700 001E                941              BEQ         L_SIZE 
-000009A0                           942              
-000009A0  18FC 0042                943  B_SIZE      MOVE.B      #'B',(A4)+  *Add size character to good string
-000009A4  18FC 0020                944              MOVE.B      #' ',(A4)+
-000009A8  18FC 0020                945              MOVE.B      #' ',(A4)+
-000009AC  4E75                     946              RTS
-000009AE                           947  
-000009AE  18FC 0057                948  W_SIZE      MOVE.B      #'W',(A4)+  *Add size character to good string
-000009B2  18FC 0020                949              MOVE.B      #' ',(A4)+
-000009B6  18FC 0020                950              MOVE.B      #' ',(A4)+
-000009BA  4E75                     951              RTS
-000009BC                           952  
-000009BC  18FC 004C                953  L_SIZE      MOVE.B      #'L',(A4)+  *Add size character to good string
-000009C0  18FC 0020                954              MOVE.B      #' ',(A4)+
-000009C4  18FC 0020                955              MOVE.B      #' ',(A4)+
-000009C8  4E75                     956              RTS
-000009CA                           957  
-000009CA                           958  *--------------------GET SIZE CODE--------------------------
-000009CA                           959  * The following three subroutines isolate the size bits for
-000009CA                           960  * all opcodes. They are by number of bits (e.g. 3 bits for
-000009CA                           961  * size implies GET_SIZE_3). Bit(s) are isolated into D4)
-000009CA                           962  *-----------------------------------------------------------
-000009CA  4284                     963  GET_SIZE_3  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
-000009CC  3807                     964              MOVE.W      D7,D4       *Copy untouched opcode into D4
-000009CE  EF4C                     965              LSL.W       #7,D4       *Clear more significant bits
-000009D0  4283                     966              CLR.L       D3          *Make sure D3 is clear for shifting
-000009D2  163C 000D                967              MOVE.B      #13,D3      *Shifting 13 times
-000009D6  E66C                     968              LSR.W       D3,D4       *Move size bits to LSB position
-000009D8  4E75                     969              RTS
-000009DA                           970  
-000009DA  4284                     971  GET_SIZE_2  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
-000009DC  3807                     972              MOVE.W      D7,D4       *Copy untouched opcode into D4
-000009DE  E14C                     973              LSL.W       #8,D4       *Clear more significant bits
-000009E0  4283                     974              CLR.L       D3          *Make sure D3 is clear for shifting
-000009E2  163C 000E                975              MOVE.B      #14,D3      *Shifting 14 times
-000009E6  E66C                     976              LSR.W       D3,D4       *Move size bits to LSB position
-000009E8  4E75                     977              RTS
-000009EA                           978  
-000009EA  4284                     979  GET_SIZE_1  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
-000009EC  3807                     980              MOVE.W      D7,D4       *Copy untouched opcode into D4
-000009EE  4283                     981              CLR.L       D3          *Make sure D3 is clear for shifting
-000009F0  163C 0009                982              MOVE.B      #9,D3       *Shift 9 times to the left
-000009F4  E76C                     983              LSL.W       D3,D4       *Clear more significant bits
-000009F6  4283                     984              CLR.L       D3          *Make sure D3 is clear for shifting
-000009F8  163C 000F                985              MOVE.B      #15,D3      *Shifting 15 times
-000009FC  E66C                     986              LSR.W       D3,D4       *Move size bits to LSB position
-000009FE  4E75                     987              RTS
-00000A00                           988  
-00000A00                           989  *--------------------ADD SIZE (Pseudo JMP TABLE)------------
-00000A00                           990  * This subroutine is for ADD, AND, OR, SUB.
-00000A00                           991  * It adds the appropriate "B", "W", "L" and space characters
-00000A00                           992  * to the output strings. It then starts the parameter decode
-00000A00                           993  * sequence for the above 4 subroutines.
-00000A00                           994  * Values 0, 1, 2 => B, W, L => <ea>,Dn => JSR EA_SRC
-00000A00                           995  * Values 4, 5, 6 => B, W, L => Dn,<ea> => JSR DN_SRC
-00000A00                           996  *-----------------------------------------------------------
-00000A00  B83C 0000                997  OR_ADD_SIZE CMP.B       #0,D4       *Is it a B, <ea>,dn
-00000A04  6700 002E                998              BEQ         B_EA
-00000A08  B83C 0001                999              CMP.B       #1,D4       *Is it a W, <ea>,dn
-00000A0C  6700 003A               1000              BEQ         W_EA
-00000A10  B83C 0002               1001              CMP.B       #2,D4       *Is it a L, <ea>,dn
-00000A14  6700 0046               1002              BEQ         L_EA
-00000A18                          1003  
-00000A18  B83C 0004               1004              CMP.B       #4,D4       *Is it a B, dn,<ea>
-00000A1C  6700 0052               1005              BEQ         B_DN
-00000A20  B83C 0005               1006              CMP.B       #5,D4       *Is it a W, dn,<ea>
-00000A24  6700 005E               1007              BEQ         W_DN
-00000A28  B83C 0006               1008              CMP.B       #6,D4       *Is it a L, dn,<ea>
-00000A2C  6700 006A               1009              BEQ         L_DN        
-Line 1010 ERROR: Undefined symbol
-00000A30  6000 B15C               1010              BRA         INVALID     *Got here, must be invalid data.
-00000A34                          1011              
-00000A34  18FC 0042               1012  B_EA        MOVE.B      #'B',(A4)+  *Add size character to good string
-00000A38  18FC 0020               1013              MOVE.B      #' ',(A4)+
-00000A3C  18FC 0020               1014              MOVE.B      #' ',(A4)+
-Line 1015 ERROR: Undefined symbol
-00000A40  4EB9 004DBB8E           1015              JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
-00000A46  4E75                    1016              RTS
-00000A48                          1017  
-00000A48  18FC 0057               1018  W_EA        MOVE.B      #'W',(A4)+  *Add size character to good string
-00000A4C  18FC 0020               1019              MOVE.B      #' ',(A4)+
-00000A50  18FC 0020               1020              MOVE.B      #' ',(A4)+
-Line 1021 ERROR: Undefined symbol
-00000A54  4EB9 004DBB8E           1021              JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
-00000A5A  4E75                    1022              RTS
-00000A5C                          1023  
-00000A5C  18FC 004C               1024  L_EA        MOVE.B      #'L',(A4)+  *Add size character to good string
-00000A60  18FC 0020               1025              MOVE.B      #' ',(A4)+
-00000A64  18FC 0020               1026              MOVE.B      #' ',(A4)+
-Line 1027 ERROR: Undefined symbol
-00000A68  4EB9 004DBB8E           1027              JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
-00000A6E  4E75                    1028              RTS
-00000A70                          1029  
-00000A70  18FC 0042               1030  B_DN        MOVE.B      #'B',(A4)+  *Add size character to good string
-00000A74  18FC 0020               1031              MOVE.B      #' ',(A4)+
-00000A78  18FC 0020               1032              MOVE.B      #' ',(A4)+
-Line 1033 ERROR: Undefined symbol
-00000A7C  4EB9 004DBB8E           1033              JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
-00000A82  4E75                    1034              RTS
-00000A84                          1035  
-00000A84  18FC 0057               1036  W_DN        MOVE.B      #'W',(A4)+  *Add size character to good string
-00000A88  18FC 0020               1037              MOVE.B      #' ',(A4)+
-00000A8C  18FC 0020               1038              MOVE.B      #' ',(A4)+
-Line 1039 ERROR: Undefined symbol
-00000A90  4EB9 004DBB8E           1039              JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
-00000A96  4E75                    1040              RTS
-00000A98                          1041  
-00000A98  18FC 004C               1042  L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
-00000A9C  18FC 0020               1043              MOVE.B      #' ',(A4)+
-00000AA0  18FC 0020               1044              MOVE.B      #' ',(A4)+
-Line 1045 ERROR: Undefined symbol
-00000AA4  4EB9 004DBB8E           1045              JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
-00000AAA  4E75                    1046              RTS            
-00000AAC                          1047              
-00000AAC                          1048              
-00000AAC                          1049              
-00000AAC                          1050              
-00000AAC                          1051              
-00000AAC                          1052              
-00000AAC                          1053              
-00000AAC                          1054  
-00000AAC                          1055  
-00000AAC                          1056  
-00000AAC                          1057  
-00000AAC                          1058  
-00000AAC                          1059  
-00000AAC                          1060  
-00000AAC                          1061  
-00000AAC                          1062  
-00000AAC                          1063  
-Line 1064 WARNING: END directive missing, starting address not set
+000006DE  4EB9 004DBB8E            748              JSR         GEN_EA_CODE *Get EA code
+000006E4                           749              
+000006E4  4E75                     750              RTS
+000006E6                           751  
+000006E6                           752  *--------------------NOP OPCODE-----------------------------
+000006E6  18FC 004E                753  OPC_NOP     MOVE.B      #'N',(A4)+
+000006EA  18FC 004F                754              MOVE.B      #'O',(A4)+
+000006EE  18FC 0050                755              MOVE.B      #'P',(A4)+
+000006F2                           756              
+000006F2  4E75                     757              RTS
+000006F4                           758  
+000006F4                           759  *--------------------RTS OPCODE-----------------------------
+000006F4  18FC 0052                760  OPC_RTS     MOVE.B      #'R',(A4)+
+000006F8  18FC 0054                761              MOVE.B      #'T',(A4)+
+000006FC  18FC 0053                762              MOVE.B      #'S',(A4)+
+00000700                           763              
+00000700  4E75                     764              RTS
+00000702                           765              
+00000702                           766  *-LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM OPCODE--  
+00000702                           767  *------------AS(L/R) OPCODE MEMORY variant------------------          
+00000702  18FC 0041                768  OPC_AS_MEM  MOVE.B      #'A',(A4)+
+00000706  18FC 0053                769              MOVE.B      #'S',(A4)+
+0000070A  4EB9 000007C2            770              JSR         SHFT_DECODE
+00000710  18FC 002E                771              MOVE.B      #'.',(A4)+
+00000714                           772                         
+Line 773 ERROR: Undefined symbol
+00000714  4EB9 004DBB8E            773              JSR         SR_MEM
+0000071A  4E75                     774              RTS
+0000071C                           775  
+0000071C                           776  *------------LS(L/R) OPCODE MEMORY variant------------------    
+0000071C  18FC 004C                777  OPC_LS_MEM  MOVE.B      #'L',(A4)+
+00000720  18FC 0053                778              MOVE.B      #'S',(A4)+
+00000724  4EB9 000007C2            779              JSR         SHFT_DECODE
+0000072A  18FC 002E                780              MOVE.B      #'.',(A4)+
+0000072E                           781                          
+Line 782 ERROR: Undefined symbol
+0000072E  4EB9 004DBB8E            782              JSR         SR_MEM
+00000734  4E75                     783              RTS
+00000736                           784  
+00000736                           785  *------------RO(L/R) OPCODE MEMORY variant------------------     
+00000736  18FC 0052                786  OPC_RO_MEM  MOVE.B      #'R',(A4)+
+0000073A  18FC 004F                787              MOVE.B      #'O',(A4)+
+0000073E  4EB9 000007C2            788              JSR         SHFT_DECODE
+00000744  18FC 002E                789              MOVE.B      #'.',(A4)+
+00000748                           790                         
+Line 791 ERROR: Undefined symbol
+00000748  4EB9 004DBB8E            791              JSR         SR_MEM
+0000074E  4E75                     792              RTS   
+00000750                           793  
+00000750                           794  *----------AS(L/R) OPCODE REGISTER variant------------------      
+00000750  18FC 0041                795  OPC_AS_REG  MOVE.B      #'A',(A4)+
+00000754  18FC 0053                796              MOVE.B      #'S',(A4)+
+00000758  4EB9 000007C2            797              JSR         SHFT_DECODE
+0000075E  18FC 002E                798              MOVE.B      #'.',(A4)+
+00000762                           799              
+00000762  4EB9 00000A16            800              JSR         GET_SIZE_2
+00000768  4EB9 000009C4            801              JSR         ADD_SIZE
+Line 802 ERROR: Undefined symbol
+0000076E  4EB9 004DBB8E            802              JSR         SR_REG
+00000774                           803              
+00000774  4E75                     804              RTS
+00000776                           805  
+00000776                           806  *----------LS(L/R) OPCODE REGISTER variant------------------ 
+00000776  18FC 004C                807  OPC_LS_REG  MOVE.B      #'L',(A4)+
+0000077A  18FC 0053                808              MOVE.B      #'S',(A4)+
+0000077E  4EB9 000007C2            809              JSR         SHFT_DECODE
+00000784  18FC 002E                810              MOVE.B      #'.',(A4)+
+00000788                           811              
+00000788  4EB9 00000A16            812              JSR         GET_SIZE_2
+0000078E  4EB9 000009C4            813              JSR         ADD_SIZE
+Line 814 ERROR: Undefined symbol
+00000794  4EB9 004DBB8E            814              JSR         SR_REG
+0000079A  4E75                     815              RTS
+0000079C                           816  
+0000079C                           817  *----------RO(L/R) OPCODE REGISTER variant------------------ 
+0000079C  18FC 0052                818  OPC_RO_REG  MOVE.B      #'R',(A4)+
+000007A0  18FC 004F                819              MOVE.B      #'O',(A4)+
+000007A4  4EB9 000007C2            820              JSR         SHFT_DECODE
+000007AA  18FC 002E                821              MOVE.B      #'.',(A4)+
+000007AE                           822  
+000007AE  4EB9 00000A16            823              JSR         GET_SIZE_2
+000007B4  4EB9 000009C4            824              JSR         ADD_SIZE
+Line 825 ERROR: Undefined symbol
+000007BA  4EB9 004DBB8E            825              JSR         SR_REG
+000007C0  4E75                     826              RTS          
+000007C2                           827  
+000007C2                           828  *===========================================================
+000007C2                           829  *=====================HELPER SUBROUTINES====================
+000007C2                           830  *===========================================================
+000007C2                           831  
+000007C2                           832  *---------------Determine Shift Direction-------------------
+000007C2                           833  * %0000 000X 0000 0000 
+000007C2  4282                     834  SHFT_DECODE CLR.L       D2
+000007C4  3407                     835              MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+000007C6  4281                     836              CLR.L       D1
+000007C8  EF4A                     837              LSL.W       #7,D2       *Clear the most sig 7 bits
+000007CA  123C 000F                838              MOVE.B      #15,D1      *Moves 15 into D1
+000007CE  E26A                     839              LSR.W       D1,D2       *Shifts 15 right to isolate the bits we're working with 
+000007D0  B43C 0000                840              CMP.B       #0,D2       *If 0, direction is determined to be R       
+000007D4  6700 0006                841              BEQ         DECODE_R
+000007D8  6000 0008                842              BRA         DECODE_L
+000007DC                           843              
+000007DC  18FC 0052                844  DECODE_R    MOVE.B      #'R',(A4)+  *Adds R to the output
+000007E0  4E75                     845              RTS
+000007E2                           846  
+000007E2  18FC 004C                847  DECODE_L    MOVE.B      #'L',(A4)+  *Adds L to the output
+000007E6  4E75                     848              RTS
+000007E8                           849                      
+000007E8                           850  
+000007E8                           851  *-------------------------BCC_DECODE------------------------
+000007E8                           852  * Isolates the 4 bit condition code for BCC OPCODES
+000007E8                           853  *-----------------------------------------------------------
+000007E8  4283                     854  BCC_CODE    CLR.L       D3          *Make sure D3 is empty to hold condition code
+000007EA  3607                     855              MOVE.W      D7,D3       *Move in original address to be shifted
+000007EC  E94B                     856              LSL.W       #4,D3
+000007EE  4282                     857              CLR.L       D2
+000007F0  143C 000C                858              MOVE.B      #12,D2
+000007F4  E46B                     859              LSR.W       D2,D3
+000007F6  4EB9 000007FE            860              JSR         BCC_TABLE   *Jump to BCC table now that condition code is in D3
+000007FC  4E75                     861              RTS
+000007FE                           862  
+000007FE                           863  *-------------------------BCC_TABLE-------------------------
+000007FE                           864  * This jump table looks at the condition code in D3 to
+000007FE                           865  * select the correct B"CC" for the BCC OPCODE. After the
+000007FE                           866  * correct condition code is selected, it then jumps to the
+000007FE                           867  * 8 bit displacment.
+000007FE                           868  *-----------------------------------------------------------
+000007FE  B63C 0002                869  BCC_TABLE   CMP.B       #$2,D3      *Is it BHI?
+00000802  6700 0070                870              BEQ         BCC_HI
+00000806  B63C 0003                871              CMP.B       #$3,D3      *Is it BLS?
+0000080A  6700 0080                872              BEQ         BCC_LS      
+0000080E  B63C 0004                873              CMP.B       #$4,D3      *Is it BCC?
+00000812  6700 0090                874              BEQ         BCC_CC
+00000816  B63C 0005                875              CMP.B       #$5,D3      *Is it BCS?
+0000081A  6700 00A0                876              BEQ         BCC_CS
+0000081E  B63C 0006                877              CMP.B       #$6,D3      *Is it BNE?
+00000822  6700 00B0                878              BEQ         BCC_NE
+00000826  B63C 0007                879              CMP.B       #$7,D3      *Is it BEQ?
+0000082A  6700 00C0                880              BEQ         BCC_EQ
+0000082E  B63C 0008                881              CMP.B       #$8,D3      *Is it BVC?
+00000832  6700 00D0                882              BEQ         BCC_VC      
+00000836  B63C 0009                883              CMP.B       #$9,D3      *Is it BVS?
+0000083A  6700 00E0                884              BEQ         BCC_VS
+0000083E  B63C 000A                885              CMP.B       #$A,D3      *Is it BPL?
+00000842  6700 00F0                886              BEQ         BCC_PL
+00000846  B63C 000B                887              CMP.B       #$B,D3      *Is it BMI?
+0000084A  6700 0100                888              BEQ         BCC_MI
+0000084E  B63C 000C                889              CMP.B       #$C,D3      *Is it BGE?
+00000852  6700 0110                890              BEQ         BCC_GE
+00000856  B63C 000D                891              CMP.B       #$D,D3      *Is it BLT?
+0000085A  6700 0120                892              BEQ         BCC_LT
+0000085E  B63C 000E                893              CMP.B       #$E,D3      *Is it BGT?
+00000862  6700 0130                894              BEQ         BCC_GT      
+00000866  B63C 000F                895              CMP.B       #$F,D3      *Is it BLE?
+0000086A  6700 0140                896              BEQ         BCC_LE
+Line 897 ERROR: Undefined symbol
+0000086E  4EF9 004DBB8E            897              JMP         INVALID     *Got here? Something is wrong.
+00000874                           898  
+00000874  18FC 0048                899  BCC_HI      MOVE.B      #'H',(A4)+
+00000878  18FC 0049                900              MOVE.B      #'I',(A4)+
+0000087C  18FC 0020                901              MOVE.B      #' ',(A4)+
+00000880  18FC 0020                902              MOVE.B      #' ',(A4)+
+Line 903 ERROR: Undefined symbol
+00000884  4EB9 004DBB8E            903              JSR         ABW         *Add absolute word in next word address.
+0000088A  4E75                     904              RTS
+0000088C                           905  
+0000088C  18FC 004C                906  BCC_LS      MOVE.B      #'L',(A4)+
+00000890  18FC 0053                907              MOVE.B      #'S',(A4)+
+00000894  18FC 0020                908              MOVE.B      #' ',(A4)+
+00000898  18FC 0020                909              MOVE.B      #' ',(A4)+
+Line 910 ERROR: Undefined symbol
+0000089C  4EB9 004DBB8E            910              JSR         ABW         *Add absolute word in next word address.
+000008A2  4E75                     911              RTS
+000008A4                           912  
+000008A4  18FC 0043                913  BCC_CC      MOVE.B      #'C',(A4)+
+000008A8  18FC 0043                914              MOVE.B      #'C',(A4)+
+000008AC  18FC 0020                915              MOVE.B      #' ',(A4)+
+000008B0  18FC 0020                916              MOVE.B      #' ',(A4)+
+Line 917 ERROR: Undefined symbol
+000008B4  4EB9 004DBB8E            917              JSR         ABW         *Add absolute word in next word address.
+000008BA  4E75                     918              RTS
+000008BC                           919              
+000008BC  18FC 0043                920  BCC_CS      MOVE.B      #'C',(A4)+
+000008C0  18FC 0053                921              MOVE.B      #'S',(A4)+
+000008C4  18FC 0020                922              MOVE.B      #' ',(A4)+
+000008C8  18FC 0020                923              MOVE.B      #' ',(A4)+
+Line 924 ERROR: Undefined symbol
+000008CC  4EB9 004DBB8E            924              JSR         ABW         *Add absolute word in next word address.
+000008D2  4E75                     925              RTS
+000008D4                           926              
+000008D4  18FC 004E                927  BCC_NE      MOVE.B      #'N',(A4)+
+000008D8  18FC 0045                928              MOVE.B      #'E',(A4)+
+000008DC  18FC 0020                929              MOVE.B      #' ',(A4)+
+000008E0  18FC 0020                930              MOVE.B      #' ',(A4)+
+Line 931 ERROR: Undefined symbol
+000008E4  4EB9 004DBB8E            931              JSR         ABW         *Add absolute word in next word address.
+000008EA  4E75                     932              RTS
+000008EC                           933              
+000008EC  18FC 0045                934  BCC_EQ      MOVE.B      #'E',(A4)+
+000008F0  18FC 0051                935              MOVE.B      #'Q',(A4)+
+000008F4  18FC 0020                936              MOVE.B      #' ',(A4)+
+000008F8  18FC 0020                937              MOVE.B      #' ',(A4)+
+Line 938 ERROR: Undefined symbol
+000008FC  4EB9 004DBB8E            938              JSR         ABW         *Add absolute word in next word address.
+00000902  4E75                     939              RTS
+00000904                           940              
+00000904  18FC 0056                941  BCC_VC      MOVE.B      #'V',(A4)+
+00000908  18FC 0043                942              MOVE.B      #'C',(A4)+
+0000090C  18FC 0020                943              MOVE.B      #' ',(A4)+
+00000910  18FC 0020                944              MOVE.B      #' ',(A4)+
+Line 945 ERROR: Undefined symbol
+00000914  4EB9 004DBB8E            945              JSR         ABW         *Add absolute word in next word address.
+0000091A  4E75                     946              RTS
+0000091C                           947  
+0000091C  18FC 0056                948  BCC_VS      MOVE.B      #'V',(A4)+
+00000920  18FC 0053                949              MOVE.B      #'S',(A4)+
+00000924  18FC 0020                950              MOVE.B      #' ',(A4)+
+00000928  18FC 0020                951              MOVE.B      #' ',(A4)+
+Line 952 ERROR: Undefined symbol
+0000092C  4EB9 004DBB8E            952              JSR         ABW         *Add absolute word in next word address.
+00000932  4E75                     953              RTS
+00000934                           954              
+00000934  18FC 0050                955  BCC_PL      MOVE.B      #'P',(A4)+
+00000938  18FC 004C                956              MOVE.B      #'L',(A4)+
+0000093C  18FC 0020                957              MOVE.B      #' ',(A4)+
+00000940  18FC 0020                958              MOVE.B      #' ',(A4)+
+Line 959 ERROR: Undefined symbol
+00000944  4EB9 004DBB8E            959              JSR         ABW         *Add absolute word in next word address.
+0000094A  4E75                     960              RTS
+0000094C                           961              
+0000094C  18FC 004D                962  BCC_MI      MOVE.B      #'M',(A4)+
+00000950  18FC 0049                963              MOVE.B      #'I',(A4)+
+00000954  18FC 0020                964              MOVE.B      #' ',(A4)+
+00000958  18FC 0020                965              MOVE.B      #' ',(A4)+
+Line 966 ERROR: Undefined symbol
+0000095C  4EB9 004DBB8E            966              JSR         ABW         *Add absolute word in next word address.
+00000962  4E75                     967              RTS
+00000964                           968              
+00000964  18FC 0047                969  BCC_GE      MOVE.B      #'G',(A4)+
+00000968  18FC 0045                970              MOVE.B      #'E',(A4)+
+0000096C  18FC 0020                971              MOVE.B      #' ',(A4)+
+00000970  18FC 0020                972              MOVE.B      #' ',(A4)+
+Line 973 ERROR: Undefined symbol
+00000974  4EB9 004DBB8E            973              JSR         ABW         *Add absolute word in next word address.
+0000097A  4E75                     974              RTS
+0000097C                           975              
+0000097C  18FC 004C                976  BCC_LT      MOVE.B      #'L',(A4)+
+00000980  18FC 0054                977              MOVE.B      #'T',(A4)+
+00000984  18FC 0020                978              MOVE.B      #' ',(A4)+
+00000988  18FC 0020                979              MOVE.B      #' ',(A4)+
+Line 980 ERROR: Undefined symbol
+0000098C  4EB9 004DBB8E            980              JSR         ABW         *Add absolute word in next word address.
+00000992  4E75                     981              RTS
+00000994                           982              
+00000994  18FC 0047                983  BCC_GT      MOVE.B      #'G',(A4)+
+00000998  18FC 0054                984              MOVE.B      #'T',(A4)+
+0000099C  18FC 0020                985              MOVE.B      #' ',(A4)+
+000009A0  18FC 0020                986              MOVE.B      #' ',(A4)+
+Line 987 ERROR: Undefined symbol
+000009A4  4EB9 004DBB8E            987              JSR         ABW         *Add absolute word in next word address.
+000009AA  4E75                     988              RTS
+000009AC                           989              
+000009AC  18FC 004C                990  BCC_LE      MOVE.B      #'L',(A4)+
+000009B0  18FC 0045                991              MOVE.B      #'E',(A4)+
+000009B4  18FC 0020                992              MOVE.B      #' ',(A4)+
+000009B8  18FC 0020                993              MOVE.B      #' ',(A4)+
+Line 994 ERROR: Undefined symbol
+000009BC  4EB9 004DBB8E            994              JSR         ABW         *Add absolute word in next word address.
+000009C2  4E75                     995              RTS
+000009C4                           996  
+000009C4                           997  
+000009C4                           998  *--------------------ADD SIZE-------------------------------
+000009C4                           999  * A simple helper that looks at the size code in D4 to add
+000009C4                          1000  * the appropriate B,W,L to the string.
+000009C4                          1001  *-----------------------------------------------------------
+000009C4  B83C 0000               1002  ADD_SIZE    CMP.B       #0,D4       *Is it a B, <ea>,dn/an
+000009C8  6700 0012               1003              BEQ         B_SIZE
+000009CC  B83C 0001               1004              CMP.B       #1,D4       *Is it a W, <ea>,dn/an
+000009D0  6700 0018               1005              BEQ         W_SIZE
+000009D4  B83C 0002               1006              CMP.B       #2,D4       *Is it a L, <ea>,dn/an
+000009D8  6700 001E               1007              BEQ         L_SIZE 
+000009DC                          1008              
+000009DC  18FC 0042               1009  B_SIZE      MOVE.B      #'B',(A4)+  *Add size character to good string
+000009E0  18FC 0020               1010              MOVE.B      #' ',(A4)+
+000009E4  18FC 0020               1011              MOVE.B      #' ',(A4)+
+000009E8  4E75                    1012              RTS
+000009EA                          1013  
+000009EA  18FC 0057               1014  W_SIZE      MOVE.B      #'W',(A4)+  *Add size character to good string
+000009EE  18FC 0020               1015              MOVE.B      #' ',(A4)+
+000009F2  18FC 0020               1016              MOVE.B      #' ',(A4)+
+000009F6  4E75                    1017              RTS
+000009F8                          1018  
+000009F8  18FC 004C               1019  L_SIZE      MOVE.B      #'L',(A4)+  *Add size character to good string
+000009FC  18FC 0020               1020              MOVE.B      #' ',(A4)+
+00000A00  18FC 0020               1021              MOVE.B      #' ',(A4)+
+00000A04  4E75                    1022              RTS
+00000A06                          1023  
+00000A06                          1024  *--------------------GET SIZE CODE--------------------------
+00000A06                          1025  * The following three subroutines isolate the size bits for
+00000A06                          1026  * all opcodes. They are by number of bits (e.g. 3 bits for
+00000A06                          1027  * size implies GET_SIZE_3). Bit(s) are isolated into D4)
+00000A06                          1028  *-----------------------------------------------------------
+00000A06  4284                    1029  GET_SIZE_3  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
+00000A08  3807                    1030              MOVE.W      D7,D4       *Copy untouched opcode into D4
+00000A0A  EF4C                    1031              LSL.W       #7,D4       *Clear more significant bits
+00000A0C  4283                    1032              CLR.L       D3          *Make sure D3 is clear for shifting
+00000A0E  163C 000D               1033              MOVE.B      #13,D3      *Shifting 13 times
+00000A12  E66C                    1034              LSR.W       D3,D4       *Move size bits to LSB position
+00000A14  4E75                    1035              RTS
+00000A16                          1036  
+00000A16  4284                    1037  GET_SIZE_2  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
+00000A18  3807                    1038              MOVE.W      D7,D4       *Copy untouched opcode into D4
+00000A1A  E14C                    1039              LSL.W       #8,D4       *Clear more significant bits
+00000A1C  4283                    1040              CLR.L       D3          *Make sure D3 is clear for shifting
+00000A1E  163C 000E               1041              MOVE.B      #14,D3      *Shifting 14 times
+00000A22  E66C                    1042              LSR.W       D3,D4       *Move size bits to LSB position
+00000A24  4E75                    1043              RTS
+00000A26                          1044  
+00000A26  4284                    1045  GET_SIZE_1  CLR.L       D4          *Make sure D4 is clear to isolate size bits.
+00000A28  3807                    1046              MOVE.W      D7,D4       *Copy untouched opcode into D4
+00000A2A  4283                    1047              CLR.L       D3          *Make sure D3 is clear for shifting
+00000A2C  163C 0009               1048              MOVE.B      #9,D3       *Shift 9 times to the left
+00000A30  E76C                    1049              LSL.W       D3,D4       *Clear more significant bits
+00000A32  4283                    1050              CLR.L       D3          *Make sure D3 is clear for shifting
+00000A34  163C 000F               1051              MOVE.B      #15,D3      *Shifting 15 times
+00000A38  E66C                    1052              LSR.W       D3,D4       *Move size bits to LSB position
+00000A3A  4E75                    1053              RTS
+00000A3C                          1054  
+00000A3C                          1055  *--------------------ADD SIZE (Pseudo JMP TABLE)------------
+00000A3C                          1056  * This subroutine is for ADD, AND, OR, SUB.
+00000A3C                          1057  * It adds the appropriate "B", "W", "L" and space characters
+00000A3C                          1058  * to the output strings. It then starts the parameter decode
+00000A3C                          1059  * sequence for the above 4 subroutines.
+00000A3C                          1060  * Values 0, 1, 2 => B, W, L => <ea>,Dn => JSR EA_SRC
+00000A3C                          1061  * Values 4, 5, 6 => B, W, L => Dn,<ea> => JSR DN_SRC
+00000A3C                          1062  *-----------------------------------------------------------
+00000A3C  B83C 0000               1063  OR_ADD_SIZE CMP.B       #0,D4       *Is it a B, <ea>,dn
+00000A40  6700 002E               1064              BEQ         B_EA
+00000A44  B83C 0001               1065              CMP.B       #1,D4       *Is it a W, <ea>,dn
+00000A48  6700 003A               1066              BEQ         W_EA
+00000A4C  B83C 0002               1067              CMP.B       #2,D4       *Is it a L, <ea>,dn
+00000A50  6700 0046               1068              BEQ         L_EA
+00000A54                          1069  
+00000A54  B83C 0004               1070              CMP.B       #4,D4       *Is it a B, dn,<ea>
+00000A58  6700 0052               1071              BEQ         B_DN
+00000A5C  B83C 0005               1072              CMP.B       #5,D4       *Is it a W, dn,<ea>
+00000A60  6700 005E               1073              BEQ         W_DN
+00000A64  B83C 0006               1074              CMP.B       #6,D4       *Is it a L, dn,<ea>
+00000A68  6700 006A               1075              BEQ         L_DN        
+Line 1076 ERROR: Undefined symbol
+00000A6C  6000 B120               1076              BRA         INVALID     *Got here, must be invalid data.
+00000A70                          1077              
+00000A70  18FC 0042               1078  B_EA        MOVE.B      #'B',(A4)+  *Add size character to good string
+00000A74  18FC 0020               1079              MOVE.B      #' ',(A4)+
+00000A78  18FC 0020               1080              MOVE.B      #' ',(A4)+
+Line 1081 ERROR: Undefined symbol
+00000A7C  4EB9 004DBB8E           1081              JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
+00000A82  4E75                    1082              RTS
+00000A84                          1083  
+00000A84  18FC 0057               1084  W_EA        MOVE.B      #'W',(A4)+  *Add size character to good string
+00000A88  18FC 0020               1085              MOVE.B      #' ',(A4)+
+00000A8C  18FC 0020               1086              MOVE.B      #' ',(A4)+
+Line 1087 ERROR: Undefined symbol
+00000A90  4EB9 004DBB8E           1087              JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
+00000A96  4E75                    1088              RTS
+00000A98                          1089  
+00000A98  18FC 004C               1090  L_EA        MOVE.B      #'L',(A4)+  *Add size character to good string
+00000A9C  18FC 0020               1091              MOVE.B      #' ',(A4)+
+00000AA0  18FC 0020               1092              MOVE.B      #' ',(A4)+
+Line 1093 ERROR: Undefined symbol
+00000AA4  4EB9 004DBB8E           1093              JSR         EASRC_DDES *Move to EA_SRC to start parameter decode sequence
+00000AAA  4E75                    1094              RTS
+00000AAC                          1095  
+00000AAC  18FC 0042               1096  B_DN        MOVE.B      #'B',(A4)+  *Add size character to good string
+00000AB0  18FC 0020               1097              MOVE.B      #' ',(A4)+
+00000AB4  18FC 0020               1098              MOVE.B      #' ',(A4)+
+Line 1099 ERROR: Undefined symbol
+00000AB8  4EB9 004DBB8E           1099              JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
+00000ABE  4E75                    1100              RTS
+00000AC0                          1101  
+00000AC0  18FC 0057               1102  W_DN        MOVE.B      #'W',(A4)+  *Add size character to good string
+00000AC4  18FC 0020               1103              MOVE.B      #' ',(A4)+
+00000AC8  18FC 0020               1104              MOVE.B      #' ',(A4)+
+Line 1105 ERROR: Undefined symbol
+00000ACC  4EB9 004DBB8E           1105              JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
+00000AD2  4E75                    1106              RTS
+00000AD4                          1107  
+00000AD4  18FC 004C               1108  L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
+00000AD8  18FC 0020               1109              MOVE.B      #' ',(A4)+
+00000ADC  18FC 0020               1110              MOVE.B      #' ',(A4)+
+Line 1111 ERROR: Undefined symbol
+00000AE0  4EB9 004DBB8E           1111              JSR         DN_SRC      *Move to DN_SRC to start parameter decode sequence
+00000AE6  4E75                    1112              RTS            
+00000AE8                          1113              
+00000AE8                          1114              
+00000AE8                          1115              
+00000AE8                          1116              
+00000AE8                          1117              
+00000AE8                          1118              
+00000AE8                          1119              
+00000AE8                          1120  
+00000AE8                          1121  
+00000AE8                          1122  
+00000AE8                          1123  
+00000AE8                          1124  
+00000AE8                          1125  
+00000AE8                          1126  
+00000AE8                          1127  
+00000AE8                          1128  
+00000AE8                          1129  
+00000AE8                          1130  
+00000AE8                          1131  
+Line 1132 WARNING: END directive missing, starting address not set
 
-59 errors detected
+54 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ADD_SIZE            988
-BCC_CC              868
-BCC_CODE            7AC
-BCC_CS              880
-BCC_EQ              8B0
-BCC_GE              928
-BCC_GT              958
-BCC_HI              838
-BCC_LE              970
-BCC_LS              850
-BCC_LT              940
-BCC_MI              910
-BCC_NE              898
-BCC_PL              8F8
-BCC_TABLE           7C2
-BCC_VC              8C8
-BCC_VS              8E0
-B_DN                A70
-B_EA                A34
-B_SIZE              9A0
-DECODE_L            7A6
-DECODE_R            7A0
-GET_SIZE_1          9EA
-GET_SIZE_2          9DA
-GET_SIZE_3          9CA
+ADD_SIZE            9C4
+BCC_CC              8A4
+BCC_CODE            7E8
+BCC_CS              8BC
+BCC_EQ              8EC
+BCC_GE              964
+BCC_GT              994
+BCC_HI              874
+BCC_LE              9AC
+BCC_LS              88C
+BCC_LT              97C
+BCC_MI              94C
+BCC_NE              8D4
+BCC_PL              934
+BCC_TABLE           7FE
+BCC_VC              904
+BCC_VS              91C
+B_DN                AAC
+B_EA                A70
+B_SIZE              9DC
+DECODE_L            7E2
+DECODE_R            7DC
+GET_SIZE_1          A26
+GET_SIZE_2          A16
+GET_SIZE_3          A06
+INV_OP              FC
 JMP_0               C
-JMP_0X              184
+JMP_0X              186
 JMP_1               1C
 JMP_2               2C
-JMP_2X              1B0
+JMP_2X              1B2
 JMP_3               3C
-JMP_3X              1D4
+JMP_3X              1D6
 JMP_4               4C
-JMP_47X             380
-JMP_4X              1F8
+JMP_47X             3BC
+JMP_4X              1FA
 JMP_5               5C
 JMP_6               6C
-JMP_6X              240
+JMP_6X              242
 JMP_7               7C
 JMP_8               8C
-JMP_8X              264
+JMP_8X              266
 JMP_9               9C
 JMP_A               AC
-JMP_AS_MEM          350
-JMP_AS_REG          368
 JMP_B               BC
 JMP_C               CC
-JMP_CX              288
+JMP_CX              28A
 JMP_D               DC
-JMP_DX              2AC
+JMP_DX              2AE
 JMP_E               EC
-JMP_EX              310
-JMP_LS_MEM          358
-JMP_LS_REG          370
-JMP_RO_MEM          360
-JMP_RO_REG          378
+JMP_EX              312
 JMP_TBL             0
-J_47X               228
-J_ADDI              1A8
-J_AND               2A4
-J_BCC               25C
-J_BRA               254
-J_CLR1              132
-J_CLR2              122
-J_CLR3              112
-J_CLR4              102
-J_CLR_DM            160
-J_CLR_LEA           142
-J_CLR_MM            152
-J_CLR_SHFT          170
-J_DIVU              278
-J_LEA               230
-J_MOVEAL            1C4
-J_MOVEAW            1E8
-J_MOVEL             1CC
-J_MOVEM             238
-J_MOVEW             1F0
-J_MULS              29C
-J_OR                280
-J_SUBI              1A0
-L_DN                A98
-L_EA                A5C
-L_SIZE              9BC
-MM_ADD_S            4EC
-MM_LONG             4E8
-MM_WORD             4E0
-OPC_ADD             670
-OPC_ADDA            64E
-OPC_ADDI            3E2
-OPC_ADDQ            42E
-OPC_AND             630
-OPC_AS_MEM          6C6
-OPC_AS_REG          714
-OPC_BCC             5BE
-OPC_BRA             5A2
-OPC_DIVU            5CA
-OPC_JSR             68E
-OPC_LEA             490
-OPC_LS_MEM          6E0
-OPC_LS_REG          73A
-OPC_MOVEAL          4FA
-OPC_MOVEAW          54E
-OPC_MOVEB           40A
-OPC_MOVEL           526
-OPC_MOVEM           4B2
-OPC_MOVEQ           456
-OPC_MOVEW           57A
-OPC_MULS            60A
-OPC_NOP             6AA
-OPC_OR              5F0
-OPC_RO_MEM          6FA
-OPC_RO_REG          760
-OPC_RTS             6B8
-OPC_SUB             472
-OPC_SUBI            3BA
-OP_ADD              308
-OP_ADDA             300
-OR_ADD_SIZE         A00
-O_JSR               3B2
-O_NOP               3A2
-O_RTS               3AA
-SHFT_DECODE         786
-W_DN                A84
-W_EA                A48
-W_SIZE              9AE
+J_47X               22A
+J_ADDI              1AA
+J_AND               2A6
+J_BCC               25E
+J_BRA               256
+J_CLR1              134
+J_CLR2              124
+J_CLR3              114
+J_CLR4              104
+J_CLR_DM            162
+J_CLR_LEA           144
+J_CLR_MM            154
+J_CLR_SHFT          172
+J_DIVU              27A
+J_LEA               232
+J_MOVEAL            1C6
+J_MOVEAW            1EA
+J_MOVEL             1CE
+J_MOVEM             23A
+J_MOVEW             1F2
+J_MULS              29E
+J_OR                282
+J_SUBI              1A2
+L_DN                AD4
+L_EA                A98
+L_SIZE              9F8
+MM_ADD_S            528
+MM_LONG             524
+MM_WORD             51C
+OPC_ADD             6AC
+OPC_ADDA            68A
+OPC_ADDI            41E
+OPC_ADDQ            46A
+OPC_AND             66C
+OPC_AS_MEM          702
+OPC_AS_REG          750
+OPC_BCC             5FA
+OPC_BRA             5DE
+OPC_DIVU            606
+OPC_JSR             6CA
+OPC_LEA             4CC
+OPC_LS_MEM          71C
+OPC_LS_REG          776
+OPC_MOVEAL          536
+OPC_MOVEAW          58A
+OPC_MOVEB           446
+OPC_MOVEL           562
+OPC_MOVEM           4EE
+OPC_MOVEQ           492
+OPC_MOVEW           5B6
+OPC_MULS            646
+OPC_NOP             6E6
+OPC_OR              62C
+OPC_RO_MEM          736
+OPC_RO_REG          79C
+OPC_RTS             6F4
+OPC_SUB             4AE
+OPC_SUBI            3F6
+OP_ADD              30A
+OP_ADDA             302
+OP_AS_MEM           36C
+OP_AS_REG           3A4
+OP_LS_MEM           374
+OP_LS_REG           3AC
+OP_RO_MEM           37C
+OP_RO_REG           3B4
+OR_ADD_SIZE         A3C
+O_JSR               3EE
+O_NOP               3DE
+O_RTS               3E6
+SHFT_DECODE         7C2
+SRMEM_VAR           34C
+SRREG_VAR           384
+SR_MEM_VAR          33C
+SR_REG_VAR          344
+W_DN                AC0
+W_EA                A84
+W_SIZE              9EA

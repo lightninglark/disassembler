@@ -10,13 +10,8 @@
 START       ORG         $1000       *Start program
             JSR         INTRO       *Display Intro Message
             JSR         GET_INPUT   *Prompt user for input, convert input from ascii to hex and assign to sta_addr and end_addr
-            
-            *Assuming all input error checking is done before the next call (not yet implemented)
-            
             JSR         DECODE_LOOP *Enters maine decode loop
             
-            * final call of program, may need to be removed if we jump directly to DONE from the loop
-            *JMP         DONE        *End Program               
                
 *-----------------------INTRO-------------------------------
 INTRO       LEA         NL_INTRO,A1 *Load INTRO1 message into A1
@@ -185,7 +180,7 @@ INIT_BAD    MOVE.B      #'$',(A3)+
             
             MOVE.B      #' ',(A3)+  *Add spaces after bad code added
             MOVE.B      #' ',(A3)+
-            JSR         H2A_B_OP   *Add the opcode to the bad string
+            JSR         H2A_B_OP    *Add the opcode to the bad string
             
             RTS
             
@@ -220,7 +215,7 @@ LET_G       ADDI.B      #$37,D2     *Make it an ascii letter
 ADD_CHAR_G  MOVE.B      D2,(A4)+    *Add to the good data string
             SUBI.B      #$1,D0      *decrement counter
             CMPI.B      #$0,D0      *Check if we're done            
-            BGT         ISO_DIG_G    *If not, continue tranlation   
+            BGT         ISO_DIG_G   *If not, continue tranlation   
             
             RTS
             
@@ -310,6 +305,7 @@ PRINT_B     MOVE.B      #' ',(A4)+
             TRAP        #15         *Display string
             
             RTS 
+            
 *-------------------PRG_RESET-------------------------------
 PRG_RESET   MOVEA.L     #$01000000,A7   *Reset the stack pointer
             
@@ -358,7 +354,8 @@ END_OPT     LEA         END_PGR,A1  *Display Ending messages
 *-----------------------DONE--------------------------------
 DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
             TRAP        #15         *Halt program, Trap#15 task 9
-            
+ 
+           
 *---------------Variables and Constants---------------------
             INCLUDE     'Never_Lucky_Jump_Tables.x68'   *Include jump tables file
             INCLUDE     'Never_Lucky_EA_Codes.x68'      *Include ea code (tables)
@@ -394,8 +391,6 @@ END_PGR     DC.B        CR,LF,'Prese SPACE to decode another memory image.',CR,L
 
 STA_ADDR    DS.B        40
 END_ADDR    DS.B        40
-
-
 
 
 BAD_STR     DC.L        1
@@ -435,6 +430,7 @@ SPACERE     DC.L        80
 SPACERF     DC.L        80
 
             END         START       *LAST LINE
+
 
 
 

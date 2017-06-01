@@ -3,16 +3,17 @@
 * This file includes OPCODE logic (OPCODE and size decoding)
 ************************************************************
 
+
+*============================================================
+*===================ID FIRST OPCODE DIGIT====================
+*============================================================
+
 *-----------------------JMP_TBL------------------------------
 * Purpose: JMP_TBL takes a data register input (D7) and navigates to the correct OPCODE table
 *          entry.
 *          $FF is saved to D6 if OPCode is determined to be incorrect
 * Assumption: Whenever JMP_TBL is called, D7 contains the next new machine code instruction
 *------------------------------------------------------------
-
-*============================================================
-*===================ID FIRST OPCODE DIGIT====================
-*============================================================
 JMP_TBL     CLR.L       D2
             MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
             CLR.L       D1
@@ -91,10 +92,11 @@ JMP_D       CMP.B       #$D,D2
             RTS
             
 JMP_E       CMP.B       #$F,D2      *If first hex value is not 0-D, it must be E(valid) or F(invalid)
-            BEQ         INVALID     *If first hex value is F, jump to INVALID
+            BEQ         INV_OP      *If first hex value is F, jump to INVALID
             JSR         JMP_EX      *If the first hex value is E, jump to JMP_EX to determine the next set of digits
+            RTS
             
-            JMP         INVALID     *Got here? Must be invalid.
+INV_OP      JMP         INVALID     *Got here? Must be invalid.
             RTS
  
 *============================================================
@@ -325,45 +327,64 @@ OP_ADD      JSR         OPC_ADD
             
 *------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
 
-JMP_EX      JSR         J_CLR3      *Isolate Count/Reg bits to determine if the OPCODE is a MEMORY variant
-            CMP.B       #0,D2       
-            BEQ         JMP_AS_MEM  *Instruction is determined to be ASR or ASL MEMORY variant
-            CMP.B       #1,D2
-            BEQ         JMP_LS_MEM  *Instruction is determined to be LSR or LSL MEMORY variant
-            CMP.B       #3,D2       
-            BEQ         JMP_RO_MEM  *Instruction is determined to be ROR or ROL MEMORY variant
-                                    *If none of the above, possibly a REGISTER variant
-                                    
-            JSR         J_CLR_SHFT  *Isolate the identifying bits that determine whether LS(L/R) / AS(L/R) / RO(L/R) for the REGISTER variant          
+JMP_EX      JSR         J_CLR2
+            CMP.B       #3,D2       *Is it a memory variant?
+            BEQ         SR_MEM_VAR  
             CMP.B       #0,D2
-            BEQ         JMP_AS_REG  *Instruction is determined to be ASR or ASL REGISTER variant
+            BEQ         SR_REG_VAR  *Is it a reg variant
             CMP.B       #1,D2
-            BEQ         JMP_LS_REG  *Instruction is determined to be LSR or LSL REGISTER variant 
+            BEQ         SR_REG_VAR
+            CMP.B       #2,D2
+            BEQ         SR_REG_VAR
+            JMP         INVALID     *Got here? Mus be invalid.
+            
+SR_MEM_VAR  JSR         SRMEM_VAR
+            RTS
+
+SR_REG_VAR  JSR         SRREG_VAR
+            RTS
+            
+*------------------SHIFT AND ROTATE MEM VAR-----------------
+* For MEMORY variant shifts and rotations
+*-----------------------------------------------------------   
+SRMEM_VAR   JSR         J_CLR3      *Isolate unique hardcoded mem section
+            CMP.B       #0,D2
+            BEQ         OP_AS_MEM  *Is it as AS?
+            CMP.B       #1,D2
+            BEQ         OP_LS_MEM  *Is it a LS
             CMP.B       #3,D2
-            BEQ         JMP_RO_REG  *Instruction is determined to be ROR or ROL REGISTER variant
-           
-            JSR         INVALID     *Otherwise instruction is determined to be invalid
-            RTS
-           
-JMP_AS_MEM  JSR         OPC_AS_MEM
+            BEQ         OP_RO_MEM  *Is it a RO
+            BRA         INVALID     *Got here? Must be invalid
+            
+OP_AS_MEM   JSR         OPC_AS_MEM
             RTS
 
-JMP_LS_MEM  JSR         OPC_LS_MEM
+OP_LS_MEM   JSR         OPC_LS_MEM
             RTS
 
-JMP_RO_MEM  JSR         OPC_RO_MEM
+OP_RO_MEM   JSR         OPC_RO_MEM
+            RTS
+            
+*------------------SHIFT AND ROTATE REG VAR-----------------
+* For REGISTER variant shifts and rotations
+*-----------------------------------------------------------
+SRREG_VAR   JSR         J_CLR_SHFT *Isolate hardoced unique
+            CMP.B       #0,D2       *Is it a AS?
+            BEQ         OP_AS_REG
+            CMP.B       #1,D2       *Is it a LS?
+            BEQ         OP_LS_REG
+            CMP.B       #3,D2       *is it a RO?
+            BEQ         OP_RO_REG
+            BRA         INVALID     *Got here? Must be invalid.
+
+OP_AS_REG   JSR         OPC_AS_REG
+            RTS   
+
+OP_LS_REG   JSR         OPC_LS_REG
             RTS
 
-JMP_AS_REG  JSR         OPC_AS_REG
+OP_RO_REG   JSR         OPC_RO_REG
             RTS
-
-JMP_LS_REG  JSR         OPC_LS_REG
-            RTS
-
-JMP_RO_REG  JSR         OPC_RO_REG
-            RTS           
-
-     
 
 *============================================================
 *==================ID THIRD OPCODE DIGIT=====================
@@ -1051,6 +1072,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 
 

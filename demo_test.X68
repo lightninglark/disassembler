@@ -104,7 +104,6 @@ NOP
     MOVE.L    -(A0),(A1)
     MOVE.L    -(A0),(A1)+
     MOVE.L    -(A0),-(A1)
-    MOVEM.W   D0-D7/A0-A6,(A1)
     MOVEM.W   A1-A7,-(A1)
     MOVEM.L   D1-D7,-(A1)
     MOVEM.W   A1/D7,-(A1)
