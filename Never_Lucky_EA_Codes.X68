@@ -148,7 +148,8 @@ ADDQ_EA     CLR.L       D1          *Make sure D1 is clear
 * Logic for opcodes with a #<data> source, <EA> destination
 * opcodes: SUBI, ADDI
 *-----------------------------------------------------------
-SR_MEM      JSR         GEN_EA_CODE
+SR_MEM      JSR         SR_MEM_ADDS     *Add Size characters
+            JSR         GEN_EA_CODE
             RTS
 
 
@@ -531,6 +532,33 @@ AQ_7        MOVE.B      #'7',(A4)+
 *============================================================
 *=========================HELPER SUBROUTINES=================
 *============================================================
+
+*-------------------------INVALID DATA----------------------
+* Helper function to add size characters to SR_MEM
+*
+*-----------------------------------------------------------
+SR_MEM_ADDS CLR.L       D2
+            MOVE.W      D7,D2
+            
+            CLR.L       D1
+            MOVE.B      #13,D1
+            LSL.W       D1,D2       *Shifting to isolate REGISTER (#13 already in D1)
+            LSR.W       D1,D2
+            
+            CMP.B       #0,D2       *is it a word?
+            BEQ         SR_MEM_W
+            CMP.B       #1,D2       *is it a word?
+            BEQ         SR_MEM_L
+            
+SR_MEM_W    MOVE.B      #'W',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            RTS
+
+SR_MEM_L    MOVE.B      #'L',(A4)+
+            MOVE.B      #' ',(A4)+
+            MOVE.B      #' ',(A4)+
+            RTS
 
 *-------------------------INVALID DATA----------------------
 * This subroutine adds invalid data to invalid string.
