@@ -700,42 +700,86 @@ OPC_RTS     MOVE.B      #'R',(A4)+
 *------------AS(L/R) OPCODE MEMORY variant------------------          
 OPC_AS_MEM  MOVE.B      #'A',(A4)+
             MOVE.B      #'S',(A4)+
-            
+            JSR         SHIFT_DECODE
+            MOVE.B      #'.',(A4)+
+                       
+            JSR         SR_MEM
             RTS
 
 *------------LS(L/R) OPCODE MEMORY variant------------------    
 OPC_LS_MEM  MOVE.B      #'L',(A4)+
             MOVE.B      #'S',(A4)+
-            
+            JSR         SHIFT_DECODE
+            MOVE.B      #'.',(A4)+
+                        
+            JSR         SR_MEM
             RTS
 
 *------------RO(L/R) OPCODE MEMORY variant------------------     
 OPC_RO_MEM  MOVE.B      #'R',(A4)+
             MOVE.B      #'O',(A4)+
-            
+            JSR         SHIFT_DECODE
+            MOVE.B      #'.',(A4)+
+                       
+            JSR         SR_MEM
             RTS   
 
 *----------AS(L/R) OPCODE REGISTER variant------------------      
 OPC_AS_REG  MOVE.B      #'A',(A4)+
             MOVE.B      #'S',(A4)+
+            JSR         SHIFT_DECODE
+            MOVE.B      #'.',(A4)+
+            
+            JSR         GET_SIZE_2
+            JSR         ADD_SIZE
+            JSR         SR_REGISTER
             
             RTS
 
 *----------LS(L/R) OPCODE REGISTER variant------------------ 
 OPC_LS_REG  MOVE.B      #'L',(A4)+
             MOVE.B      #'S',(A4)+
+            JSR         SHIFT_DECODE
+            MOVE.B      #'.',(A4)+
             
+            JSR         GET_SIZE_2
+            JSR         ADD_SIZE
+            JSR         SR_REGISTER
             RTS
 
 *----------RO(L/R) OPCODE REGISTER variant------------------ 
 OPC_RO_REG  MOVE.B      #'R',(A4)+
             MOVE.B      #'O',(A4)+
-            
+            JSR         SHIFT_DECODE
+            MOVE.B      #'.',(A4)+
+
+            JSR         GET_SIZE_2
+            JSR         ADD_SIZE
+            JSR         SR_REGISTER
             RTS          
 
 *===========================================================
 *=====================HELPER SUBROUTINES====================
 *===========================================================
+
+*---------------Determine Shift Direction-------------------
+* %0000 000X 0000 0000 
+DECODE_SHFT CLR.L       D2
+            MOVE.W      D7,D2       *Copies D7 contents to D2 for manipulation
+            CLR.L       D1
+            LSL.W       #7,D2       *Clear the most sig 7 bits
+            MOVE.B      #15,D1      *Moves 15 into D1
+            LSR.W       D1,D2       *Shifts 15 right to isolate the bits we're working with 
+            CMP.B       #0,D2       *If 0, direction is determined to be R       
+            BEQ         DECODE_R
+            BRA         DECODE_L
+            
+DECODE_R    MOVE.B      #'R',(A4)+  *Adds R to the output
+            RTS
+
+DECODE_L    MOVE.B      #'L',(A4)+  *Adds L to the output
+            RTS
+                    
 
 *-------------------------BCC_DECODE------------------------
 * Isolates the 4 bit condition code for BCC OPCODES
@@ -1006,6 +1050,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 
 
