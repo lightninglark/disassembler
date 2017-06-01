@@ -4,10 +4,6 @@
 * Logic.
 ************************************************************
 
-*------LSL/LSR REG/MEM, ASL/ASR REG/MEM, ROL/ROR REG/MEM---------
-
-JMP_EX      
-            RTS
 
 
 
@@ -148,14 +144,80 @@ ADDQ_EA     CLR.L       D1          *Make sure D1 is clear
             
             RTS
 
-*---------------------LEA_EA-------------------------------
-* Logic for the ADDQ OPCODE to produce an operand.
-* D1/D2/D3/D6 avaliable for shifting
+*---------------------Data source, EA dest------------------
+* Logic for opcodes with a #<data> source, <EA> destination
+* opcodes: SUBI, ADDI
 *-----------------------------------------------------------
+SR_MEM      JSR         GEN_EA_CODE
+            RTS
+
+
+*---------------------Data source, EA dest------------------
+* Logic for opcodes with a #<data> source, <EA> destination
+* opcodes: SUBI, ADDI Size is in D4
+*-----------------------------------------------------------
+SR_REG      JSR         ISO_IR      *Place in D3
+            JSR         ISO_RCOUNT  *Place in D2
+            CMP.B       #0, D3      *Is it an immediate data shift?
+            BEQ         IMD_SR
+            CMP.B       #1, D3      *Is it an Dn shift?
+            BEQ         DN_SR
+            
+            
+IMD_SR      MOVE.B      #'#',(A4)+
+            MOVE.B      #'$',(A4)+
+            CLR.L       D1
+            MOVE.W      D2,D1
+            JSR         ADDQ_ID     *Same number sequence as ADDQ (add number of shifts)
+            RTS
+
+
+DN_SR       MOVE.B      D2,D3
+            MOVE.B      #'D',(A4)+
+            JSR         REG_TBL
+            MOVE.B      #',',(A4)+
+            MOVE.B      #'D',(A4)+
+            
+            CLR.L       D1
+            MOVE.B      #13,D1
+            LSL.W       D1,D3       *Shifting to isolate REGISTER (#13 already in D1)
+            LSR.W       D1,D3       *Move REG bits to LSB position (#13 already in D1)
+            JSR         REG_TBL
+            
+            RTS         
 
 *============================================================
 *======================BIT ISOLATORS=========================
 *============================================================
+
+*-------------------------MM_DR-----------------------------
+* For:SHIFTS/ROTATIONS. Place IR bit in D3
+*-----------------------------------------------------------
+ISO_IR      CLR.L       D1
+            CLR.L       D3
+            
+            MOVE.W      D7,D3
+            
+            MOVE.B      #10,D1
+            LSL.W       D1,D3
+            MOVE.B      #15,D1
+            LSR.W       D1,D3
+              
+            RTS
+
+*-------------------------MM_DR-----------------------------
+* For:SHIFTS/ROTATIONS. Place Reg/Gount in D2
+*-----------------------------------------------------------
+ISO_RCOUNT  CLR.L       D1
+            CLR.L       D2
+             
+            MOVE.W      D7,D2
+            
+            LSL.W       #4,D2
+            MOVE.B      #13,D1
+            LSR.W       D1,D2
+            
+            RTS
 
 *-------------------------MM_DR-----------------------------
 * For:MOVEM. This subroutine isolates the MOVEM DR bit into
@@ -427,7 +489,7 @@ L_IMD       CLR.L       D1          *Make sure D1 is clear
 *---------------------ADDQ_ID-------------------------------
 * A simple immeidate data selector for ADDQ. Simply adds
 * the the correct character (1 thru 8) to good string based
-* on data bits in D1
+* on data bits in D1. ALSO USED FOR SHIFT/ROTATIONS
 *-----------------------------------------------------------
 ADDQ_ID     CMP.B       #0,D1       *Select correct number to add to output strings
             BEQ         AQ_0
