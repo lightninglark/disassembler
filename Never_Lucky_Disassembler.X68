@@ -357,7 +357,7 @@ DONE        MOVE.B      #9,D0       *Load 9 into D0 (trap task)
  
            
 *---------------Variables and Constants---------------------
-            INCLUDE     'Never_Lucky_Jump_Tables.x68'   *Include jump tables file
+            INCLUDE     'Never_Lucky_OP_Codes.x68'   *Include jump tables file
             INCLUDE     'Never_Lucky_EA_Codes.x68'      *Include ea code (tables)
 
 CR          EQU         $0D
@@ -430,6 +430,7 @@ SPACERE     DC.L        80
 SPACERF     DC.L        80
 
             END         START       *LAST LINE
+
 
 
 

@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 6/2/2017 11:13:47 AM
+Created On: 6/2/2017 12:43:12 PM
 
 00000000                             1  ************************************************************
 00000000                             2  * Title      : Never Lucky Disassembler
@@ -361,7 +361,7 @@ Created On: 6/2/2017 11:13:47 AM
 00001310                           357   
 00001310                           358             
 00001310                           359  *---------------Variables and Constants---------------------
-00001310                           360              INCLUDE     'Never_Lucky_Jump_Tables.x68'   *Include jump tables file
+00001310                           360              INCLUDE     'Never_Lucky_OP_Codes.x68'   *Include jump tables file
 00001310                           361  
 00001310                           362  
 00001310                           363  
