@@ -197,7 +197,7 @@ START       LSL.B       #$01,D0
             DIVU.W      (A0)+,D1            
             DIVU.W      -(A1),D0
             
-            BRA         $60            
+            BRA         $01620040            
             BRA         $61            
             BRA         $62            
             BRA         $63            
@@ -525,6 +525,7 @@ TEST1       RTS
 
 
         END    START
+
 
 
 

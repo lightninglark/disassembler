@@ -1,6 +1,6 @@
 00003000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/30/2017 11:00:43 AM
+Created On: 6/1/2017 8:36:38 AM
 
 00003000                             1          ORG    $3000
 00003000                             2  
@@ -201,7 +201,8 @@ Created On: 5/30/2017 11:00:43 AM
 0000323A  82D8                     197              DIVU.W      (A0)+,D1            
 0000323C  80E1                     198              DIVU.W      -(A1),D0
 0000323E                           199              
-0000323E  6000 CE20                200              BRA         $60            
+Line 200 ERROR: Branch instruction displacement is out of range or invalid
+0000323E  6000 CE00                200              BRA         $010040            
 00003242  6000 CE1D                201              BRA         $61            
 00003246  6000 CE1A                202              BRA         $62            
 0000324A  6000 CE17                203              BRA         $63            
@@ -530,7 +531,7 @@ Created On: 5/30/2017 11:00:43 AM
 00003602                           526  
 00003602                           527          END    START
 
-No errors detected
+1 error detected
 No warnings generated
 
 

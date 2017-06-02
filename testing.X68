@@ -1,5 +1,5 @@
 *-----------------------------------------------------------
-* Title      :
+* Title      :  Team Never Lucky Testing File
 * Written by :
 * Date       :
 * Description:
@@ -7,6 +7,142 @@
 START       ORG         $3000   *where data gets loaded into memory in disassembler
 
 *-----------------------------------------------------
+            *Illegal instructions
+            CLR       D0    
+            CLR       (A2)
+            CLR       (A3)+
+            CLR.B     (A7)+
+            CLR.W     D5
+            CLR.L     -(A4)
+            CLR       $1
+            CLR.B     D3
+            CLR.B     (A2)
+            CLR.W     $23
+            CLR.L     D3  
+            CLR.L     (A5)+
+            CLR.L     $1235 
+            
+            CMP.B       D1,D0
+            CMP.W       A2,D1
+            CMP.L       (A3),D2    
+            CMP.B       (A4)+,D3 
+            CMP.W       -(A5),D4  
+            
+            CMPA.W      D0,A0      
+            CMPA.L      A0,A1      
+            CMPA.W      (A1),A2    
+            CMPA.L      (A2)+,A3   
+            CMPA.W      -(A3),A4    
+            CMPA.L      #1234,A7
+            
+            
+            CMPI.W      #10,D1
+            CMPI.B      #$12,(A3)
+            CMPI.B      #$FF, -(A0)
+            CMPI.W      #$1222,-(A5)
+            
+            CMPM.B      (A1)+,(A2)+
+            CMPM.W      (A1)+,(A2)+
+            CMPM.L      (A1)+,(A2)+
+            
+            BCHG    D2,D3
+            BCHG    D1,(A1)
+            BCHG    D3,(A2)+
+            BCHG    D4,-(A3)   
+            BCHG    #1234,D1
+            BCHG    #5678,(A1)
+            BCHG    #1234,(A2)+
+            BCHG    #12345678,(A3)+
+            
+            BCLR  D1,D2
+            BCLR  D1,(A1)
+            
+            BSET  D1,D2
+            
+            BSR     START
+            
+            BTST     D1,D2
+            
+            CHK     D0,D7
+            
+            
+            
+            SUBQ.B      #$1,D1
+            SUBQ.W      #$2,D2
+            SUBQ.L      #3,D3
+            SUBQ.W      #$4,A0     
+            SUBQ.L      #$5,A1
+            SUBQ.L      #$6,A2
+            SUBQ.B      #$7,(A0)   
+            SUBQ.W      #$8,(A1)
+            SUBQ.L      #1,(A2)
+            SUBQ.B      #$2,(A2)+    
+            SUBQ.W      #$3,(A3)+
+            SUBQ.L      #$4,(A4)+
+            SUBQ.B      #$5,-(A5)   
+            SUBQ.W      #6,-(A6)
+            SUBQ.L      #$7,-(A7)
+            SUBQ.L      #$4,$12345
+            SUBQ.L      #$8,$1
+            
+            SUBA.W      D0,A0
+            SUBA.L      D1,A1 
+            SUBA.W      A1,A2  
+            SUBA.L      A2,A3
+            SUBA.W      (A3),A3  
+            SUBA.L      (A4),A4
+            SUBA.W      (A5)+,A0  
+            SUBA.L      (A6)+,A1
+            SUBA.W      -(A0),A2   
+            SUBA.L      -(A1),A3
+            
+ 
+            EORI.W      #10,D1
+            EORI.B      #$12,(A3)
+            EORI.W      #$FF,(A2)+
+            EORI.B      #$FF, -(A0) 
+            EORI.W      #$1222,-(A5)
+            
+
+            ANDI.W      #10,D1
+            ANDI.B      #$12,(A3)
+            ANDI.B      #$FF, (A0)+
+            ANDI.W      #$1222,-(A5)
+            
+            
+            CLR.B       D1
+            CLR.L       D2
+            CLR.L       (A1)
+            
+            ADDX.B      D1,D2
+            ADDX.W      D1,D2
+            ADDX.L      D1,D2
+            
+            DIVS.W      D1,D2
+            
+            EOR         D1,D2
+            
+            EXT         D1
+            
+            JMP         START
+            
+            LINK        A1,#50
+            
+            MULU        D1,D2
+            
+            RESET
+            
+            ROXL        D1,D2
+            
+            RTE
+            RTR
+            
+            SWAP        D1
+            
+            
+            
+            
+            *Legal instructions
             LEA         $8000,A0
             LEA         (A0),A1
             LEA         $800,A2
@@ -1533,6 +1669,7 @@ START       ORG         $3000   *where data gets loaded into memory in disassemb
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

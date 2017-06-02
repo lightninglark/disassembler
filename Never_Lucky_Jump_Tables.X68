@@ -158,8 +158,8 @@ J_CLR_MM    CLR.L       D2
             CLR.L       D1   
             MOVE.B      #11,D1      *Moves 11 into D1
             LSR.W       D1,D2       *Shifts 11 right to isolate the bit we're working with 
-            RTS  
-     
+            RTS
+            
 * J_CLR_DM prepares the data registers for data manipulation by isolating the DESTINATION MODE bits:
 * Also alternatively known as the OPMODE bits for some OPCODES: OR, DIVU, SUB, ADDA, ADD
 * %0000 000X XX00 0000 0000          
@@ -518,6 +518,7 @@ OPC_MOVEM   MOVE.B      #'M',(A4)+
             MOVE.B      #'M',(A4)+
             MOVE.B      #'.',(A4)+
             
+            
             JSR         GET_SIZE_1
             
             CMP.B       #0,D4       *Change size code so it matches standard formatting
@@ -532,9 +533,7 @@ MM_LONG     MOVE.B      #2,D4
        
 MM_ADD_S    JSR         ADD_SIZE
             JSR         MM_OP_ORD
-            
             RTS
-
 
 *------------------MOVEA.L OPCODE----------------------------
 OPC_MOVEAL  MOVE.B      #'M',(A4)+
@@ -1072,6 +1071,7 @@ L_DN        MOVE.B      #'L',(A4)+  *Add size character to good string
             
             
             
+
 
 
 
